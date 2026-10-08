@@ -1,0 +1,8 @@
+{
+  "name": "motion-prompt",
+  "version": "1.0.0",
+  "description": "모션그래픽 요청 문장 사전 152종 — 영상·쇼츠·인트로를 만들 때 장면마다 맞는 카드의 «자세히» 사양(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 꺼내 쓴다. HyperFrames·Remotion·HTML 애니메이션 공용.",
+  "author": { "name": "EDB Data Biz" },
+  "license": "UNLICENSED",
+  "keywords": ["video", "motion-graphics", "hyperframes", "remotion", "shorts", "prompt"]
+}
