@@ -5,6 +5,8 @@ from pathlib import Path
 
 CARDS = json.loads((Path(__file__).resolve().parent / 'data' / 'motion.json').read_text(encoding='utf-8'))
 BY = {c['code']: c for c in CARDS}
+_PM = Path(__file__).resolve().parent / 'data' / 'prompt_motion.json'  # prompt-motion.com 실전 예시(build_pm.py)
+EXAMPLES = json.loads(_PM.read_text(encoding='utf-8')) if _PM.exists() else []
 TOOLS = {'auto': '하이퍼프레임(HyperFrames)으로', 'claude': '/hyperframes 로', 'codex': '$hyperframes 로'}
 RATIO = {'가로': '가로 16:9', '세로': '세로 9:16', '정사각': '정사각 1:1', '없음': ''}
 TAIL = '[[ 화면 비율: {ratio}.]][[ 색·분위기: {color}.]]'
@@ -134,6 +136,16 @@ def main(argv):
         out = [f'{pre} 아래 그래픽 {len(cs)}개를 순서대로 만들어줘.' + compose(TAIL, only) + compose('[[ 넣을 영상: {file}.]]', only)]
         out += [f"{i}) [{c['code']} {c['name']}] " + compose(c['tpl'], resolver(c['fields'], vals, g, no_file=True)) for i, c in enumerate(cs, 1)]
         print('\n'.join(out))
+    elif cmd == 'examples':  # prompt-motion.com — Claude 로 실제 만든 영상과 그 프롬프트(영어)
+        qs = [q.lower() for q in args]
+        hit = [e for e in EXAMPLES if all(q in ' '.join([e['id'], e['title'], e['type'], e['creator'], e['prompt'], *e['tags']]).lower() for q in qs)]
+        for e in hit: print(f"{e['id']}\t{e['title']}\t{','.join(e['tags'])}\t" + ' · '.join(x for x in [e['type'], e.get('effort'), e['iterations'], f"{len(e['prompt'])}자"] if x))
+        if not hit: print('찾은 예시 없음 — 태그: ' + ' '.join(sorted({t for e in EXAMPLES for t in e['tags']})))
+    elif cmd == 'example':
+        e = next((e for e in EXAMPLES if e['id'] == (args[0] if args else '')), None)
+        if not e: sys.exit(f"없는 예시: {args[0] if args else ''} — examples 로 찾기")
+        print(f"# {e['title']} — {e['creator']} ({e['source'] or e['creator_url']})\n"
+              ' · '.join(x for x in [e['type'], e['model'], e.get('effort') and 'effort ' + e['effort'], e['iterations'], e['posted'], e['size'], '영상 ' + e['video'], e['url']] if x) + f"\n\n{e['prompt']}")
     else:
         print('''사용법 (python3 motion.py …):
   list [카테고리 일부]          카드 목록(코드·이름·길이·설명)
@@ -141,6 +153,8 @@ def main(argv):
   fields <코드>                채울 칸 보기
   show <코드> [칸=값…] [옵션]   요청 문장(기본 🔍자세히, --simple 이면 간단)
   order <코드…> [칸=값…] [옵션] 여러 카드를 한 요청으로(주문서)
+  examples [단어…]             prompt-motion.com 실전 예시 찾기(제목·태그·프롬프트·만든 사람, AND · 영어)
+  example <id>                 예시 프롬프트 전문 + 만든 사람·원문·영상 링크
 옵션: --ratio 가로|세로|정사각|없음 (기본 가로) · --color "남색과 노랑" · --file video.mp4 · --tool auto|claude|codex''')
 
 

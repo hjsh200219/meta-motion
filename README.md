@@ -5,6 +5,7 @@
 자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩·구독 등.
 
 출처: https://nondev-thinking.web.app/motion/ (한국경영교육연구소 AI ACADEMY «모션그래픽 주문 사전»), 2026-10-08 수집. 사내 참고용.
+실전 예시: https://prompt-motion.com — Claude 로 만든 모션 영상의 프롬프트 230여 개(영어, 만든 사람·원문 링크 포함), 2026-10-11 수집. 사내 참고용 — 영상·프롬프트는 만든 사람 소유.
 
 ## 설치
 
@@ -21,4 +22,5 @@ claude plugin install motion-prompt@motion-prompt
 
 - 그냥 «필첵 소개 쇼츠 만들어줘»처럼 영상을 요청하면 Claude 가 스킬을 불러 장면별 카드를 고르고, 쓴 카드 코드를 알려 준다.
 - 프롬프트만 원하면 «로고 인트로 프롬프트 줘», «/motion-prompt:motion-prompt 켄 번스».
+- 실전 예시: «prompt-motion 에서 차트 예시 보여줘» · 직접 `motion.py examples chart` → `example <id>`
 - 직접: `python3 skills/motion-prompt/motion.py search 자막` · `show I02 title=필첵 --ratio 세로` (전체 사용법은 인자 없이 실행)
