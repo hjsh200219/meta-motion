@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>모션 카드 고르기</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -197,11 +198,11 @@ const ASPECT = { '가로': '16 / 9', '세로': '9 / 16', '정사각': '1 / 1', '
 const TAG = { 'product-ui': '제품 화면', 'kinetic-type': '글자 움직임', music: '음악', shapes: '도형', particles: '입자', charts: '차트', diagrams: '도식', characters: '캐릭터', photos: '사진', phone: '휴대폰', code: '코드' };
 const SRC = { '': '전체', card: '요청 카드', pm: '실전 예시' };
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let ITEMS = [], src = '', cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
+let BASE = '', ITEMS = [], src = '', cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 const g = () => ({ ratio: RATIO[$('#ratio').value] ?? '', color: $('#color').value, file: '' });
 const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
-const poster = (it) => it.pm?.poster ? `posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}` : '';
+const poster = (it) => it.pm?.poster ? `${BASE}posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}` : '';
 const credit = (it) => it.pm ? `\n[참고한 실전 예시] ${it.code} — ${it.pm.creator} (${it.pm.url}) · 참고만 하고 그대로 베끼지 않음` : '';
 const aspectOf = (it) => {
   const m = it.pm?.size?.match(/^(\d+)x(\d+)$/);
@@ -332,7 +333,8 @@ document.addEventListener('change', (e) => {
 });
 
 for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if (v !== null) $('#' + k).value = v; }
-const load = (f) => fetch(f).then((r) => { if (!r.ok) throw new Error(`${f} ${r.status}`); return r.json(); });
+// 게시본은 자료를 같은 폴더에, repo 는 data/ 아래에 둔다 — 없으면 data/ 에서 찾는다
+const load = (f) => fetch(f).then((r) => r.ok ? r : fetch('data/' + f).then((d) => { if (!d.ok) throw new Error(`${f} ${r.status}`); BASE = 'data/'; return d; })).then((r) => r.json());
 Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json')]).then(([cards, ex, ko]) => {
   const pm = ex.filter((e) => ko[e.id]).map((e) => ({ ...ko[e.id], code: e.id, en: e.title, inds: e.tags.map((t) => TAG[t] || t), src: 'pm', pm: e }));
   ITEMS = [...cards.map((c) => ({ ...c, src: 'card' })), ...pm];
