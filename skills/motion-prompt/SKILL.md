@@ -58,4 +58,4 @@ python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람�
 - `data/motion.json` — 카드 152개: code·cat·name·en·plain·len·when·inds·fields·tpl·dx(자세히 재료)
 - `data/compose.mjs` — 사이트 원본 조립 코드(참조용 · 수정 금지, build.py 가 덮어씀)
 - `data/prompt_motion.json` — prompt-motion.com 예시: id·title·type(Prompt/Skill)·tags·prompt·creator·source·model·effort·iterations·posted·url·video
-- `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지
+- `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지

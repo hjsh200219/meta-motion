@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T18 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  background:radial-gradient(circle at 30% 20%,#F6F8FF 0,transparent 55%),radial-gradient(circle at 80% 85%,#DCE4FA 0,transparent 50%),#E9EEFB}
+.pos{position:absolute;width:16vmin;height:16vmin;transform:translate(-50%,-50%);perspective:80vmin}
+.p1{left:14%;top:56%}.p2{left:38%;top:74%}.p3{left:62%;top:56%}.p4{left:86%;top:74%}.p5{left:50%;top:24%}
+.shd{position:absolute;left:12%;right:12%;bottom:-5vmin;height:2.4vmin;border-radius:50%;background:rgba(80,95,140,.16);filter:blur(.8vmin)}
+.bob,.tilt{position:absolute;inset:0;transform-style:preserve-3d}
+.p1 .bob{--d:1;animation:bob 3s ease-in-out 0s 2 both}
+.p2 .bob{--d:-1;animation:bob 2s ease-in-out 0s 3 both}
+.p3 .bob{--d:1;animation:bob 1.5s ease-in-out 0s 4 both}
+.p4 .bob{--d:-1;animation:bob 6s ease-in-out 0s 1 both}
+.p5 .bob{--d:1;animation:bob 2s ease-in-out 0s 3 both}
+.p1 .tilt{--s:1}.p2 .tilt{--s:-1}.p3 .tilt{--s:1}.p4 .tilt{--s:-1}
+.tilt{animation:tilt 3s ease-in-out 1.5s 1 both}
+.tilt.spin{animation:spin 6s ease-in-out 0s 1 both}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(var(--d) * -3vmin))}}
+@keyframes tilt{0%{transform:rotateY(0) rotateX(0)}25%{transform:rotateY(calc(30deg * var(--s))) rotateX(8deg)}
+  50%{transform:rotateY(0) rotateX(-8deg)}75%{transform:rotateY(calc(-30deg * var(--s))) rotateX(6deg)}100%{transform:rotateY(0) rotateX(0)}}
+@keyframes spin{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
+.body{position:absolute;left:50%;top:50%;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateY(-12deg) rotateX(6deg);
+  border-radius:1.6vmin;box-shadow:inset .6vmin .6vmin 1vmin rgba(255,255,255,.7),inset 0 -.8vmin 1.2vmin rgba(0,0,0,.1)}
+.body::before,.body::after{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--dk)}
+.body::before{transform:translateZ(-1.6vmin)}.body::after{transform:translateZ(-.8vmin)}
+.body span{position:absolute;display:block;transform:translateZ(.3vmin)}
+.doc{width:11vmin;height:14vmin;background:#fff;--dk:#cfd6ea}
+.doc .ln{left:18%;right:18%;top:38%;height:44%;background:repeating-linear-gradient(#cfd6ea 0 .9vmin,transparent .9vmin 2.5vmin)}
+.doc .hd{left:18%;top:16%;width:40%;height:1.6vmin;border-radius:1vmin;background:#9fb0e8}
+.doc .fd{right:0;top:0;width:3.6vmin;height:3.6vmin;background:linear-gradient(to bottom left,#E9EEFB 50%,#d3daef 50%);border-radius:0 1.6vmin 0 .8vmin}
+.fol{width:14vmin;height:10vmin;background:linear-gradient(#FFC93C,#F2A900);--dk:#D99500}
+.fol .tab{left:0;top:-1.8vmin;width:6vmin;height:3vmin;background:#F2A900;border-radius:1vmin 1vmin 0 0}
+.fol .fl{left:0;right:0;bottom:0;height:72%;background:linear-gradient(#FFE27D,#FFD24A);border-radius:1.2vmin;transform:translateZ(.8vmin)}
+.mail{width:14vmin;height:10vmin;background:linear-gradient(#5A9AFF,#3F7DF0);--dk:#2D63C8}
+.mail .v{left:0;right:0;top:0;height:58%;border-radius:1.6vmin 1.6vmin 0 0;
+  background:linear-gradient(to top right,transparent 50%,#9CC3FF 50%) left/50% 100% no-repeat,linear-gradient(to top left,transparent 50%,#9CC3FF 50%) right/50% 100% no-repeat}
+.mail .dt{right:1.2vmin;bottom:1.2vmin;width:2vmin;height:2vmin;border-radius:50%;background:#fff;opacity:.85}
+.chart{width:13vmin;height:13vmin;background:#fff;--dk:#d6dcef;display:flex;align-items:flex-end;justify-content:center;gap:1.2vmin;padding:2vmin;box-sizing:border-box}
+.chart span{position:relative;width:2.6vmin;border-radius:.8vmin .8vmin .3vmin .3vmin}
+.chart span:nth-child(1){height:40%;background:linear-gradient(#FF9DBF,#FF6F9F)}
+.chart span:nth-child(2){height:75%;background:linear-gradient(#A98BFF,#7D58EA)}
+.chart span:nth-child(3){height:55%;background:linear-gradient(#5FE0AA,#2FBF84)}
+.gear{position:absolute;left:50%;top:50%;width:16vmin;height:16vmin;transform:translate(-50%,-50%) rotateX(6deg);transform-style:preserve-3d}
+.gl{position:absolute;inset:14%;border-radius:50%;
+  background:radial-gradient(circle closest-side,#E9EEFB 0 30%,transparent 31%),radial-gradient(circle at 35% 30%,var(--c1),var(--c2))}
+.gl::before{content:"";position:absolute;inset:-16%;border-radius:50%;
+  background:repeating-conic-gradient(from -11deg,var(--c2) 0 22deg,transparent 22deg 45deg);
+  -webkit-mask-image:radial-gradient(circle closest-side,transparent 0 72%,#000 73%);mask-image:radial-gradient(circle closest-side,transparent 0 72%,#000 73%)}
+.gl.b2{--c1:#7c8290;--c2:#6c7280;transform:translateZ(-1.4vmin)}
+.gl.b1{--c1:#8a909e;--c2:#7a808e;transform:translateZ(-.7vmin)}
+.gl.f{--c1:#E3E6EC;--c2:#A4AAB7;overflow:visible}
+.sh{position:absolute;inset:0;border-radius:50%;
+  background:linear-gradient(105deg,transparent 42%,rgba(255,255,255,.95) 50%,transparent 58%) 0 0/250% 100% no-repeat;
+  animation:glare 1s ease-in-out 5s 1 both}
+@keyframes glare{0%{opacity:0;background-position:0 0}12%{opacity:1}88%{opacity:1}100%{opacity:0;background-position:100% 0}}
+</style>
+<div class="stage">
+  <div class="pos p1"><div class="bob"><div class="tilt"><div class="body doc"><span class="hd"></span><span class="ln"></span><span class="fd"></span></div></div></div><i class="shd"></i></div>
+  <div class="pos p2"><div class="bob"><div class="tilt"><div class="body fol"><span class="tab"></span><span class="fl"></span></div></div></div><i class="shd"></i></div>
+  <div class="pos p3"><div class="bob"><div class="tilt"><div class="body mail"><span class="v"></span><span class="dt"></span></div></div></div><i class="shd"></i></div>
+  <div class="pos p4"><div class="bob"><div class="tilt"><div class="body chart"><span></span><span></span><span></span></div></div></div><i class="shd"></i></div>
+  <div class="pos p5"><div class="bob"><div class="tilt spin"><div class="gear"><b class="gl b2"></b><b class="gl b1"></b><b class="gl f"><i class="sh"></i></b></div></div></div><i class="shd"></i></div>
+</div>
+</html>

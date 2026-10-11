@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T06 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#04060C;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:absolute;inset:0;display:grid;place-items:center;padding-top:10vmin;box-sizing:border-box;perspective:150vmin;perspective-origin:50% 40%;background:radial-gradient(120% 90% at 50% 30%,#0a1224 0,#04060C 70%)}
+.tilt,.orbit,.world{position:absolute;left:50%;top:56%;width:0;height:0;transform-style:preserve-3d}
+.tilt{left:auto;top:auto;position:relative;animation:rise-cam 3.2s ease-in-out 2.8s 1 both}
+.orbit{left:0;top:0;animation:orbit 6s linear 0s 1 both}
+.world{left:0;top:0}
+@keyframes rise-cam{from{transform:rotateX(56deg)}to{transform:rotateX(71deg) translateZ(-6vmin)}}
+@keyframes orbit{from{transform:rotateZ(-15deg)}to{transform:rotateZ(15deg)}}
+
+.floor{position:absolute;width:240vmin;height:240vmin;left:-120vmin;top:-120vmin;
+background:
+linear-gradient(rgba(60,130,255,.55) .25vmin,transparent .25vmin) 0 0/6vmin 6vmin,
+linear-gradient(90deg,rgba(60,130,255,.55) .25vmin,transparent .25vmin) 0 0/6vmin 6vmin,
+radial-gradient(circle,#0b1a33 0,#050914 60%)}
+
+.b{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;
+transform:translate3d(var(--x),var(--y),0) scale3d(1,1,.001);
+animation:rise 1.48s cubic-bezier(.16,.8,.24,1) calc(.2s + var(--i)*.16s) 1 both}
+@keyframes rise{from{transform:translate3d(var(--x),var(--y),0) scale3d(1,1,.001)}to{transform:translate3d(var(--x),var(--y),0) scale3d(1,1,1)}}
+.f,.roof{position:absolute;left:0;top:0;width:6.4vmin;transform-origin:0 0;
+animation:show .01s linear calc(.2s + var(--i)*.16s) 1 both}
+@keyframes show{from{opacity:0}to{opacity:1}}
+.f{height:calc(var(--v)*.7vmin);background:linear-gradient(180deg,rgba(184,106,30,.7) 0,#1d1209 38%,#120a05 100%)}
+.f::before{content:"";position:absolute;inset:0;opacity:.5;
+background:
+radial-gradient(circle,#ffd08a 0 .35vmin,transparent .45vmin) 0 0/1.8vmin 2.4vmin,
+radial-gradient(circle,#ffb35c 0 .3vmin,transparent .4vmin) .9vmin 1.2vmin/2.7vmin 3.3vmin;
+animation:flash 1.1s ease-out 5s 1 both}
+@keyframes flash{0%{opacity:.5}25%{opacity:1}100%{opacity:.5}}
+.f1{transform:translate3d(-3.2vmin,3.2vmin,0) rotateX(90deg)}
+.f2{transform:translate3d(-3.2vmin,-3.2vmin,0) rotateX(90deg);filter:brightness(.7)}
+.f3{transform:translate3d(-3.2vmin,-3.2vmin,0) rotateZ(90deg) rotateX(90deg);filter:brightness(.55)}
+.f4{transform:translate3d(3.2vmin,-3.2vmin,0) rotateZ(90deg) rotateX(90deg);filter:brightness(.85)}
+.roof{height:6.4vmin;background:linear-gradient(135deg,#B86A1E,#7a4513);
+transform:translate3d(-3.2vmin,-3.2vmin,calc(var(--v)*.7vmin))}
+
+.fog{position:absolute;inset:0;pointer-events:none;
+background:linear-gradient(#04060C 0,rgba(4,6,12,.92) 14%,rgba(4,6,12,.45) 32%,transparent 52%),radial-gradient(90% 80% at 50% 55%,transparent 55%,rgba(4,6,12,.85) 100%)}
+
+@property --n{syntax:"<integer>";inherits:false;initial-value:0}
+.hud{position:absolute;left:5vmin;top:5vmin;color:#ffe2b8;animation:hudin .5s ease-out 2.8s 1 both}
+@keyframes hudin{from{opacity:0;transform:translateY(-2vmin)}to{opacity:1;transform:none}}
+.hud .lab{font-size:4.2vmin;letter-spacing:.08em;color:#e9a560}
+.hud .num{font-size:12vmin;font-weight:800;line-height:1.05;color:#fff2dc;text-shadow:0 0 3vmin rgba(255,160,60,.6);
+counter-reset:n var(--n);animation:count 2.2s cubic-bezier(.2,.7,.2,1) 2.8s 1 both}
+.hud .num::after{content:counter(n)}
+@keyframes count{from{--n:0}to{--n:204}}
+.hud .src{font-size:3vmin;color:#7f93b8;margin-top:.8vmin}
+</style>
+<div class="stage">
+  <div class="tilt"><div class="orbit"><div class="world">
+    <div class="floor"></div>
+    <div class="b" style="--i:0;--v:12;--x:-31.5vmin;--y:-4.5vmin"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div><div class="f f4"></div><div class="roof"></div></div>
+    <div class="b" style="--i:1;--v:18;--x:-22.5vmin;--y:-2vmin"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div><div class="f f4"></div><div class="roof"></div></div>
+    <div class="b" style="--i:2;--v:15;--x:-13.5vmin;--y:-.5vmin"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div><div class="f f4"></div><div class="roof"></div></div>
+    <div class="b" style="--i:3;--v:24;--x:-4.5vmin;--y:0vmin"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div><div class="f f4"></div><div class="roof"></div></div>
+    <div class="b" style="--i:4;--v:30;--x:4.5vmin;--y:0vmin"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div><div class="f f4"></div><div class="roof"></div></div>
+    <div class="b" style="--i:5;--v:27;--x:13.5vmin;--y:-.5vmin"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div><div class="f f4"></div><div class="roof"></div></div>
+    <div class="b" style="--i:6;--v:36;--x:22.5vmin;--y:-2vmin"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div><div class="f f4"></div><div class="roof"></div></div>
+    <div class="b" style="--i:7;--v:42;--x:31.5vmin;--y:-4.5vmin"><div class="f f1"></div><div class="f f2"></div><div class="f f3"></div><div class="f f4"></div><div class="roof"></div></div>
+  </div></div></div>
+  <div class="fog"></div>
+  <div class="hud"><div class="lab">월별 매출 합계</div><div class="num"></div><div class="src">data.xlsx</div></div>
+</div>
+</html>

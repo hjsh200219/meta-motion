@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """preview.html 을 사내 KB(kb.pilldoc.co.kr/motion/)용 페이지로 내보낸다 — preview.html 이 정본, 내보낸 파일은 고치지 않는다.
 KB 에는 외부 영상을 막는 CSP 가 없어 원본 영상·그림을 바로 쓴다(window.MOTION_MEDIA='origin'). 접근은 KB 로그인(kb 역할)이 막는다.
-실행: python3 export_kb.py <PillDocKb>/site/motion   → index.html + motion.json·prompt_motion.json·prompt_motion_ko.json"""
+실행: python3 export_kb.py <PillDocKb>/site/motion   → index.html + motion.json·prompt_motion.json·prompt_motion_ko.json + anim/(요청 카드 샘플)"""
 import shutil, sys
 from pathlib import Path
 
@@ -27,6 +27,8 @@ def build(out: Path) -> None:
     (out / 'index.html').write_text(HEAD + body + '\n</html>\n', encoding='utf-8')
     for f in ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json'):
         shutil.copyfile(HERE / 'data' / f, out / f)
+    shutil.rmtree(out / 'anim', ignore_errors=True)
+    shutil.copytree(HERE / 'data' / 'anim', out / 'anim', ignore=shutil.ignore_patterns('index.json'))
 
 
 if __name__ == '__main__':

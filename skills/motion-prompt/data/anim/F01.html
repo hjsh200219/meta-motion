@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F01 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1520;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden}
+.photo{position:absolute;inset:0;transform-origin:50% 50%;
+  background:linear-gradient(180deg,#31465c 0%,#5d7a8f 38%,#b9a98e 62%,#6b5a46 100%);
+  animation:pFade .4s linear 0s 1 both,pZoom 4.5s linear 0s 1 both}
+.wall{position:absolute;left:0;right:0;top:0;height:58%;background:linear-gradient(90deg,rgba(255,255,255,.06),rgba(255,255,255,0) 40%,rgba(255,255,255,.08))}
+.win{position:absolute;top:8%;width:22vmin;height:16vmin;background:linear-gradient(180deg,#d9ecf7,#8fb7d0);border:1vmin solid #2a3a4a;border-radius:.6vmin}
+.w1{left:8%}.w2{right:8%}
+.floor{position:absolute;left:0;right:0;bottom:0;height:46%;background:linear-gradient(180deg,#8a7658,#4d4033)}
+.table{position:absolute;left:12%;right:12%;top:52%;height:5vmin;background:#3a2f26;border-radius:1vmin;box-shadow:0 2vmin 3vmin rgba(0,0,0,.35)}
+.box{position:absolute;bottom:100%;background:linear-gradient(135deg,#d8b074,#b58a4e);border:.3vmin solid #8a6633;border-radius:.4vmin}
+.b1{left:6%;width:15vmin;height:11vmin}
+.b2{left:24%;width:11vmin;height:8vmin}
+.b3{right:8%;width:17vmin;height:13vmin}
+.b4{right:30%;width:10vmin;height:7vmin}
+.person{position:absolute;left:50%;bottom:100%;width:16vmin;height:26vmin;transform:translateX(-50%)}
+.head{position:absolute;left:50%;top:0;width:8vmin;height:8vmin;margin-left:-4vmin;border-radius:50%;background:#e2b896}
+.body{position:absolute;left:0;right:0;top:8.5vmin;bottom:0;border-radius:6vmin 6vmin 0 0;background:linear-gradient(180deg,#2f6fa8,#245580)}
+.band{position:absolute;left:0;right:0;bottom:0;height:25%;box-sizing:border-box;padding:2.4vmin 5vmin;
+  background:rgba(14,28,46,.78);border-top:.5vmin solid #ffb938;display:flex;flex-direction:column;justify-content:center;
+  animation:bandUp .5s cubic-bezier(.2,.8,.2,1) .35s 1 both}
+.sweep{position:absolute;left:0;top:-.5vmin;width:30%;height:.5vmin;pointer-events:none;
+  background:linear-gradient(90deg,rgba(255,255,255,0),#fff,rgba(255,255,255,0));box-shadow:0 0 2vmin 1vmin rgba(255,220,140,.7);opacity:0;
+  animation:sweep .6s ease-in-out .85s 1 both}
+.title{font-size:8vmin;line-height:1.1;font-weight:900;color:#fff;letter-spacing:-.02em;animation:rise .35s ease-out .75s 1 both}
+.desc{margin-top:1.2vmin;max-width:80%;font-size:3.4vmin;line-height:1.4;color:#c9d6e6;animation:rise .5s ease-out 1s 1 both}
+.src{position:absolute;right:3vmin;bottom:1.6vmin;font-size:2.2vmin;color:#c9d6e6;animation:srcIn .3s ease-out 1.2s 1 both}
+@keyframes pFade{from{opacity:0}to{opacity:1}}
+@keyframes pZoom{from{transform:scale(1)}to{transform:scale(1.03)}}
+@keyframes bandUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes rise{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes srcIn{from{opacity:0}to{opacity:.6}}
+@keyframes sweep{0%{opacity:1;transform:translateX(-100%)}100%{opacity:1;transform:translateX(333%)}}
+</style>
+<div class="stage">
+  <div class="photo">
+    <div class="wall"></div>
+    <div class="win w1"></div><div class="win w2"></div>
+    <div class="floor"></div>
+    <div class="table">
+      <div class="box b1"></div><div class="box b2"></div>
+      <div class="box b3"></div><div class="box b4"></div>
+      <div class="person"><div class="head"></div><div class="body"></div></div>
+    </div>
+  </div>
+  <div class="band">
+    <div class="sweep"></div>
+    <div class="title">포장 작업장</div>
+    <div class="desc">주문이 몰리는 오전, 손으로 하던 포장 순서를 AI가 정리해 줍니다</div>
+    <div class="src">이미지: AI 생성</div>
+  </div>
+</div>
+</html>

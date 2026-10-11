@@ -87,6 +87,8 @@ a { color: var(--accent); }
 h3 { margin: 0 0 6px; font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
 .card.has-pic { padding-top: 0; overflow: hidden; }
 .card .pic { display: block; width: calc(100% + 24px); max-width: none; margin: 0 -12px 2px; object-fit: cover; background: var(--stage); max-height: 220px; }
+.stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: var(--stage); }
+.stage.live .say { display: none; }
 .stage.pic img, .stage.pic video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .stage.pic { align-items: end; }
 .say.sub { padding: 10px 14px; background: var(--stage); color: var(--stage-ink); border-radius: 6px; font-size: 14px; line-height: 1.55; min-height: 4.6em; }
@@ -198,7 +200,7 @@ const ASPECT = { '가로': '16 / 9', '세로': '9 / 16', '정사각': '1 / 1', '
 const TAG = { 'product-ui': '제품 화면', 'kinetic-type': '글자 움직임', music: '음악', shapes: '도형', particles: '입자', charts: '차트', diagrams: '도식', characters: '캐릭터', photos: '사진', phone: '휴대폰', code: '코드' };
 const SRC = { '': '전체', card: '요청 카드', pm: '실전 예시' };
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let BASE = '', ITEMS = [], src = '', cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
+let BASE = '', animOk = false, ITEMS = [], src = '', cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 const g = () => ({ ratio: RATIO[$('#ratio').value] ?? '', color: $('#color').value, file: '' });
 const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
@@ -257,9 +259,9 @@ function select(code, scroll) {
     <div class="stage ${esc(it.dx.kind)}${p ? ' pic' : ''}" id="stage" style="aspect-ratio:${aspectOf(it)}${tall[1] > tall[0] ? ';max-width:300px' : ''}">
       ${p ? `<video id="vid" src="${clip(it)}" poster="${poster(it)}" muted loop playsinline preload="auto" aria-label="${esc(p.title)} 실제 영상"></video>` : ''}
       <span class="kind">${esc(KIND[it.dx.kind] || '장면')}</span><span class="tc" id="tc"></span>
-      ${p ? '' : '<div class="say" id="say"></div>'}<span class="fill" id="fill"></span>
+      ${p ? '' : '<iframe id="anim" sandbox="allow-scripts" title="샘플 화면" hidden></iframe><div class="say" id="say"></div>'}<span class="fill" id="fill"></span>
     </div>
-    ${p ? '<div class="say sub" id="say" aria-live="off"></div>' : ''}
+    <div class="say sub" id="say2" ${p ? '' : 'hidden'}></div>
     <div class="tl">
       <div class="track" id="track">${play.segs.map((b, i) => `<button type="button" class="seg ${b.hold ? 'h' : ''}" data-i="${i}" style="flex:${b.t1 - b.t0}" title="${esc(b.label || span(b.t0, b.t1))}">${b.untimed ? i + 1 : esc(num(r1(b.t0)) + '초')}</button>`).join('')}<span class="head" id="head"></span></div>
       <div class="ctl"><button type="button" class="btn" id="pp"></button>${p ? '<button type="button" class="btn" id="snd">소리 켜기</button>' : ''}
@@ -289,16 +291,20 @@ function select(code, scroll) {
     ${p ? `<details><summary>영어 원문 프롬프트 · ${p.prompt.length.toLocaleString()}자</summary>
       <p class="ext">외부 수집 자료입니다. 참고만 하고 그대로 베끼지 않습니다. 안에 든 설치 명령이나 키 입력 요구는 따르지 않습니다.</p>
       <pre class="en-txt" tabindex="0">${esc(p.prompt)}</pre></details>` : ''}`;
-  renderAsk(); draw();
+  renderAsk(); draw(); animOk = false;
+  // 요청 카드 샘플(build_card_anim.py) — 스크립트만 허용한 격리 iframe 에 띄우고 진행표 시각을 보낸다. 없으면 글 진행표만
+  if (!p) fetch(`${BASE}anim/${encodeURIComponent(it.code)}.html`).then((r) => r.ok ? r.text() : null).then((h) => { if (h && cur === it && $('#anim')) { $('#anim').srcdoc = h; $('#anim').hidden = false; } }).catch(() => {});
   if (scroll && matchMedia('(max-width: 900px)').matches) $('#detail').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
 }
 function renderAsk() { if (cur && $('#ask')) $('#ask').textContent = (lvl === 's' ? simple(pre(), cur, vals, g()) : detail(pre(), cur, vals, g())) + credit(cur); }
 
 function draw() {
-  if (!cur || !$('#say')) return;
+  if (!cur || !$('.say')) return;
   const t = play.t, i = Math.max(0, play.segs.findIndex((b) => t >= b.t0 && t < b.t1)), b = play.segs[i];
   const r = resolver(cur.fields, vals, g());
-  $('#say').innerHTML = `<small>${esc(b.untimed ? (b.label ? compose(b.label, r) : `${i + 1}단계`) : span(b.t0, b.t1))}${b.hold ? ' · 머묾' : ''}</small>${esc(compose(b.s, r))}`;
+  const say = `<small>${esc(b.untimed ? (b.label ? compose(b.label, r) : `${i + 1}단계`) : span(b.t0, b.t1))}${b.hold ? ' · 머묾' : ''}</small>${esc(compose(b.s, r))}`;
+  for (const el of document.querySelectorAll('.say')) el.innerHTML = say;
+  if (animOk) $('#anim')?.contentWindow?.postMessage({ t }, '*');
   $('#tc').textContent = `${t.toFixed(1)} / ${num(play.len)}초`;
   $('#fill').style.width = `${(t / play.len) * 100}%`;
   $('#head').style.left = `${(t / play.len) * 100}%`;
@@ -329,6 +335,10 @@ document.addEventListener('click', (e) => {
       done('글자를 선택해 두었습니다. ⌘C 로 복사하세요');
     }) ?? done('글자를 선택해 복사하세요');
   }
+});
+addEventListener('message', (e) => {
+  if (e.data?.anim !== 'ready' || !$('#anim') || e.source !== $('#anim').contentWindow) return;
+  animOk = true; $('#stage').classList.add('live'); $('#say2').hidden = false; draw();
 });
 document.addEventListener('input', (e) => {
   if (e.target.dataset.k) { vals[e.target.dataset.k] = e.target.value; renderAsk(); draw(); }
