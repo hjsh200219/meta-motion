@@ -9,6 +9,6 @@ with tempfile.TemporaryDirectory() as d:
     html = (Path(d) / 'index.html').read_text(encoding='utf-8')
     assert html.startswith('<!doctype html>') and html.count('<meta charset') == 1
     assert "window.MOTION_MEDIA = 'origin'" in html and '← PillDocKb</a>\n    <h1>' in html
-    assert sorted(p.stem for p in (Path(d) / 'anim').glob('*.html')) == sorted(p.stem for p in (Path(__file__).resolve().parent / 'data/anim').glob('*.html')) and not (Path(d) / 'anim/index.json').exists()
+    assert sorted(p.stem for p in (Path(d) / 'anim').glob('*.html')) == sorted(p.stem for p in (Path(__file__).resolve().parent / 'data/anim').glob('*.html')) and not (Path(d) / 'anim/index.json').exists() and len(list((Path(d) / 'anim/thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/anim/thumb').glob('*.jpg')))
     assert all((Path(d) / f).stat().st_size > 1000 for f in ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json'))
 print('ok')

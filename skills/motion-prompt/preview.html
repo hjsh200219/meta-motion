@@ -107,14 +107,13 @@ footer { color: var(--muted); font-size: 12px; }
 <div class="wrap">
   <header>
     <h1>모션 카드 고르기</h1>
-    <p class="sub">요청 카드와 prompt-motion.com 실전 예시를 같은 모양으로 모았습니다. 고르면 장면이 몇 초에 무엇을 하는지 재생해 보여 주고, 칸을 채워 요청 문장을 복사할 수 있습니다. 실전 예시는 실제 영상을 틀고, 장면 설명이 영상 시각에 맞춰 따라갑니다.</p>
+    <p class="sub">영상에 쓸 모션 385가지입니다. 고르면 실제 화면이 장면 순서대로 움직이고 몇 초에 무엇을 하는지 함께 보여 주며, 칸을 채워 요청 문장을 복사할 수 있습니다. 다른 사람이 만든 영상은 만든 사람을 함께 적었습니다.</p>
     <div class="bar">
       <input id="q" type="search" placeholder="찾기: 자막, 숫자, 앱 화면, 출시…" aria-label="카드 찾기">
       <label for="ratio">화면 비율 <select id="ratio"><option value="가로">가로 16:9</option><option value="세로">세로 9:16</option><option value="정사각">정사각 1:1</option><option value="없음">정하지 않음</option></select></label>
       <label for="color">색·분위기 <input id="color" type="text" placeholder="예: 남색과 노랑" size="12"></label>
       <label for="tool">도구 <select id="tool"><option value="auto">하이퍼프레임</option><option value="claude">Claude /hyperframes</option><option value="codex">Codex $hyperframes</option></select></label>
     </div>
-    <div class="chips" id="srcs" role="group" aria-label="출처"></div>
     <div class="chips" id="chips" role="group" aria-label="분류"></div>
   </header>
   <div class="main">
@@ -198,9 +197,8 @@ const strip = (s) => String(s || '').replace(/\[\[[\s\S]*?\]\]/g, '');
 const KIND = { scene: '장면', overlay: '영상 위 합성 · 배경 투명', transition: '장면 전환', loop: '반복 재생' };
 const ASPECT = { '가로': '16 / 9', '세로': '9 / 16', '정사각': '1 / 1', '없음': '16 / 9' };
 const TAG = { 'product-ui': '제품 화면', 'kinetic-type': '글자 움직임', music: '음악', shapes: '도형', particles: '입자', charts: '차트', diagrams: '도식', characters: '캐릭터', photos: '사진', phone: '휴대폰', code: '코드' };
-const SRC = { '': '전체', card: '요청 카드', pm: '실전 예시' };
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let BASE = '', animOk = false, ITEMS = [], src = '', cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
+let BASE = '', animOk = false, ITEMS = [], cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 const g = () => ({ ratio: RATIO[$('#ratio').value] ?? '', color: $('#color').value, file: '' });
 const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
@@ -225,21 +223,19 @@ function miniBar(it) {
   const s = segsOf(it), L = Math.max(...s.map((b) => b.t1));
   return s.map((b) => `<i class="${b.hold ? 'h' : ''}" style="flex:${(b.t1 - b.t0) / L}"></i>`).join('');
 }
-const inSrc = (it) => !src || it.src === src;
 
 function renderChips() {
-  const pool = ITEMS.filter(inSrc), cats = [...new Set(ITEMS.map((it) => it.cat))];
-  $('#srcs').innerHTML = Object.entries(SRC).map(([k, label]) => `<button type="button" class="chip" data-src="${k}" aria-pressed="${k === src}">${label}<small>${ITEMS.filter((it) => !k || it.src === k).length}</small></button>`).join('');
+  const pool = ITEMS, cats = [...new Set(ITEMS.map((it) => it.cat))];
   $('#chips').innerHTML = [['', '모든 분류', pool.length], ...cats.map((k) => [k, k, pool.filter((it) => it.cat === k).length])]
     .filter(([k, , n]) => !k || n).map(([k, label, n]) => `<button type="button" class="chip" data-cat="${esc(k)}" aria-pressed="${k === cat}">${esc(label)}<small>${n}</small></button>`).join('');
 }
 function renderList() {
   const qs = $('#q').value.toLowerCase().split(/\s+/).filter(Boolean);
-  const hit = ITEMS.filter((it) => inSrc(it) && (!cat || it.cat === cat) && qs.every((q) => it.hay.includes(q)));
-  $('#list').innerHTML = `<p class="count">${hit.length}개${qs.length || cat || src ? ` · 전체 ${ITEMS.length}개 중` : ''}</p>` + (hit.length ? hit.map((it) => `
-    <button type="button" class="card${it.pm ? ' has-pic' : ''}" data-code="${esc(it.code)}" aria-current="${cur?.code === it.code}">
-      ${it.pm ? `<img class="pic" src="${poster(it)}" alt="" loading="lazy" style="aspect-ratio:${aspectOf(it)}">` : ''}
-      <span class="top"><span class="code">${it.pm ? '실전' : esc(it.code)}</span><b>${esc(it.name)}</b></span>
+  const hit = ITEMS.filter((it) => (!cat || it.cat === cat) && qs.every((q) => it.hay.includes(q)));
+  $('#list').innerHTML = `<p class="count">${hit.length}개${qs.length || cat ? ` · 전체 ${ITEMS.length}개 중` : ''}</p>` + (hit.length ? hit.map((it) => `
+    <button type="button" class="card has-pic" data-code="${esc(it.code)}" aria-current="${cur?.code === it.code}">
+      <img class="pic" src="${it.pm ? poster(it) : `${BASE}anim/thumb/${esc(it.code)}.jpg`}" alt="" loading="lazy" style="aspect-ratio:${it.pm ? aspectOf(it) : '16 / 9'}" onerror="this.remove()">
+      <span class="top">${it.pm ? '' : `<span class="code">${esc(it.code)}</span>`}<b>${esc(it.name)}</b></span>
       <span class="en">${esc(it.en)}${it.pm ? ` · ${esc(it.pm.creator)}` : ''}</span>
       <p class="plain">${esc(it.plain)}</p>
       <span class="mini" aria-hidden="true">${miniBar(it)}</span>
@@ -255,7 +251,7 @@ function select(code, scroll) {
   const untimed = play.segs[0]?.untimed, rules = (it.dx.beats || []).filter((b) => b.label && !untimed), p = it.pm;
   const tall = (it.pm ? aspectOf(it) : ASPECT[$('#ratio').value]).match(/^(\d+) \/ (\d+)$/).slice(1).map(Number);
   $('#detail').innerHTML = `
-    <div><span class="code">${p ? '실전 예시' : esc(it.code)}</span> <span class="en">${esc(it.cat)}</span><h2>${esc(it.name)}</h2><span class="en">${esc(it.en)} · ⏱ ${esc(it.len)}${p ? ` · ${esc(p.creator)}` : ''}</span></div>
+    <div>${p ? '' : `<span class="code">${esc(it.code)}</span> `}<span class="en">${esc(it.cat)}</span><h2>${esc(it.name)}</h2><span class="en">${esc(it.en)} · ⏱ ${esc(it.len)}${p ? ` · ${esc(p.creator)}` : ''}</span></div>
     <div class="stage ${esc(it.dx.kind)}${p ? ' pic' : ''}" id="stage" style="aspect-ratio:${aspectOf(it)}${tall[1] > tall[0] ? ';max-width:300px' : ''}">
       ${p ? `<video id="vid" src="${clip(it)}" poster="${poster(it)}" muted loop playsinline preload="auto" aria-label="${esc(p.title)} 실제 영상"></video>` : ''}
       <span class="kind">${esc(KIND[it.dx.kind] || '장면')}</span><span class="tc" id="tc"></span>
@@ -321,7 +317,6 @@ function tick(now) {
 }
 
 document.addEventListener('click', (e) => {
-  const sc = e.target.closest('[data-src]'); if (sc) { src = sc.dataset.src; cat = ''; renderChips(); renderList(); return; }
   const chip = e.target.closest('[data-cat]'); if (chip) { cat = chip.dataset.cat; renderChips(); renderList(); return; }
   const card = e.target.closest('.card'); if (card) { select(card.dataset.code, true); return; }
   const seg = e.target.closest('.seg'); if (seg) { play.t = play.segs[+seg.dataset.i].t0; if (vid()) vid().currentTime = play.t; draw(); return; }
@@ -358,7 +353,9 @@ for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if
 const load = (f) => fetch(f).then((r) => r.ok ? r : fetch('data/' + f).then((d) => { if (!d.ok) throw new Error(`${f} ${r.status}`); BASE = 'data/'; return d; })).then((r) => r.json());
 Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json')]).then(([cards, ex, ko]) => {
   const pm = ex.filter((e) => ko[e.id]).map((e) => ({ ...ko[e.id], code: e.id, en: e.title, inds: e.tags.map((t) => TAG[t] || t), src: 'pm', pm: e }));
-  ITEMS = [...cards.map((c) => ({ ...c, src: 'card' })), ...pm];
+  // 두 출처를 나누지 않고 분류별로 번갈아 섞는다(2026-10-12 «요청카드와 실전 예시를 왜 분리한거야?»)
+  const all = [...cards.map((c) => ({ ...c, src: 'card' })), ...pm], order = [...new Set(all.map((it) => it.cat))];
+  ITEMS = order.flatMap((k) => { const a = all.filter((it) => it.cat === k && !it.pm), b = all.filter((it) => it.cat === k && it.pm); return Array.from({ length: Math.max(a.length, b.length) }, (_, i) => [a[i], b[i]]).flat().filter(Boolean); });
   for (const it of ITEMS) it.hay = [it.code, it.name, it.en, it.plain, it.when, it.cat, ...it.inds, it.pm?.creator, ...(it.pm?.tags || [])].join(' ').toLowerCase();
   const h = decodeURIComponent(location.hash.slice(1));
   renderChips(); renderList();
