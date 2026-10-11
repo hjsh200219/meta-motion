@@ -41,7 +41,7 @@ def parse(slug, page):
         'prompt': body_txt,
         'creator': cr.get('name', ''), 'creator_url': cr.get('url', ''), 'source': src.group(1) if src else '',
         'model': meta.get('Model', ''), 'effort': meta.get('Effort', ''), 'iterations': meta.get('Iterations', ''), 'posted': ld.get('uploadDate', ''),
-        'url': f'{BASE}/{slug}', 'video': ld.get('contentUrl', ''), 'size': f"{ld.get('width', '')}x{ld.get('height', '')}",
+        'url': f'{BASE}/{slug}', 'video': ld.get('contentUrl', ''), 'poster': (ld.get('thumbnailUrl') or [''])[0], 'size': f"{ld.get('width', '')}x{ld.get('height', '')}",
     }
 
 

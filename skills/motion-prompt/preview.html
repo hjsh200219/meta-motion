@@ -84,11 +84,14 @@ dd { margin: 0; overflow-wrap: anywhere; }
 .note { font-size: 12px; color: var(--muted); margin: 0; }
 a { color: var(--accent); }
 h3 { margin: 0 0 6px; font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
+.card.has-pic { padding-top: 0; overflow: hidden; }
+.card .pic { display: block; width: calc(100% + 24px); max-width: none; margin: 0 -12px 2px; object-fit: cover; background: var(--stage); max-height: 220px; }
+.stage.pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.stage.pic { align-items: end; }
+.stage.pic .say { position: relative; padding: 10px 14px; margin: 0 0 10px; width: calc(100% - 20px); background: color-mix(in srgb, var(--stage) 78%, transparent); color: var(--stage-ink); border-radius: 6px; font-size: 14px; }
+details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+details { display: grid; gap: 8px; }
 footer { color: var(--muted); font-size: 12px; }
-.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
-.tab { font: inherit; font-weight: 600; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); padding: 6px 14px; cursor: pointer; }
-.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
-.tab small { font-family: var(--mono); font-weight: 400; margin-left: 4px; }
 .tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .tags span { font-size: 11px; border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; color: var(--muted); }
 .ext { font-size: 12px; color: var(--muted); border-left: 3px solid var(--hold); padding-left: 8px; margin: 0; }
@@ -101,21 +104,21 @@ footer { color: var(--muted); font-size: 12px; }
 <div class="wrap">
   <header>
     <h1>모션 카드 고르기</h1>
-    <p class="sub">«요청 카드»는 누르면 장면이 몇 초에 무엇을 하는지 재생해 보여 주고, 칸을 채워 요청 문장을 복사할 수 있습니다. «실전 예시»는 prompt-motion.com 에서 Claude 로 실제 만든 영상과 그 프롬프트입니다.</p>
-    <div class="tabs" role="tablist"><button type="button" class="tab" role="tab" id="tab-cards" data-mode="cards" aria-selected="true">요청 카드<small id="n-cards"></small></button><button type="button" class="tab" role="tab" id="tab-ex" data-mode="ex" aria-selected="false">실전 예시<small id="n-ex"></small></button></div>
+    <p class="sub">요청 카드와 prompt-motion.com 실전 예시를 같은 모양으로 모았습니다. 고르면 장면이 몇 초에 무엇을 하는지 재생해 보여 주고, 칸을 채워 요청 문장을 복사할 수 있습니다. 실전 예시는 실제 영상의 한 장면 위에서 재생합니다.</p>
     <div class="bar">
-      <input id="q" type="search" placeholder="찾기" aria-label="카드 찾기">
+      <input id="q" type="search" placeholder="찾기: 자막, 숫자, 앱 화면, 출시…" aria-label="카드 찾기">
       <label for="ratio">화면 비율 <select id="ratio"><option value="가로">가로 16:9</option><option value="세로">세로 9:16</option><option value="정사각">정사각 1:1</option><option value="없음">정하지 않음</option></select></label>
       <label for="color">색·분위기 <input id="color" type="text" placeholder="예: 남색과 노랑" size="12"></label>
       <label for="tool">도구 <select id="tool"><option value="auto">하이퍼프레임</option><option value="claude">Claude /hyperframes</option><option value="codex">Codex $hyperframes</option></select></label>
     </div>
+    <div class="chips" id="srcs" role="group" aria-label="출처"></div>
     <div class="chips" id="chips" role="group" aria-label="분류"></div>
   </header>
   <div class="main">
     <div class="list" id="list"><p class="count">카드를 불러오는 중…</p></div>
     <section class="detail" id="detail" aria-live="polite"><p class="note">왼쪽에서 카드를 고르세요.</p></section>
   </div>
-  <footer>실전 예시 출처: <a href="https://prompt-motion.com" target="_blank" rel="noopener">prompt-motion.com</a>, 2026-10-11 수집 · 사내 참고용. 영상과 프롬프트는 만든 사람의 것이며, 참고만 하고 그대로 베끼지 않습니다. 영상은 이 화면 안에서 재생할 수 없어 링크로 엽니다.<br>요청 카드 출처: <a href="https://nondev-thinking.web.app/motion/" target="_blank" rel="noopener">모션그래픽 주문 사전</a>(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 · 사내 참고용. 이 화면의 재생은 카드에 적힌 장면 순서와 초를 그대로 따라가는 진행표이고, 실제 그림 미리보기는 카드마다 있는 «원본 미리보기» 링크에서 볼 수 있습니다. 요청 문장은 motion-prompt 플러그인의 <code>motion.py show</code> 와 같은 규칙으로 만듭니다.</footer>
+  <footer>실전 예시 출처: <a href="https://prompt-motion.com" target="_blank" rel="noopener">prompt-motion.com</a>, 2026-10-11 수집 · 사내 참고용. 영상과 프롬프트는 만든 사람의 것이며, 참고만 하고 그대로 베끼지 않습니다. 실전 예시의 그림은 실제 영상의 한 장면(사이트 대표 이미지)이고, 카드 내용은 원문 프롬프트를 우리 말로 새로 정리한 것입니다. 영상 전체는 «실제 영상 보기»로 엽니다.<br>요청 카드 출처: <a href="https://nondev-thinking.web.app/motion/" target="_blank" rel="noopener">모션그래픽 주문 사전</a>(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 · 사내 참고용. 이 화면의 재생은 카드에 적힌 장면 순서와 초를 그대로 따라가는 진행표이고, 실제 그림 미리보기는 카드마다 있는 «원본 미리보기» 링크에서 볼 수 있습니다. 요청 문장은 motion-prompt 플러그인의 <code>motion.py show</code> 와 같은 규칙으로 만듭니다.</footer>
 </div>
 
 <script>
@@ -183,136 +186,106 @@ function detail(pre, c, vals, g) {
 }
 </script>
 <script>
-// ---- 화면 ----
+// ---- 화면: 요청 카드와 실전 예시를 같은 카드 모양으로 한 목록에 ----
 const $ = (s) => document.querySelector(s);
 // 수집 자료의 링크는 http(s)만 — javascript: 등은 # 로 막는다
 const url = (u) => /^https?:\/\//i.test(String(u ?? '')) ? esc(u) : '#';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
+const strip = (s) => String(s || '').replace(/\[\[[\s\S]*?\]\]/g, '');
 const KIND = { scene: '장면', overlay: '영상 위 합성 · 배경 투명', transition: '장면 전환', loop: '반복 재생' };
 const ASPECT = { '가로': '16 / 9', '세로': '9 / 16', '정사각': '1 / 1', '없음': '16 / 9' };
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const TAG = { 'product-ui': '제품 화면', 'kinetic-type': '글자 움직임', music: '음악', shapes: '도형', particles: '입자', charts: '차트', diagrams: '도식', characters: '캐릭터', photos: '사진', phone: '휴대폰', code: '코드' };
-let CARDS = [], EX = [], mode = 'cards', cat = '', cur = null, curEx = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 0 };
+const SRC = { '': '전체', card: '요청 카드', pm: '실전 예시' };
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let ITEMS = [], src = '', cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 const g = () => ({ ratio: RATIO[$('#ratio').value] ?? '', color: $('#color').value, file: '' });
 const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
+const poster = (it) => it.pm?.poster ? `posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}` : '';
+const credit = (it) => it.pm ? `\n[참고한 실전 예시] ${it.code} — ${it.pm.creator} (${it.pm.url}) · 참고만 하고 그대로 베끼지 않음` : '';
+const aspectOf = (it) => {
+  const m = it.pm?.size?.match(/^(\d+)x(\d+)$/);
+  return m ? `${m[1]} / ${m[2]}` : ASPECT[$('#ratio').value];
+};
 
 // 재생 구간: 초가 있는 장면만 진행표로, 초 없는 규칙(«처음부터 끝까지» 등)은 아래 목록으로
-function segsOf(c) {
-  const timed = (c.dx.beats || []).filter((b) => !b.label && b.t1 > b.t0);
-  return timed.length ? timed : (c.dx.beats || []).map((b, i) => ({ ...b, t0: i * 2.5, t1: (i + 1) * 2.5, untimed: true }));
+function segsOf(it) {
+  const timed = (it.dx.beats || []).filter((b) => !b.label && b.t1 > b.t0);
+  return timed.length ? timed : (it.dx.beats || []).map((b, i) => ({ ...b, t0: i * 2.5, t1: (i + 1) * 2.5, untimed: true }));
 }
-function miniBar(c) {
-  const s = segsOf(c), L = Math.max(...s.map((b) => b.t1));
+function miniBar(it) {
+  const s = segsOf(it), L = Math.max(...s.map((b) => b.t1));
   return s.map((b) => `<i class="${b.hold ? 'h' : ''}" style="flex:${(b.t1 - b.t0) / L}"></i>`).join('');
 }
+const inSrc = (it) => !src || it.src === src;
 
 function renderChips() {
-  const groups = mode === 'cards'
-    ? [...new Set(CARDS.map((c) => c.cat))].map((k) => [k, k, CARDS.filter((c) => c.cat === k).length])
-    : Object.keys(TAG).map((k) => [k, TAG[k], EX.filter((e) => e.tags.includes(k)).length]).concat([['Skill', '스킬', EX.filter((e) => e.type === 'Skill').length]]);
-  const all = mode === 'cards' ? CARDS.length : EX.length;
-  $('#chips').innerHTML = [['', '전체', all], ...groups]
-    .map(([k, label, n]) => `<button type="button" class="chip" data-cat="${esc(k)}" aria-pressed="${k === cat}">${esc(label)}<small>${n}</small></button>`).join('');
+  const pool = ITEMS.filter(inSrc), cats = [...new Set(ITEMS.map((it) => it.cat))];
+  $('#srcs').innerHTML = Object.entries(SRC).map(([k, label]) => `<button type="button" class="chip" data-src="${k}" aria-pressed="${k === src}">${label}<small>${ITEMS.filter((it) => !k || it.src === k).length}</small></button>`).join('');
+  $('#chips').innerHTML = [['', '모든 분류', pool.length], ...cats.map((k) => [k, k, pool.filter((it) => it.cat === k).length])]
+    .filter(([k, , n]) => !k || n).map(([k, label, n]) => `<button type="button" class="chip" data-cat="${esc(k)}" aria-pressed="${k === cat}">${esc(label)}<small>${n}</small></button>`).join('');
 }
 function renderList() {
   const qs = $('#q').value.toLowerCase().split(/\s+/).filter(Boolean);
-  if (mode === 'ex') return renderExList(qs);
-  const hit = CARDS.filter((c) => (!cat || c.cat === cat) && qs.every((q) => [c.code, c.name, c.en, c.plain, c.when, c.cat, ...c.inds].join(' ').toLowerCase().includes(q)));
-  $('#list').innerHTML = `<p class="count">${hit.length}개 카드${qs.length || cat ? ` · 전체 ${CARDS.length}개 중` : ''}</p>` + (hit.length ? hit.map((c) => `
-    <button type="button" class="card" data-code="${esc(c.code)}" aria-current="${cur?.code === c.code}">
-      <span class="top"><span class="code">${esc(c.code)}</span><b>${esc(c.name)}</b></span>
-      <span class="en">${esc(c.en)}</span>
-      <p class="plain">${esc(c.plain)}</p>
-      <span class="mini" aria-hidden="true">${miniBar(c)}</span>
-      <span class="len">⏱ ${esc(c.len)} · ${esc(KIND[c.dx.kind] || '')}</span>
-    </button>`).join('') : '<p class="count">찾은 카드가 없습니다. 다른 단어로 찾거나 분류를 «전체»로 바꿔 보세요.</p>');
-}
-const exMeta = (e) => [e.type === 'Skill' ? '스킬' : '', e.effort && 'effort ' + e.effort, e.iterations, e.size, `${e.prompt.length.toLocaleString()}자`].filter(Boolean).join(' · ');
-function renderExList(qs) {
-  const hit = EX.filter((e) => (!cat || (cat === 'Skill' ? e.type === 'Skill' : e.tags.includes(cat))) && qs.every((q) => [e.id, e.title, e.creator, e.prompt, ...e.tags, ...e.tags.map((t) => TAG[t] || '')].join(' ').toLowerCase().includes(q)));
-  $('#list').innerHTML = `<p class="count">${hit.length}개 예시${qs.length || cat ? ` · 전체 ${EX.length}개 중` : ''} · 프롬프트는 영어라 영어 단어로 찾으면 잘 걸립니다</p>` + (hit.length ? hit.map((e) => `
-    <button type="button" class="card" data-ex="${esc(e.id)}" aria-current="${curEx?.id === e.id}">
-      <span class="top"><b>${esc(e.title)}</b></span>
-      <span class="en">${esc(e.creator)} · ${esc(e.posted)}</span>
-      <p class="plain">${esc(e.prompt)}</p>
-      <span class="tags">${e.tags.map((t) => `<span>${esc(TAG[t] || t)}</span>`).join('')}</span>
-      <span class="len">${esc(exMeta(e))}</span>
-    </button>`).join('') : '<p class="count">찾은 예시가 없습니다. 영어 단어(chart, logo, phone…)로 찾거나 분류를 «전체»로 바꿔 보세요.</p>');
-}
-function selectEx(id, scroll) {
-  const e = EX.find((x) => x.id === id); if (!e) return;
-  curEx = e; cur = null;
-  try { history.replaceState(null, '', '#' + id); } catch {}
-  document.querySelectorAll('.card').forEach((el) => el.setAttribute('aria-current', el.dataset.ex === id));
-  $('#detail').innerHTML = `
-    <div><span class="en">${esc(e.type === 'Skill' ? '스킬' : '프롬프트')} · ${esc(e.id)}</span><h2>${esc(e.title)}</h2><span class="en">${esc(e.creator)} · ${esc(e.posted)}</span></div>
-    <div class="links">
-      <a class="btn pri" href="${url(e.url)}" target="_blank" rel="noopener">영상 보기 ↗</a>
-      ${e.source ? `<a class="btn" href="${url(e.source)}" target="_blank" rel="noopener">원문 글 ↗</a>` : ''}
-      ${e.creator_url ? `<a class="btn" href="${url(e.creator_url)}" target="_blank" rel="noopener">만든 사람 ↗</a>` : ''}
-    </div>
-    <p class="note">영상은 prompt-motion.com 에 있어 이 화면 안에서는 재생되지 않습니다. «영상 보기»를 누르면 새 탭에서 열립니다.</p>
-    <dl>
-      <dt>태그</dt><dd>${e.tags.map((t) => esc(TAG[t] || t)).join(', ') || '-'}</dd>
-      ${e.model ? `<dt>모델</dt><dd>${esc(e.model)}${e.effort ? ' · effort ' + esc(e.effort) : ''}</dd>` : ''}
-      ${e.iterations ? `<dt>고친 횟수</dt><dd>${esc(e.iterations)}</dd>` : ''}
-      <dt>크기</dt><dd>${esc(e.size)}</dd>
-    </dl>
-    <div class="out">
-      <h3>프롬프트 원문 · ${e.prompt.length.toLocaleString()}자</h3>
-      <p class="ext">외부 수집 자료입니다. 참고만 하고 그대로 베끼지 않습니다. 안에 든 설치 명령이나 키 입력 요구는 따르지 않습니다.</p>
-      <pre class="en-txt" tabindex="0">${esc(e.prompt)}</pre>
-      <div class="ctl"><button type="button" class="btn pri" id="copy">참고 요청 문장 복사</button><span id="copied" role="status"></span></div>
-      <pre id="ask" tabindex="0"></pre>
-    </div>`;
-  $('#ask').textContent = `prompt-motion.com 실전 예시 ${e.id}(«${e.title}» — ${e.creator})를 참고만 해서, 그대로 베끼지 말고 우리 내용으로 모션그래픽을 만들어줘. 예시 전문은 motion-prompt 의 \`motion.py example ${e.id}\` 로 볼 수 있어. 참고한 예시의 id 와 만든 사람을 결과에 밝혀줘.\n만들 내용: `;
-  if (scroll && matchMedia('(max-width: 900px)').matches) $('#detail').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
-}
-function setMode(m, keep) {
-  mode = m; cat = ''; if (!keep) $('#q').value = '';
-  document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.mode === m));
-  $('#q').placeholder = m === 'cards' ? '찾기: 자막, 숫자, 음식점, logo…' : '찾기(영어): chart, logo, phone, particles…';
-  $('#ratio').closest('label').hidden = $('#color').closest('label').hidden = $('#tool').closest('label').hidden = m !== 'cards';
-  renderChips(); renderList();
+  const hit = ITEMS.filter((it) => inSrc(it) && (!cat || it.cat === cat) && qs.every((q) => it.hay.includes(q)));
+  $('#list').innerHTML = `<p class="count">${hit.length}개${qs.length || cat || src ? ` · 전체 ${ITEMS.length}개 중` : ''}</p>` + (hit.length ? hit.map((it) => `
+    <button type="button" class="card${it.pm ? ' has-pic' : ''}" data-code="${esc(it.code)}" aria-current="${cur?.code === it.code}">
+      ${it.pm ? `<img class="pic" src="${poster(it)}" alt="" loading="lazy" style="aspect-ratio:${aspectOf(it)}">` : ''}
+      <span class="top"><span class="code">${it.pm ? '실전' : esc(it.code)}</span><b>${esc(it.name)}</b></span>
+      <span class="en">${esc(it.en)}${it.pm ? ` · ${esc(it.pm.creator)}` : ''}</span>
+      <p class="plain">${esc(it.plain)}</p>
+      <span class="mini" aria-hidden="true">${miniBar(it)}</span>
+      <span class="len">⏱ ${esc(it.len)} · ${esc(KIND[it.dx.kind] || '')}</span>
+    </button>`).join('') : '<p class="count">찾은 것이 없습니다. 다른 단어로 찾거나 분류를 «모든 분류»로 바꿔 보세요.</p>');
 }
 
 function select(code, scroll) {
-  const c = CARDS.find((x) => x.code === code); if (!c) return;
-  cur = c; curEx = null; vals = {}; play.t = 0; play.segs = segsOf(c); play.len = Math.max(...play.segs.map((b) => b.t1));
+  const it = ITEMS.find((x) => x.code === code); if (!it) return;
+  cur = it; vals = {}; play.t = 0; play.segs = segsOf(it); play.len = Math.max(...play.segs.map((b) => b.t1));
   try { history.replaceState(null, '', '#' + code); } catch {}
   document.querySelectorAll('.card').forEach((el) => el.setAttribute('aria-current', el.dataset.code === code));
-  const untimed = play.segs[0]?.untimed, rules = (c.dx.beats || []).filter((b) => b.label && !untimed);
+  const untimed = play.segs[0]?.untimed, rules = (it.dx.beats || []).filter((b) => b.label && !untimed), p = it.pm;
+  const tall = (it.pm ? aspectOf(it) : ASPECT[$('#ratio').value]).match(/^(\d+) \/ (\d+)$/).slice(1).map(Number);
   $('#detail').innerHTML = `
-    <div><span class="code">${esc(c.code)}</span> <span class="en">${esc(c.cat)}</span><h2>${esc(c.name)}</h2><span class="en">${esc(c.en)} · ⏱ ${esc(c.len)}</span></div>
-    <div class="stage ${esc(c.dx.kind)}" id="stage" style="aspect-ratio:${ASPECT[$('#ratio').value]}${$('#ratio').value === '세로' ? ';max-width:300px' : ''}">
-      <span class="kind">${esc(KIND[c.dx.kind] || '장면')}</span><span class="tc" id="tc"></span>
+    <div><span class="code">${p ? '실전 예시' : esc(it.code)}</span> <span class="en">${esc(it.cat)}</span><h2>${esc(it.name)}</h2><span class="en">${esc(it.en)} · ⏱ ${esc(it.len)}${p ? ` · ${esc(p.creator)}` : ''}</span></div>
+    <div class="stage ${esc(it.dx.kind)}${p ? ' pic' : ''}" id="stage" style="aspect-ratio:${aspectOf(it)}${tall[1] > tall[0] ? ';max-width:300px' : ''}">
+      ${p ? `<img src="${poster(it)}" alt="${esc(p.title)} 영상의 한 장면">` : ''}
+      <span class="kind">${esc(KIND[it.dx.kind] || '장면')}</span><span class="tc" id="tc"></span>
       <div class="say" id="say"></div><span class="fill" id="fill"></span>
     </div>
     <div class="tl">
       <div class="track" id="track">${play.segs.map((b, i) => `<button type="button" class="seg ${b.hold ? 'h' : ''}" data-i="${i}" style="flex:${b.t1 - b.t0}" title="${esc(b.label || span(b.t0, b.t1))}">${b.untimed ? i + 1 : esc(num(r1(b.t0)) + '초')}</button>`).join('')}<span class="head" id="head"></span></div>
       <div class="ctl"><button type="button" class="btn" id="pp"></button>
-        ${untimed ? '<span>원본에 초 단위 기준이 없어 순서만 2.5초씩 넘겨 보여 줍니다.</span>' : `<span>미리보기 기준 ${num(c.dx.base || play.len)}초 · 길이를 정하면 같은 비율로 늘어납니다</span><span class="legend"><span><i></i>움직임</span><span><i class="h"></i>머묾</span></span>`}
+        ${untimed ? '<span>초 단위 기준이 없어 순서만 2.5초씩 넘겨 보여 줍니다.</span>' : `<span>${p ? `실제 영상 ${num(play.len)}초 기준` : `미리보기 기준 ${num(it.dx.base || play.len)}초`} · 길이를 정하면 같은 비율로 늘어납니다</span><span class="legend"><span><i></i>움직임</span><span><i class="h"></i>머묾</span></span>`}
       </div>
     </div>
-    ${rules.length ? `<div><h3>처음부터 끝까지 지키는 것</h3><ul class="rules">${rules.map((b) => `<li><b>${esc(b.label)}</b> — ${esc(b.s.replace(/\[\[[\s\S]*?\]\]/g, ''))}</li>`).join('')}</ul></div>` : ''}
+    ${p ? `<div class="links">
+      <a class="btn pri" href="${url(p.url)}" target="_blank" rel="noopener">실제 영상 보기 ↗</a>
+      ${p.source ? `<a class="btn" href="${url(p.source)}" target="_blank" rel="noopener">원문 글 ↗</a>` : ''}
+      ${p.creator_url ? `<a class="btn" href="${url(p.creator_url)}" target="_blank" rel="noopener">만든 사람 ↗</a>` : ''}
+    </div>` : ''}
+    ${rules.length ? `<div><h3>처음부터 끝까지 지키는 것</h3><ul class="rules">${rules.map((b) => `<li><b>${esc(b.label)}</b> — ${esc(strip(b.s))}</li>`).join('')}</ul></div>` : ''}
     <dl>
-      <dt>이럴 때</dt><dd>${esc(c.when)}</dd>
-      ${c.dx.wow ? `<dt>볼거리 한 번</dt><dd>${esc(c.dx.wow.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
-      ${c.dx.look ? `<dt>모양</dt><dd>${esc(c.dx.look.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
-      ${c.dx.avoid ? `<dt>하지 말 것</dt><dd>${esc(c.dx.avoid.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
-      <dt>원본</dt><dd><a href="https://nondev-thinking.web.app/motion/#${esc(c.code)}" target="_blank" rel="noopener">원본 미리보기 ↗</a></dd>
+      <dt>이럴 때</dt><dd>${esc(it.when)}</dd>
+      ${it.dx.wow ? `<dt>볼거리 한 번</dt><dd>${esc(strip(it.dx.wow))}</dd>` : ''}
+      ${it.dx.look ? `<dt>모양</dt><dd>${esc(strip(it.dx.look))}</dd>` : ''}
+      ${it.dx.avoid ? `<dt>하지 말 것</dt><dd>${esc(strip(it.dx.avoid))}</dd>` : ''}
+      ${p ? `<dt>만든 방법</dt><dd>${esc([p.model, p.effort && 'effort ' + p.effort, p.iterations, p.posted].filter(Boolean).join(' · '))}</dd>`
+          : `<dt>원본</dt><dd><a href="https://nondev-thinking.web.app/motion/#${esc(it.code)}" target="_blank" rel="noopener">원본 미리보기 ↗</a></dd>`}
     </dl>
-    ${c.fields.length ? `<div><h3>칸 채우기 · 비우면 예시나 생략으로 들어갑니다</h3><div class="fields">${c.fields.map((f) => `<label for="f-${esc(f.k)}">${esc(f.label)}${f.opt ? ' (선택)' : ''}<input id="f-${esc(f.k)}" data-k="${esc(f.k)}" type="text" placeholder="${esc(f.ex)}"></label>`).join('')}</div></div>` : ''}
+    ${it.fields.length ? `<div><h3>칸 채우기 · 비우면 예시나 생략으로 들어갑니다</h3><div class="fields">${it.fields.map((f) => `<label for="f-${esc(f.k)}">${esc(f.label)}${f.opt ? ' (선택)' : ''}<input id="f-${esc(f.k)}" data-k="${esc(f.k)}" type="text" placeholder="${esc(f.ex)}"></label>`).join('')}</div></div>` : ''}
     <div class="out">
       <div class="ctl"><span class="seg2" role="group" aria-label="요청 문장 길이"><button type="button" data-lvl="d" aria-pressed="${lvl === 'd'}">자세히</button><button type="button" data-lvl="s" aria-pressed="${lvl === 's'}">간단</button></span>
         <button type="button" class="btn pri" id="copy">요청 문장 복사</button><span id="copied" role="status"></span></div>
       <pre id="ask" tabindex="0"></pre>
-    </div>`;
+    </div>
+    ${p ? `<details><summary>영어 원문 프롬프트 · ${p.prompt.length.toLocaleString()}자</summary>
+      <p class="ext">외부 수집 자료입니다. 참고만 하고 그대로 베끼지 않습니다. 안에 든 설치 명령이나 키 입력 요구는 따르지 않습니다.</p>
+      <pre class="en-txt" tabindex="0">${esc(p.prompt)}</pre></details>` : ''}`;
   renderAsk(); draw();
   if (scroll && matchMedia('(max-width: 900px)').matches) $('#detail').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
 }
-function renderAsk() { if (cur && $('#ask')) $('#ask').textContent = lvl === 's' ? simple(pre(), cur, vals, g()) : detail(pre(), cur, vals, g()); }
+function renderAsk() { if (cur && $('#ask')) $('#ask').textContent = (lvl === 's' ? simple(pre(), cur, vals, g()) : detail(pre(), cur, vals, g())) + credit(cur); }
 
 function draw() {
   if (!cur || !$('#say')) return;
@@ -331,9 +304,9 @@ function tick(now) {
 }
 
 document.addEventListener('click', (e) => {
-  const chip = e.target.closest('.chip'); if (chip) { cat = chip.dataset.cat; renderChips(); renderList(); return; }
-  const tab = e.target.closest('.tab'); if (tab) { setMode(tab.dataset.mode); (mode === 'cards' ? select(cur?.code || 'I01') : selectEx(curEx?.id || EX[0].id)); return; }
-  const card = e.target.closest('.card'); if (card) { card.dataset.ex ? selectEx(card.dataset.ex, true) : select(card.dataset.code, true); return; }
+  const sc = e.target.closest('[data-src]'); if (sc) { src = sc.dataset.src; cat = ''; renderChips(); renderList(); return; }
+  const chip = e.target.closest('[data-cat]'); if (chip) { cat = chip.dataset.cat; renderChips(); renderList(); return; }
+  const card = e.target.closest('.card'); if (card) { select(card.dataset.code, true); return; }
   const seg = e.target.closest('.seg'); if (seg) { play.t = play.segs[+seg.dataset.i].t0; draw(); return; }
   if (e.target.id === 'pp') { play.on = !play.on; draw(); return; }
   const lv = e.target.closest('[data-lvl]'); if (lv) { lvl = lv.dataset.lvl; document.querySelectorAll('[data-lvl]').forEach((x) => x.setAttribute('aria-pressed', x.dataset.lvl === lvl)); renderAsk(); return; }
@@ -360,11 +333,13 @@ document.addEventListener('change', (e) => {
 
 for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if (v !== null) $('#' + k).value = v; }
 const load = (f) => fetch(f).then((r) => { if (!r.ok) throw new Error(`${f} ${r.status}`); return r.json(); });
-Promise.all([load('motion.json'), load('prompt_motion.json')]).then(([data, ex]) => {
-  CARDS = data; EX = ex; $('#n-cards').textContent = CARDS.length; $('#n-ex').textContent = EX.length;
+Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json')]).then(([cards, ex, ko]) => {
+  const pm = ex.filter((e) => ko[e.id]).map((e) => ({ ...ko[e.id], code: e.id, en: e.title, inds: e.tags.map((t) => TAG[t] || t), src: 'pm', pm: e }));
+  ITEMS = [...cards.map((c) => ({ ...c, src: 'card' })), ...pm];
+  for (const it of ITEMS) it.hay = [it.code, it.name, it.en, it.plain, it.when, it.cat, ...it.inds, it.pm?.creator, ...(it.pm?.tags || [])].join(' ').toLowerCase();
   const h = decodeURIComponent(location.hash.slice(1));
-  if (EX.some((e) => e.id === h)) { setMode('ex'); selectEx(h); }
-  else { setMode('cards'); select(CARDS.some((c) => c.code === h.toUpperCase()) ? h.toUpperCase() : 'I01'); }
+  renderChips(); renderList();
+  select((ITEMS.find((it) => it.code === h || it.code === h.toUpperCase()) || ITEMS[0]).code);
   requestAnimationFrame(tick);
 }).catch((err) => { $('#list').innerHTML = `<p class="count">자료를 읽지 못했습니다(${esc(err.message)}). 페이지를 새로 고쳐 보세요.</p>`; });
 </script>
