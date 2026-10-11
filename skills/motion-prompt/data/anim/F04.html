@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F04 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#1b2838;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.board{box-sizing:border-box;width:100%;height:100%;display:flex;flex-direction:column;padding:2.5vmin;gap:1.5vmin;background:#1b2838}
+h1{margin:0;flex:none;color:#fff;font-weight:900;font-size:9vmin;line-height:1.15;text-align:left;
+  animation:drop .5s ease-out .05s 1 both}
+.grid{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.5vmin}
+.ph{position:relative;overflow:hidden;border-radius:2.5vmin;opacity:0;
+  animation:pop .5s cubic-bezier(.2,.9,.3,1.2) both}
+.ph::before{content:"";position:absolute;left:-10%;right:-10%;bottom:-25%;height:60%;border-radius:50% 50% 0 0}
+.ph::after{content:"";position:absolute;width:22%;aspect-ratio:1;border-radius:50%;top:14%;right:14%;background:rgba(255,255,255,.55)}
+.p1{background:linear-gradient(160deg,#f6c89f,#d9825b);animation-delay:.3s}
+.p1::before{background:#9c4f3a}
+.p2{background:linear-gradient(160deg,#9fd8f6,#4b8fc9);animation-delay:.55s}
+.p2::before{background:#2d5f8f}
+.p3{background:linear-gradient(160deg,#c6f0b5,#58a86a);animation-delay:.8s}
+.p3::before{background:#2f6e45}
+.p4{background:linear-gradient(160deg,#f3d98b,#d9a33a);animation:pop4 .5s ease-out 1.05s 1 both}
+.p4::before{background:#a06f1d}
+.tag{position:absolute;left:2vmin;bottom:2vmin;z-index:1;padding:.8vmin 2vmin;border-radius:1.2vmin;
+  background:rgba(27,40,56,.72);color:#fff;font-weight:800;font-size:4.5vmin}
+@keyframes drop{from{transform:translateY(-200%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes pop4{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.12);opacity:1}80%{transform:scale(.97);opacity:1}100%{transform:scale(1);opacity:1}}
+</style>
+<div class="board">
+  <h1>현장 사진 모음</h1>
+  <div class="grid">
+    <div class="ph p1"><span class="tag">포장</span></div>
+    <div class="ph p2"><span class="tag">세척</span></div>
+    <div class="ph p3"><span class="tag">배송</span></div>
+    <div class="ph p4"><span class="tag">조리</span></div>
+  </div>
+</div>
+</html>

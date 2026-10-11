@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 N06 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+@property --n{syntax:"<integer>";inherits:false;initial-value:0}
+@property --p{syntax:"<integer>";inherits:false;initial-value:0}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.bg{width:100%;height:100%;background:linear-gradient(160deg,#fff1f4,#ffd6e0 70%,#ffc2d1);display:flex;align-items:center;justify-content:center;gap:8vmin;box-sizing:border-box;padding:4vmin}
+@media (max-aspect-ratio:1/1){.bg{flex-direction:column;gap:3vmin}.th{transform:scale(.8)}}
+.th{position:relative;width:34vmin;height:72vmin;flex:none;animation:fi .45s 0s 1 both}
+.tube{position:absolute;left:14vmin;top:0;width:9vmin;height:60vmin;background:#fff;border:.8vmin solid #f9c3d0;border-radius:5vmin 5vmin 0 0;box-sizing:border-box;overflow:hidden}
+.fill{position:absolute;left:0;right:0;bottom:0;height:0;background:#E8442E;animation:rise 2.7s .5s cubic-bezier(.45,0,.55,1) 1 both}
+@keyframes rise{to{height:78%}}
+.bulb{position:absolute;left:11.5vmin;top:56vmin;width:14vmin;height:14vmin;border-radius:50%;background:#E8442E;border:.8vmin solid #f9c3d0;box-sizing:border-box;box-shadow:0 0 0 1vmin #fff inset}
+.tick{position:absolute;left:0;width:12vmin;text-align:right;font-size:3.4vmin;font-weight:700;color:#b5546b;transform:translateY(50%);line-height:1}
+.tick::after{content:"";position:absolute;right:-1.6vmin;top:50%;width:1.2vmin;height:.4vmin;background:#d48ca0}
+.tk{position:absolute;left:0;top:0;width:100%;height:60vmin}
+.bub{position:absolute;left:24.5vmin;bottom:0;width:0;height:0;animation:bub 2.7s .5s cubic-bezier(.45,0,.55,1) 1 both}
+@keyframes bub{to{bottom:78%}}
+.bub b{position:absolute;left:0;top:0;transform:translateY(50%);background:#E8442E;color:#fff;font-size:4vmin;padding:.8vmin 1.8vmin;border-radius:1.2vmin;white-space:nowrap;counter-reset:p var(--p);animation:cp 2.7s .5s cubic-bezier(.45,0,.55,1) 1 both}
+.bub b::before{content:counter(p) "%"}
+.bub b::after{content:"";position:absolute;left:-1.2vmin;top:50%;margin-top:-1vmin;border:1vmin solid transparent;border-right:1.4vmin solid #E8442E;border-left:0}
+@keyframes cp{from{--p:0}to{--p:78}}
+.top{position:absolute;left:0;bottom:0;width:0;height:0;animation:none}
+.info{display:flex;flex-direction:column;align-items:flex-start;gap:2vmin;animation:fi .45s 0s 1 both}
+.name{font-size:5.6vmin;font-weight:900;color:#c2185b}
+.big{font-size:17vmin;font-weight:900;color:#E8442E;line-height:1;white-space:nowrap;counter-reset:n var(--n);animation:cn 2.7s .5s cubic-bezier(.45,0,.55,1) 1 both}
+.big::before{content:counter(n)}
+.big small{font-size:7vmin}
+@keyframes cn{from{--n:0}to{--n:780}}
+.goal{font-size:5vmin;color:#7a3b4c;font-weight:700}
+.chipw{position:relative;height:9vmin;margin-top:1vmin}
+.chip{display:inline-block;background:#FBBF24;color:#5a3a00;font-weight:900;font-size:5vmin;padding:1.2vmin 3.6vmin;border-radius:9vmin;transform:scale(0);animation:pop .35s 3.2s 1 both}
+@keyframes pop{0%{transform:scale(0)}55%{transform:scale(1.25)}78%{transform:scale(.9)}100%{transform:scale(1)}}
+.sp{position:absolute;left:0;top:0;width:0;height:0;opacity:0}
+.sp i{position:absolute;left:-1vmin;top:-1vmin;width:2vmin;height:2vmin;background:#FF8A1F;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0;transform:rotate(var(--a)) translateY(0) scale(.4);animation:burst .9s 3.2s 1 both}
+.sp i:nth-child(1){--a:-75deg;--d:-13vmin}.sp i:nth-child(2){--a:-50deg;--d:-17vmin}.sp i:nth-child(3){--a:-25deg;--d:-20vmin}
+.sp i:nth-child(4){--a:0deg;--d:-22vmin}.sp i:nth-child(5){--a:25deg;--d:-20vmin}.sp i:nth-child(6){--a:50deg;--d:-17vmin}.sp i:nth-child(7){--a:75deg;--d:-13vmin}
+.sp i:nth-child(even){width:3vmin;height:3vmin;left:-1.5vmin;top:-1.5vmin;background:#FFA94D}
+@keyframes burst{0%{opacity:0;transform:rotate(var(--a)) translateY(0) scale(.4)}15%{opacity:1}100%{opacity:0;transform:rotate(var(--a)) translateY(var(--d)) scale(1.4)}}
+.tp{position:absolute;left:4.5vmin;bottom:78%;width:0;height:0}
+.cs i{position:absolute;width:2.4vmin;height:2.4vmin;background:#FF8A1F;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0;animation:tw .5s 3.3s 3 both}
+.cs i:nth-child(1){left:-2vmin;top:-2vmin}.cs i:nth-child(2){right:-1vmin;top:-3vmin;animation-delay:3.45s}
+.cs i:nth-child(3){right:-2.5vmin;bottom:0;animation-delay:3.6s}.cs i:nth-child(4){left:30%;bottom:-3vmin;animation-delay:3.75s}
+.cs{position:absolute;inset:0}
+@keyframes tw{0%{opacity:0;transform:scale(.2) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(45deg)}100%{opacity:.9;transform:scale(.8) rotate(90deg)}}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.chipwrap{position:relative;display:inline-block}
+</style>
+<div class="bg">
+  <div class="th">
+    <div class="tk">
+      <div class="tick" style="bottom:0%">0</div>
+      <div class="tick" style="bottom:25%">25</div>
+      <div class="tick" style="bottom:50%">50</div>
+      <div class="tick" style="bottom:75%">75</div>
+      <div class="tick" style="bottom:100%">100</div>
+    </div>
+    <div class="tube"><div class="fill"></div></div>
+    <div class="bulb"></div>
+    <div class="tk" style="pointer-events:none"><div class="bub"><b></b></div></div>
+    <div class="tk"><div class="tp" style="left:18.5vmin"><div class="sp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+  </div>
+  <div class="info">
+    <div class="name">이웃 사랑 나눔 모금</div>
+    <div class="big"><small>&#8203;</small></div>
+    <div class="goal">목표 1,000만 원</div>
+    <div class="chipw"><span class="chipwrap"><span class="chip">목표까지 22%</span><span class="cs"><i></i><i></i><i></i><i></i></span></span></div>
+  </div>
+</div>
+</html>

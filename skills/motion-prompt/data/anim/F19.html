@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F19 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:#e4ece1}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:#e4ece1}
+.map{position:absolute;inset:0;background:#d9e8d2;opacity:0;animation:mapIn 0.4s linear 0s 1 both}
+@keyframes mapIn{from{opacity:0}to{opacity:1}}
+.water{position:absolute;left:-10%;right:-10%;bottom:-12%;height:32%;background:#bfdcf0;border-radius:50% 50% 0 0/40% 40% 0 0}
+.road{position:absolute;background:#fff;box-shadow:0 0 0 0.4vmin #eef3ea}
+.r1{left:0;right:0;top:30%;height:4vmin}
+.r2{left:0;right:0;top:62%;height:3vmin}
+.r3{top:0;bottom:30%;left:24%;width:3.4vmin}
+.curve{position:absolute;left:38%;top:-30%;width:90vmin;height:90vmin;box-sizing:border-box;border:3.6vmin solid transparent;border-bottom-color:#fff;border-right-color:#fff;border-radius:50%;transform:rotate(20deg)}
+.blk{position:absolute;background:#c3d3c0;border-radius:1.6vmin}
+.b1{left:4%;top:6%;width:16%;height:18%}
+.b2{left:30%;top:7%;width:20%;height:16%}
+.b3{left:4%;top:38%;width:15%;height:18%}
+.b4{left:30%;top:38%;width:14%;height:18%}
+.b5{left:72%;top:8%;width:18%;height:15%}
+.b6{left:8%;top:68%;width:20%;height:10%}
+.b7{left:62%;top:68%;width:22%;height:9%}
+.tag{position:absolute;left:2.5vmin;bottom:2.5vmin;padding:0.8vmin 1.6vmin;font-size:2.6vmin;color:#6b6f6b;background:rgba(235,238,235,.9);border-radius:1vmin}
+.row{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:2vmin}
+.pinbox{position:relative;width:10vmin;height:14vmin;flex:none}
+.shadow{position:absolute;left:50%;bottom:-0.6vmin;width:7vmin;height:2vmin;margin-left:-3.5vmin;border-radius:50%;background:rgba(0,0,0,.25);opacity:0;animation:shd 0.6s ease-out 0.4s 1 both}
+@keyframes shd{0%{opacity:0;transform:scale(.3)}60%{opacity:.9;transform:scale(1)}100%{opacity:.7;transform:scale(1)}}
+.pin{position:absolute;left:0;bottom:0;width:10vmin;height:14vmin;transform-origin:50% 100%;animation:drop 0.6s linear 0.4s 1 both}
+@keyframes drop{
+0%{opacity:0;transform:translateY(-55vmin) scale(1,1);animation-timing-function:cubic-bezier(.5,0,1,.6)}
+8%{opacity:1}
+58%{opacity:1;transform:translateY(0) scale(1,1)}
+72%{opacity:1;transform:translateY(0) scale(1.18,.78)}
+88%{opacity:1;transform:translateY(-1.8vmin) scale(.97,1.03)}
+100%{opacity:1;transform:translateY(0) scale(1,1)}}
+.drop{position:absolute;left:0;top:0;width:10vmin;height:10vmin;background:#e53935;border-radius:50% 50% 50% 0;transform:translateY(0) rotate(-45deg);transform-origin:50% 50%;margin-top:0;box-shadow:-0.6vmin 0.6vmin 1.2vmin rgba(0,0,0,.25)}
+.pin:before{content:"";position:absolute;left:50%;top:50%;margin:-1.6vmin 0 0 -1.6vmin;width:3.2vmin;height:3.2vmin;background:#fff;border-radius:50%;z-index:2;transform:translateY(-1.4vmin)}
+.pin .drop{top:0}
+.card{box-sizing:border-box;width:58vmin;padding:3vmin 3.4vmin;background:#fff;border-radius:3vmin;box-shadow:0 1.4vmin 4vmin rgba(0,0,0,.22);opacity:0;animation:cardIn 0.5s cubic-bezier(.2,.8,.25,1) 0.9s 1 both}
+@keyframes cardIn{from{opacity:0;transform:translateX(50vmin)}to{opacity:1;transform:translateX(0)}}
+.t{font-size:8vmin;font-weight:800;color:#1c1c1c;line-height:1.15}
+.a{margin-top:1.2vmin;font-size:4vmin;color:#7a7a7a}
+.g{margin-top:1.6vmin;font-size:4vmin;font-weight:700;color:#1e6fe0}
+</style>
+<div class="stage">
+  <div class="map">
+    <div class="water"></div>
+    <div class="blk b1"></div><div class="blk b2"></div><div class="blk b3"></div><div class="blk b4"></div>
+    <div class="blk b5"></div><div class="blk b6"></div><div class="blk b7"></div>
+    <div class="road r1"></div><div class="road r2"></div><div class="road r3"></div>
+    <div class="curve"></div>
+    <div class="tag">예시 지도 — 실제 위치 아님</div>
+  </div>
+  <div class="row">
+    <div class="pinbox">
+      <div class="shadow"></div>
+      <div class="pin"><div class="drop"></div></div>
+    </div>
+    <div class="card">
+      <div class="t">○○센터</div>
+      <div class="a">○○구 ○○로 12</div>
+      <div class="g">지하철역에서 걸어서 5분</div>
+    </div>
+  </div>
+</div>
+</html>

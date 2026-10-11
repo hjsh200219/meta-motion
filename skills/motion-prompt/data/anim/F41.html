@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F41 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(160deg,#35506e 0%,#1f2f45 55%,#141c2b 100%)}
+.glow{position:absolute;left:-10vmin;top:-10vmin;width:70vmin;height:70vmin;border-radius:50%;background:radial-gradient(circle,rgba(255,220,160,.25),transparent 65%)}
+.desk{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(180deg,#2a2f3a,#12151c)}
+.person{position:absolute;top:22%;width:26vmin;height:44vmin}
+.person .head{position:absolute;left:50%;top:0;width:15vmin;height:15vmin;margin-left:-7.5vmin;border-radius:50%;background:linear-gradient(180deg,#e2b89a,#c48f70)}
+.person .body{position:absolute;left:0;right:0;top:16vmin;bottom:0;border-radius:13vmin 13vmin 0 0;background:linear-gradient(180deg,#5b6f8f,#34425a)}
+.p1{left:16%}
+.p2{right:16%}
+.p2 .body{background:linear-gradient(180deg,#8a6a5a,#58423a)}
+.tag{position:absolute;left:3vmin;top:3vmin;font-size:2.6vmin;color:rgba(255,255,255,.55);background:rgba(0,0,0,.25);padding:.6vmin 1.6vmin;border-radius:2vmin}
+.caps{position:absolute;left:5vmin;right:5vmin;bottom:6vmin;height:21vmin}
+.row{position:absolute;left:0;right:0;bottom:0;height:10vmin;display:flex;align-items:center;gap:1.6vmin}
+.chip{flex:none;font-size:3.2vmin;font-weight:700;color:#fff;background:rgba(14,16,24,.88);padding:1vmin 2vmin;border-radius:1.6vmin;white-space:nowrap}
+.pill{font-size:4.6vmin;font-weight:700;color:#1b1b1f;background:#ffc83d;padding:1.6vmin 3.4vmin;border-radius:5vmin;white-space:nowrap}
+.bold{font-size:5vmin;font-weight:900;color:#fff;white-space:nowrap;-webkit-text-stroke:.9vmin #10131a;paint-order:stroke fill;text-shadow:0 .4vmin 1vmin rgba(0,0,0,.6)}
+.l1{justify-content:flex-start;animation:push 0.2s linear 1.65s 1 both}
+.l1 .in{display:flex;align-items:center;gap:1.6vmin;animation:rise 0.15s ease-out 0.15s 1 both}
+.l2{justify-content:flex-end;animation:rise2 0.2s ease-out 1.65s 1 both}
+@keyframes rise{from{opacity:0;transform:translateY(3vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes rise2{from{opacity:0;transform:translateY(4vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes push{from{opacity:1;transform:translateY(0)}to{opacity:.5;transform:translateY(-11vmin)}}
+</style>
+<div class="stage">
+  <div class="glow"></div>
+  <div class="person p1"><div class="head"></div><div class="body"></div></div>
+  <div class="person p2"><div class="head"></div><div class="body"></div></div>
+  <div class="desk"></div>
+  <div class="tag">촬영 화면 예시</div>
+  <div class="caps">
+    <div class="row l1"><div class="in"><span class="chip">강사</span><span class="pill">어디서 막히셨어요?</span></div></div>
+    <div class="row l2"><span class="chip">수강생</span><span class="bold">표를 붙여 넣으니 칸이 깨져요</span></div>
+  </div>
+</div>
+</html>

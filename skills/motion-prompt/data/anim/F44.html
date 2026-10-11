@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F44 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#0f172a}
+.shot{position:absolute;inset:-6%;background:linear-gradient(180deg,#7fb4e8 0%,#c7dff3 48%,#e8d9b8 49%,#8aa36b 100%);
+  animation:shotzoom .45s 0s 1 both}
+.shot i{position:absolute;display:block}
+.shot .m1{left:6%;bottom:50%;width:40%;height:22%;background:#5d7fa3;clip-path:polygon(0 100%,50% 0,100% 100%)}
+.shot .m2{left:38%;bottom:50%;width:50%;height:30%;background:#476a8c;clip-path:polygon(0 100%,45% 0,100% 100%)}
+.shot .b1{right:8%;bottom:30%;width:14%;height:26%;background:#f4efe4;box-shadow:inset 0 0 0 .6vmin #cfc7b4}
+.shot .sun{left:14%;top:12%;width:12vmin;height:12vmin;border-radius:50%;background:#fff6c8}
+@keyframes shotzoom{from{transform:scale(1);filter:blur(0)}to{transform:scale(1.06);filter:blur(1.4vmin)}}
+.dim{position:absolute;inset:0;background:#0b1020;animation:dim .45s 0s 1 both}
+@keyframes dim{from{opacity:0}to{opacity:.55}}
+
+.env-in{position:absolute;left:50%;top:50%;width:48vmin;height:31vmin;margin:-15.5vmin 0 0 -24vmin;
+  animation:envrise .45s 0s 1 both}
+@keyframes envrise{from{transform:translateY(75vmin)}to{transform:translateY(14vmin)}}
+.env{position:absolute;inset:0;animation:envfall .65s .8s 1 both}
+@keyframes envfall{from{transform:translateY(0);opacity:1}to{transform:translateY(60vmin);opacity:0}}
+.env .body{position:absolute;inset:0;background:#e9dcc1;border-radius:1vmin;box-shadow:0 2vmin 5vmin rgba(0,0,0,.4)}
+.env .front{position:absolute;inset:0;background:#f1e6cd;border-radius:1vmin;
+  clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%)}
+.env .flap{position:absolute;left:0;top:0;width:100%;height:58%;background:#dccba6;
+  clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:50% 0;
+  animation:flap .4s .4s 1 both}
+@keyframes flap{
+  0%{transform:perspective(60vmin) rotateX(0deg);background:#dccba6}
+  49%{background:#dccba6}
+  51%{background:#c9b88f}
+  100%{transform:perspective(60vmin) rotateX(-180deg);background:#c9b88f}}
+
+.card{position:relative;width:max(50vw,78vmin);max-width:90vmin;background:#fff;border-radius:2vmin;overflow:hidden;
+  box-shadow:0 3vmin 8vmin rgba(0,0,0,.45);color:#111827;
+  animation:cardout .65s .8s 1 both}
+@keyframes cardout{
+  0%{opacity:0;transform:translateY(24vmin) scale(.45)}
+  8%{opacity:1}
+  50%{opacity:1;transform:translateY(-12vmin) scale(.72)}
+  100%{opacity:1;transform:translateY(0) scale(1)}}
+.strip{background:#ff6b3d;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:2vmin 3.5vmin}
+.strip b{font-size:4.6vmin;letter-spacing:.3vmin}
+.clock{display:flex;align-items:center;gap:1vmin;background:#1f2937;color:#fff;border-radius:5vmin;padding:.8vmin 2vmin;font-size:4vmin;font-weight:700}
+.clock s{display:block;width:3.4vmin;height:3.4vmin;border:.5vmin solid #fff;border-radius:50%;position:relative;box-sizing:border-box;text-decoration:none}
+.clock s:before{content:"";position:absolute;left:50%;top:15%;width:.4vmin;height:35%;background:#fff;transform:translateX(-50%)}
+.clock s:after{content:"";position:absolute;left:50%;top:48%;width:30%;height:.4vmin;background:#fff}
+.inner{padding:3vmin 3.5vmin 3vmin}
+.chip{display:inline-block;background:#1f2937;color:#fff;border-radius:5vmin;padding:.8vmin 2.2vmin;font-size:3.4vmin;font-weight:700;
+  animation:rise .3s 1.4s 1 both}
+.title{margin:1.6vmin 0 0;font-size:6.2vmin;line-height:1.25;font-weight:900;animation:rise .4s 1.4s 1 both}
+.bar{width:12vmin;height:1vmin;border-radius:1vmin;background:#ff6b3d;margin:1.6vmin 0 2vmin;transform-origin:left;animation:grow .25s 1.7s 1 both}
+@keyframes grow{from{transform:scaleX(0);opacity:0}to{transform:scaleX(1);opacity:1}}
+.row{display:flex;align-items:baseline;gap:2vmin;padding:.9vmin 0;animation:rise .15s 1.8s 1 both}
+.row:nth-of-type(2){animation-delay:1.95s}
+.row:nth-of-type(3){animation-delay:2.1s}
+.row span{width:17vmin;flex:none;font-size:3.4vmin;color:#8b929c}
+.row strong{font-size:4.2vmin;font-weight:800}
+@keyframes rise{from{opacity:0;transform:translateY(3vmin)}to{opacity:1;transform:translateY(0)}}
+.go{display:inline-block;margin-top:2vmin;background:#ff6b3d;color:#fff;font-size:4.4vmin;font-weight:900;border-radius:5vmin;padding:1vmin 3.4vmin;
+  transform-origin:left center;animation:pop .35s 2.4s 1 both}
+@keyframes pop{0%{opacity:0;transform:scale(0)}65%{opacity:1;transform:scale(1.2)}100%{opacity:1;transform:scale(1)}}
+.stack{display:flex;flex-direction:column}
+</style>
+<div class="stage">
+  <div class="shot"><i class="sun"></i><i class="m2"></i><i class="m1"></i><i class="b1"></i></div>
+  <div class="dim"></div>
+  <div class="env-in"><div class="env"><div class="body"></div><div class="front"></div><div class="flap"></div></div></div>
+  <div class="card">
+    <div class="strip"><b>MISSION 2</b><div class="clock"><s></s>5분</div></div>
+    <div class="inner stack">
+      <div><span class="chip">혼자 해 보기</span></div>
+      <h1 class="title">회의록 10줄을<br>3줄로 줄이기</h1>
+      <div class="bar"></div>
+      <div class="row"><span>제한 시간</span><strong>5분</strong></div>
+      <div class="row"><span>준비물</span><strong>연습용 회의록 파일</strong></div>
+      <div class="row"><span>완성 기준</span><strong>3줄·숫자 포함</strong></div>
+      <div><span class="go">시작!</span></div>
+    </div>
+  </div>
+</div>
+</html>

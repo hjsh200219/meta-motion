@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F49 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.scene{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(135deg,#6f8fb0 0%,#a9b9c4 45%,#d7b894 100%)}
+.bg-sun{position:absolute;left:12%;top:14%;width:22vmin;height:22vmin;border-radius:50%;background:radial-gradient(circle,#fff3d0,#f3c986 70%,transparent 72%);opacity:.8}
+.bg-hill{position:absolute;left:-10%;bottom:-8%;width:80%;height:40%;border-radius:50% 50% 0 0;background:linear-gradient(#5f7a6a,#3d5547)}
+.face{position:absolute;left:12%;bottom:0;width:26vmin;height:56vmin;display:flex;flex-direction:column;align-items:center}
+.face i{display:block;width:17vmin;height:20vmin;border-radius:50%;background:#e8c3a0}
+.face b{display:block;width:26vmin;flex:1;margin-top:2vmin;border-radius:13vmin 13vmin 0 0;background:#37424f}
+.shake{position:absolute;right:0;top:0;width:max(40vw,48vmin);height:100%}
+.panel{position:absolute;inset:0;background:#14202e;box-shadow:-1.5vmin 0 4vmin rgba(0,0,0,.35);animation:slidein .35s ease-out 0s 1 both}
+.inner{position:absolute;inset:0;box-sizing:border-box;padding:4vmin 3.5vmin;display:flex;flex-direction:column;gap:2vmin;animation:slam .12s linear 2.3s 1 both}
+.raw{background:#fff;color:#1b1b1b;border-radius:1.2vmin;padding:2.2vmin 2.4vmin;animation:wiggle .45s linear .35s 1 both}
+.rawhead{display:flex;align-items:center;gap:1.6vmin;margin-bottom:1.4vmin}
+.tri{width:0;height:0;border-left:3vmin solid transparent;border-right:3vmin solid transparent;border-bottom:5.2vmin solid #ff6a3d;position:relative}
+.tri:after{content:"!";position:absolute;left:-.6vmin;top:1.5vmin;font:800 3vmin/1 system-ui,sans-serif;color:#fff;width:1.2vmin;text-align:center}
+.chip{display:inline-block;background:#ff6a3d;color:#fff;font-weight:800;font-size:3.2vmin;padding:.6vmin 1.6vmin;border-radius:3vmin}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:3.5vmin;line-height:1.45;overflow-wrap:anywhere;color:#8a8a8a}
+.key{position:relative;display:inline-block;color:#111;font-weight:700}
+.key:after{content:"";position:absolute;left:0;right:0;bottom:-.3vmin;height:.8vmin;background:#ff6a3d;transform-origin:left;animation:line .45s ease-out .35s 1 both}
+.arrow{align-self:center;font-size:6vmin;line-height:1;color:#ff6a3d;font-weight:800;animation:drop .25s ease-out .9s 1 both}
+.paper{background:#f6efe0;color:#222;border-radius:1.2vmin;padding:2.2vmin 2.4vmin;animation:rise .45s ease-out 1s 1 both}
+.paper .chip{font-size:3vmin}
+.big{font-weight:900;font-size:5.6vmin;line-height:1.3;margin:1.4vmin 0 2vmin;word-break:keep-all}
+.todo{font-weight:800;font-size:3.2vmin;color:#ff6a3d;margin-bottom:.8vmin}
+.row{display:flex;gap:1.4vmin;align-items:center;font-size:4vmin;font-weight:600;padding:.7vmin 0;word-break:keep-all}
+.row em{flex:none;width:5vmin;height:5vmin;border-radius:50%;background:#ff6a3d;color:#fff;font-style:normal;font-weight:800;font-size:3.4vmin;display:flex;align-items:center;justify-content:center}
+.r1{animation:up .2s ease-out 1.55s 1 both}
+.r2{animation:up .2s ease-out 1.75s 1 both}
+.stamp{position:absolute;right:3vmin;bottom:4vmin;display:flex;align-items:center;gap:1.4vmin;border:.9vmin solid #ff6a3d;color:#ff6a3d;background:rgba(20,32,46,.9);border-radius:1.6vmin;padding:1.2vmin 2.4vmin;font-weight:900;font-size:5.4vmin;transform:rotate(-12deg);animation:stamp .35s cubic-bezier(.3,0,.5,1) 2.1s 1 both}
+.stamp s{text-decoration:none;font-size:5.4vmin}
+@keyframes slidein{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@keyframes wiggle{0%,100%{transform:translateX(0)}20%{transform:translateX(-1.6vmin)}40%{transform:translateX(1.6vmin)}60%{transform:translateX(-1vmin)}80%{transform:translateX(.8vmin)}}
+@keyframes line{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes drop{from{opacity:0;transform:translateY(-2vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes rise{from{opacity:0;transform:translateY(8vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes up{from{opacity:0;transform:translateY(4vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes stamp{0%{opacity:0;transform:rotate(-45deg) scale(3.2)}65%{opacity:1;transform:rotate(-8deg) scale(.92)}100%{opacity:1;transform:rotate(-12deg) scale(1)}}
+@keyframes slam{0%{transform:translate(0,0)}30%{transform:translate(-.8vmin,.9vmin)}65%{transform:translate(.6vmin,-.5vmin)}100%{transform:translate(0,0)}}
+</style>
+<div class="scene">
+  <div class="bg-sun"></div>
+  <div class="bg-hill"></div>
+  <div class="face"><i></i><b></b></div>
+  <div class="shake">
+    <div class="panel">
+      <div class="inner">
+        <div class="raw">
+          <div class="rawhead"><span class="tri"></span><span class="chip">화면에 뜬 말</span></div>
+          <div class="mono"><span class="key">Error: Permission denied</span><br>/ open ./report.txt</div>
+        </div>
+        <div class="arrow">↓</div>
+        <div class="paper">
+          <span class="chip">쉬운 뜻</span>
+          <div class="big">이 폴더를 고칠 권한이 없어요</div>
+          <div class="todo">할 일</div>
+          <div class="row r1"><em>1</em>문서 폴더에 저장하기</div>
+          <div class="row r2"><em>2</em>관리자에게 권한 요청</div>
+        </div>
+        <div class="stamp"><s>⚠</s>꼭 고쳐요</div>
+      </div>
+    </div>
+  </div>
+</div>
+</html>

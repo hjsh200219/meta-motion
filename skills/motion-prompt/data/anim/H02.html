@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 H02 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#FBF6EE;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#2b2218}
+.wrap{width:100vw;height:100vh;box-sizing:border-box;padding:4vmin;display:grid;grid-template-rows:auto 1fr;gap:3vmin}
+h1{margin:0;font-size:9vmin;line-height:1.1;letter-spacing:-.02em;animation:intro .3s ease-out 0s 1 both}
+.main{display:grid;grid-template-columns:.8fr 1.3fr;gap:4vmin;min-height:0}
+@media (orientation:portrait){.main{grid-template-columns:1fr;grid-template-rows:auto 1fr}h1{font-size:11vmin}}
+.ing{background:#fff;border-radius:2.5vmin;padding:3vmin 3.5vmin;box-shadow:0 1vmin 3vmin rgba(80,50,20,.12);align-self:start;animation:intro .3s ease-out 0s 1 both}
+.ing h2{margin:0 0 1.5vmin;font-size:5vmin;color:#E8442E}
+.ing ul{list-style:none;margin:0;padding:0}
+.ing li{display:flex;align-items:center;gap:2.5vmin;padding:1.8vmin 0;border-bottom:.4vmin dotted #d9cfc0;font-size:4.6vmin}
+.ing li:last-child{border-bottom:0}
+.box{flex:none;width:5vmin;height:5vmin;box-sizing:border-box;border:.5vmin solid #cfc4b4;border-radius:1.2vmin;background:#fff;color:#fff;font-size:3.8vmin;line-height:4vmin;text-align:center;font-weight:700;animation:chk .4s ease-out 1 both}
+.box b{display:block;animation:vis .4s linear 1 both;animation-delay:inherit}
+.t{color:#b9b0a4;animation:ink .4s ease-out 1 both}
+.ing li:nth-child(1) .box,.ing li:nth-child(1) .box b,.ing li:nth-child(1) .t{animation-delay:.3s}
+.ing li:nth-child(2) .box,.ing li:nth-child(2) .box b,.ing li:nth-child(2) .t{animation-delay:.65s}
+.ing li:nth-child(3) .box,.ing li:nth-child(3) .box b,.ing li:nth-child(3) .t{animation-delay:1s}
+.ing li:nth-child(4) .box,.ing li:nth-child(4) .box b,.ing li:nth-child(4) .t{animation-delay:1.35s}
+.stack{position:relative;min-height:0}
+.paper{position:absolute;inset:0;background:#fff;border-radius:2.5vmin;box-shadow:0 1vmin 3vmin rgba(80,50,20,.12);animation:intro .3s ease-out 0s 1 both}
+.p1{transform:rotate(4deg)}
+.p2{transform:rotate(-3deg)}
+.card{position:absolute;inset:0;background:#fff;border-radius:2.5vmin;box-shadow:0 1.5vmin 4vmin rgba(80,50,20,.2);display:flex;flex-direction:column;padding:2vmin;gap:2vmin;opacity:0}
+.c1{animation:swap 2.1s cubic-bezier(.2,.8,.3,1.1) .4s 1 both}
+.c2{animation:swap 2.1s cubic-bezier(.2,.8,.3,1.1) 1.9s 1 both}
+.c3{animation:enter .6s cubic-bezier(.2,.8,.3,1.1) 3.4s 1 both}
+.photo{position:relative;flex:1;min-height:0;border-radius:1.8vmin;overflow:hidden}
+.s1{background:radial-gradient(ellipse 30% 30% at 50% 55%,#e8c27a 0 60%,transparent 62%),radial-gradient(ellipse 42% 42% at 50% 55%,#3a3330 0 70%,transparent 72%),linear-gradient(160deg,#d9c6a6,#a98f6a)}
+.s2{background:radial-gradient(ellipse 30% 30% at 50% 55%,#b4532a 0 60%,transparent 62%),radial-gradient(ellipse 42% 42% at 50% 55%,#3a3330 0 70%,transparent 72%),linear-gradient(160deg,#d8b8a0,#a8745a)}
+.s3{background:radial-gradient(ellipse 30% 30% at 50% 55%,#7a2a18 0 60%,transparent 62%),radial-gradient(ellipse 42% 42% at 50% 55%,#2c2623 0 70%,transparent 72%),linear-gradient(160deg,#c9a690,#7e5240)}
+.chip{position:absolute;right:2vmin;bottom:2vmin;background:#FFD400;color:#2b2218;font-weight:800;font-size:4.4vmin;padding:1vmin 2.4vmin;border-radius:5vmin;box-shadow:0 .6vmin 1.5vmin rgba(0,0,0,.25);animation:pop .6s ease-out 1 both}
+.c1 .chip{animation-delay:.4s}
+.c2 .chip{animation-delay:1.9s}
+.c3 .chip{animation-delay:3.4s}
+.shine{position:absolute;top:-20%;bottom:-20%;width:22%;left:0;background:linear-gradient(90deg,transparent,rgba(255,224,150,.85),transparent);transform:translateX(-200%) skewX(-20deg);animation:sweep .7s ease-in-out 3.7s 1 both}
+.row{display:flex;align-items:center;gap:2.5vmin;padding:0 1vmin 1vmin}
+.num{flex:none;width:8vmin;height:8vmin;border-radius:50%;background:#E8442E;color:#fff;font-weight:800;font-size:5vmin;display:flex;align-items:center;justify-content:center}
+.txt{flex:1;font-size:4.8vmin;font-weight:700;line-height:1.25}
+.dots{display:flex;gap:1.2vmin}
+.dots i{width:2vmin;height:2vmin;border-radius:50%;background:#e4dacb}
+.c1 .dots i:nth-child(1),.c2 .dots i:nth-child(2),.c3 .dots i:nth-child(3){background:#E8442E}
+@keyframes intro{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:none}}
+@keyframes chk{0%{background:#fff;border-color:#cfc4b4;transform:scale(.8)}50%{background:#E8442E;border-color:#E8442E;transform:scale(1.35)}100%{background:#E8442E;border-color:#E8442E;transform:scale(1)}}
+@keyframes vis{from{opacity:0}to{opacity:1}}
+@keyframes ink{from{color:#b9b0a4}to{color:#2b2218}}
+@keyframes enter{0%{opacity:1;transform:translateX(120vmin) rotate(9deg)}100%{opacity:1;transform:none}}
+@keyframes swap{0%{opacity:1;transform:translateX(120vmin) rotate(9deg)}28.57%{opacity:1;transform:none}71.43%{opacity:1;transform:none}100%{opacity:1;transform:translateX(-120vmin) rotate(-10deg)}}
+@keyframes pop{0%{transform:scale(0)}55%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes sweep{from{transform:translateX(-200%) skewX(-20deg)}to{transform:translateX(560%) skewX(-20deg)}}
+</style>
+<div class="wrap">
+  <h1>두부조림 만들기</h1>
+  <div class="main">
+    <div class="ing">
+      <h2>재료</h2>
+      <ul>
+        <li><span class="box"><b>✓</b></span><span class="t">두부 1모</span></li>
+        <li><span class="box"><b>✓</b></span><span class="t">대파 1대</span></li>
+        <li><span class="box"><b>✓</b></span><span class="t">간장 2큰술</span></li>
+        <li><span class="box"><b>✓</b></span><span class="t">고춧가루 1큰술</span></li>
+      </ul>
+    </div>
+    <div class="stack">
+      <div class="paper p1"></div>
+      <div class="paper p2"></div>
+      <div class="card c1">
+        <div class="photo s1"><span class="chip">⏱ 5분</span></div>
+        <div class="row"><span class="num">1</span><span class="txt">두부 노릇하게 굽기</span><span class="dots"><i></i><i></i><i></i></span></div>
+      </div>
+      <div class="card c2">
+        <div class="photo s2"><span class="chip">⏱ 3분</span></div>
+        <div class="row"><span class="num">2</span><span class="txt">양념장 부어 끓이기</span><span class="dots"><i></i><i></i><i></i></span></div>
+      </div>
+      <div class="card c3">
+        <div class="photo s3"><span class="shine"></span><span class="chip">⏱ 10분</span></div>
+        <div class="row"><span class="num">3</span><span class="txt">약불로 졸이기</span><span class="dots"><i></i><i></i><i></i></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</html>

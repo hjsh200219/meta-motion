@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 M05 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#F6F5F0;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+.stage{position:relative;width:100vmin;height:100vmin;background:#F6F5F0;overflow:hidden}
+.fade{position:absolute;inset:0;animation:fin .25s 0s 1 both}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+
+.ttl{position:absolute;left:6vmin;top:6vmin;font-size:8.5vmin;font-weight:900;color:#111;letter-spacing:-.02em;white-space:nowrap}
+.sub{position:absolute;left:6.4vmin;top:17.5vmin;font-size:4.2vmin;font-weight:700;color:#6B6F66;white-space:nowrap}
+
+.sv{position:absolute;inset:0;width:100%;height:100%}
+.base{fill:none;stroke:#D3D5CD;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.on{fill:none;stroke:#16A34A;stroke-width:2.2;stroke-linejoin:round;stroke-dasharray:100 100;stroke-dashoffset:100;animation:fill 3.2s .25s 1 both}
+@keyframes fill{
+0%{stroke-dashoffset:100;animation-timing-function:ease-in-out}
+18.75%{stroke-dashoffset:82.27;animation-timing-function:linear}
+28.125%{stroke-dashoffset:82.27;animation-timing-function:ease-in}
+52.25%{stroke-dashoffset:50.92;animation-timing-function:ease-out}
+62.5%{stroke-dashoffset:37.62;animation-timing-function:linear}
+71.875%{stroke-dashoffset:37.62;animation-timing-function:ease-in-out}
+100%{stroke-dashoffset:0}}
+
+.st{position:absolute;box-sizing:border-box;width:5vmin;height:5vmin;margin:-2.5vmin 0 0 -2.5vmin;border:1vmin solid #C2C5BC;background:#fff;border-radius:50%;z-index:2}
+.st::before,.st::after{content:"";position:absolute;inset:-1vmin;border:.7vmin solid #16A34A;border-radius:50%;opacity:0}
+.s1{left:24%;top:78%;animation:pop .3s .85s 1 both}
+.s2{left:56%;top:58%;animation:pop .3s 2.25s 1 both}
+.s3{left:80%;top:34%;animation:pop3 .7s 3.45s 1 both}
+.s1::before{animation:wv .3s .85s 1 both}
+.s2::before{animation:wv .3s 2.25s 1 both}
+.s3::before{animation:wvb .7s 3.45s 1 both}
+.s3::after{animation:wvb .55s 3.6s 1 both}
+.sp{position:absolute;inset:-3vmin;border-radius:50%;background:radial-gradient(circle,rgba(250,204,21,.8),rgba(22,163,74,.45) 40%,rgba(22,163,74,0) 68%);opacity:0;animation:spk .35s 3.85s 1 both}
+@keyframes pop{0%{transform:scale(1);border-color:#C2C5BC}40%{transform:scale(1.5);border-color:#16A34A}100%{transform:scale(1);border-color:#16A34A}}
+@keyframes pop3{0%{transform:scale(1);border-color:#C2C5BC}25%{transform:scale(1.7);border-color:#16A34A}50%{transform:scale(1.1);border-color:#16A34A}70%{transform:scale(1.45);border-color:#16A34A}100%{transform:scale(1);border-color:#16A34A}}
+@keyframes wv{0%{transform:scale(1);opacity:0}10%{opacity:.75}100%{transform:scale(3.4);opacity:0}}
+@keyframes wvb{0%{transform:scale(1);opacity:0}10%{opacity:.8}100%{transform:scale(5);opacity:0}}
+@keyframes spk{0%{transform:scale(.6);opacity:0}50%{transform:scale(1.5);opacity:1}100%{transform:scale(2.2);opacity:0}}
+
+.lb{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.8vmin;z-index:1}
+.l1{left:24%;top:82.3%}
+.l2{left:56%;top:62.3%}
+.l3{left:85%;top:38.3%}
+.pl{font-size:3.6vmin;font-weight:800;line-height:1;padding:.9vmin 2.2vmin;border-radius:5vmin;background:#D5D7D0;color:#8D9088}
+.nm{font-size:5vmin;font-weight:900;line-height:1.1;white-space:nowrap;color:#A3A69E}
+.l1 .pl{animation:pl .25s .9s 1 both}.l1 .nm{animation:nm .25s .9s 1 both}
+.l2 .pl{animation:pl .25s 2.3s 1 both}.l2 .nm{animation:nm .25s 2.3s 1 both}
+.l3 .pl{animation:pl .3s 3.5s 1 both}.l3 .nm{animation:nm .3s 3.5s 1 both}
+@keyframes pl{from{background:#D5D7D0;color:#8D9088}to{background:#16A34A;color:#fff}}
+@keyframes nm{from{color:#A3A69E}to{color:#111}}
+
+.tr{position:absolute;left:8%;top:78%;width:0;height:0;z-index:3;animation:run 3.2s .25s 1 both}
+.tb{position:absolute;left:-5.5vmin;top:-9.2vmin;width:11vmin;height:5.6vmin;background:#fff;border-radius:3vmin;box-shadow:0 .6vmin 1.4vmin rgba(0,0,0,.22)}
+.tb::before{content:"";position:absolute;left:1.4vmin;top:1.2vmin;width:6vmin;height:2.6vmin;background:#111;border-radius:1.3vmin}
+.tb::after{content:"";position:absolute;right:1.1vmin;top:1.9vmin;width:1.6vmin;height:1.6vmin;border-radius:50%;background:#FACC15;box-shadow:0 0 1.2vmin #FACC15}
+@keyframes run{
+0%{left:8%;top:78%;animation-timing-function:ease-in-out}
+18.75%{left:24%;top:78%;animation-timing-function:linear}
+28.125%{left:24%;top:78%;animation-timing-function:ease-in}
+52.25%{left:44%;top:58%;animation-timing-function:ease-out}
+62.5%{left:56%;top:58%;animation-timing-function:linear}
+71.875%{left:56%;top:58%;animation-timing-function:ease-in-out}
+100%{left:80%;top:34%}}
+</style>
+<div class="stage">
+  <div class="fade">
+    <div class="ttl">○○시 반나절 코스</div>
+    <div class="sub">전통시장 → 공원 → 전망대</div>
+    <svg class="sv" viewBox="0 0 100 100" preserveAspectRatio="none">
+      <path class="base" d="M8 78 H24 L44 58 H56 L80 34"/>
+      <path class="on" pathLength="100" d="M8 78 H24 L44 58 H56 L80 34"/>
+    </svg>
+    <div class="st s1"></div>
+    <div class="st s2"></div>
+    <div class="st s3"><span class="sp"></span></div>
+    <div class="lb l1"><span class="pl">1</span><span class="nm">전통시장</span></div>
+    <div class="lb l2"><span class="pl">2</span><span class="nm">공원</span></div>
+    <div class="lb l3"><span class="pl">3</span><span class="nm">전망대</span></div>
+    <div class="tr"><div class="tb"></div></div>
+  </div>
+</div>
+</html>

@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F02 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#f6f1e7;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#1f2a44}
+.stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:4vmin;padding:6vmin;box-sizing:border-box}
+.photo{flex:0 0 56%;height:78%;border-radius:3vmin;box-shadow:0 1.5vmin 4vmin rgba(31,42,68,.18);position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#ffd9a8 0%,#f7b98a 45%,#c98a62 100%);
+  animation:slideIn .6s cubic-bezier(.2,.8,.2,1) .1s 1 both}
+.photo .board{position:absolute;left:18%;top:14%;width:64%;height:72%;background:#2b3550;border-radius:1.6vmin;box-shadow:0 1vmin 2.4vmin rgba(0,0,0,.25)}
+.photo .board i{position:absolute;left:12%;height:2.2vmin;border-radius:1vmin;background:#f6f1e7;opacity:.85}
+.photo .board i:nth-child(1){top:14%;width:50%;background:#ffb703}
+.photo .board i:nth-child(2){top:32%;width:70%}
+.photo .board i:nth-child(3){top:46%;width:62%}
+.photo .board i:nth-child(4){top:60%;width:68%}
+.photo .board i:nth-child(5){top:74%;width:40%}
+.photo .sun{position:absolute;right:8%;top:7%;width:12vmin;height:12vmin;border-radius:50%;background:radial-gradient(#fff6d6,#ffd166)}
+.photo .floor{position:absolute;left:0;right:0;bottom:0;height:16%;background:linear-gradient(180deg,#8a5a3c,#6b4430)}
+.text{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
+.tag{display:inline-block;padding:.9vmin 3vmin;border-radius:5vmin;background:#ff5a36;color:#fff;font-size:4vmin;font-weight:700;
+  animation:rise .3s ease-out .5s 1 both}
+h1{margin:2vmin 0 0;font-size:10vmin;font-weight:900;line-height:1.1;white-space:nowrap;
+  animation:rise .45s cubic-bezier(.2,.8,.2,1) .7s 1 both}
+.bar{height:1.2vmin;width:18vmin;margin:1.6vmin 0 3.4vmin;border-radius:1vmin;background:#1f2a44;transform-origin:left center;
+  animation:grow .4s ease-out .9s 1 both}
+.line{display:flex;align-items:center;gap:2vmin;font-size:4.2vmin;font-weight:600;white-space:nowrap;margin-bottom:2.2vmin;
+  animation:rise .4s ease-out 1.1s 1 both}
+.line:nth-of-type(2){animation-delay:1.4s}
+.line:nth-of-type(3){animation-delay:1.7s}
+.line b{flex:0 0 auto;width:5.6vmin;height:5.6vmin;border-radius:50%;background:#5b8cff;color:#fff;font-size:3.6vmin;display:flex;align-items:center;justify-content:center}
+.line:nth-of-type(3) b{animation:pop .5s ease-out 1.8s 1 both}
+.src{margin-top:.6vmin;font-size:2.6vmin;color:#8b8b8b;animation:rise .4s ease-out 2s 1 both}
+@keyframes slideIn{from{transform:translateX(-130%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes rise{from{transform:translateY(4vmin);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.55)}100%{transform:scale(1)}}
+@media (max-aspect-ratio:1/1){
+  .stage{flex-direction:column;gap:3vmin;padding:5vmin}
+  .photo{flex:0 0 38%;width:100%;height:auto}
+  .text{flex:1 1 auto;width:100%;justify-content:flex-start}
+  h1{font-size:11vmin}
+}
+</style>
+<div class="stage">
+  <div class="photo"><div class="sun"></div><div class="board"><i></i><i></i><i></i><i></i><i></i></div><div class="floor"></div></div>
+  <div class="text">
+    <span class="tag">사례</span>
+    <h1>메뉴판 정리</h1>
+    <div class="bar"></div>
+    <div class="line"><b>1</b><span>메뉴 사진을 찍으면</span></div>
+    <div class="line"><b>2</b><span>AI가 이름·가격을 표로</span></div>
+    <div class="line"><b>3</b><span>손님 안내문까지 한 번에</span></div>
+    <div class="src">이미지: AI 생성</div>
+  </div>
+</div>
+</html>

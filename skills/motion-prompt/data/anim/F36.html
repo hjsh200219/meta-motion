@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F36 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+@property --m{syntax:"<integer>";inherits:true;initial-value:0}
+@property --s{syntax:"<integer>";inherits:true;initial-value:0}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#5b7fa6 0%,#9db8c9 45%,#3c4a3f 100%)}
+.hill{position:absolute;left:-10vmin;right:-10vmin;bottom:0;height:38%;background:linear-gradient(180deg,#52705a,#2a3a30);border-radius:50% 50% 0 0/80% 80% 0 0}
+.hill.b{left:30%;right:-40vmin;height:48%;background:linear-gradient(180deg,#3f5a4a,#1f2c25);opacity:.9}
+.sun{position:absolute;left:22%;top:18%;width:14vmin;height:14vmin;border-radius:50%;background:radial-gradient(circle,#fff6d0,#f6d98a 60%,rgba(246,217,138,0) 72%)}
+.cap{position:absolute;left:6vmin;bottom:6vmin;width:34vmin;height:3vmin;border-radius:2vmin;background:rgba(255,255,255,.25)}
+.hud{position:absolute;top:4vmin;right:4vmin;display:flex;flex-direction:column;align-items:flex-end;gap:1.6vmin}
+.row{display:flex;align-items:stretch;gap:1.4vmin}
+.badge{display:flex;align-items:center;justify-content:center;gap:1vmin;padding:0 2.4vmin;min-height:8.4vmin;border-radius:2vmin;background:#ff4d6d;color:#fff;font-weight:800;font-size:4.6vmin;white-space:nowrap;transform-origin:right top;animation:pop .2s 0s 1 both ease-out}
+.panel{display:flex;align-items:center;gap:1.4vmin;padding:0 2.4vmin;min-height:8.4vmin;border-radius:2vmin;background:rgba(14,18,30,.72);color:#fff;transform-origin:right top;animation:pop .2s .15s 1 both ease-out}
+.panel small{font-size:2.6vmin;opacity:.75;font-weight:600}
+.num{font-size:4.8vmin;font-weight:800;font-variant-numeric:tabular-nums;min-width:19vmin;text-align:right;white-space:nowrap;counter-reset:m var(--m) s var(--s);animation:cm 2.6s .3s 1 both linear,cs 2.6s .3s 1 both linear}
+.num::after{content:counter(m) "분 " counter(s,decimal-leading-zero) "초"}
+.track{width:100%;height:1vmin;border-radius:1vmin;background:rgba(255,255,255,.25);overflow:hidden;animation:fade .2s .15s 1 both}
+.fill{width:100%;height:100%;background:#ff4d6d;transform-origin:left center;animation:grow 2.6s .3s 1 both linear}
+.chip{padding:.8vmin 2.4vmin;border-radius:5vmin;background:#22c55e;color:#fff;font-weight:800;font-size:3.8vmin;white-space:nowrap;transform-origin:center;animation:chip .3s 2.9s 1 both}
+@keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes cm{0%,37.4%{--m:0}37.5%,74.9%{--m:1}75%,100%{--m:2}}
+@keyframes cs{0%{--s:0}37.4%{--s:59}37.5%{--s:0}74.9%{--s:59}75%{--s:0}100%{--s:40}}
+@keyframes chip{0%{opacity:0;transform:scale(.3)}60%{opacity:1;transform:scale(1.25)}100%{opacity:1;transform:scale(1)}}
+</style>
+<div class="stage">
+  <div class="sun"></div>
+  <div class="hill b"></div>
+  <div class="hill"></div>
+  <div class="cap"></div>
+  <div class="hud">
+    <div class="row">
+      <div class="badge">▶▶ ×8</div>
+      <div class="panel"><small>실제</small><span class="num"></span></div>
+    </div>
+    <div class="track"><div class="fill"></div></div>
+    <div class="chip">완료 ✓</div>
+  </div>
+</div>
+</html>

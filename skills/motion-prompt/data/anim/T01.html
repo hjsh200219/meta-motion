@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T01 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070D;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:100vmin;background:radial-gradient(ellipse at 50% 50%,#0a1020 0%,#05070D 70%)}
+.cloud{width:100%;height:100%;display:flex;align-items:center;justify-content:center;transform-style:preserve-3d;animation:spin 6s linear 0s 1 both}
+.box{--W:min(66vw,110vmin);--H:calc(var(--W)*.3);position:relative;width:var(--W);height:var(--H);transform-style:preserve-3d}
+@keyframes spin{
+0%{transform:rotateY(0deg);animation-timing-function:ease-in-out}
+50%{transform:rotateY(15deg);animation-timing-function:ease-in-out}
+100%{transform:rotateY(0deg)}}
+
+.box i{position:absolute;left:0;top:0;width:1.3vmin;height:1.3vmin;margin:-.65vmin 0 0 -.65vmin;border-radius:50%;
+ --ax:calc(var(--W)/2 + var(--sx)*1vw);--ay:calc(var(--H)/2 + var(--sy)*1vh);--az:calc(var(--sz)*1vmin);
+ --bx:calc(var(--W)/2 - var(--sx)*1vw);--by:calc(var(--H)/2 - var(--sy)*1vh);--bz:calc(var(--sz)*-1vmin);
+ --tX:calc(var(--tx)*var(--W));--tY:calc(var(--ty)*var(--H));
+ background:color-mix(in srgb,#4FD6FF calc((1 - var(--tx))*100%),#FFB45A);
+ box-shadow:0 0 1.6vmin color-mix(in srgb,#4FD6FF calc((1 - var(--tx))*100%),#FFB45A);
+ mix-blend-mode:screen;animation:p 6s linear 0s 1 both}
+@keyframes p{
+0%{transform:translate3d(var(--ax),var(--ay),var(--az));opacity:.65;animation-timing-function:cubic-bezier(.45,0,.2,1)}
+36.67%{transform:translate3d(var(--tX),var(--tY),0);opacity:1;animation-timing-function:ease-in-out}
+45%{transform:translate3d(var(--tX),var(--tY),calc(var(--az)*.08));opacity:.7;animation-timing-function:ease-in-out}
+55%{transform:translate3d(var(--tX),var(--tY),calc(var(--az)*-.08));opacity:1;animation-timing-function:ease-in-out}
+65%{transform:translate3d(var(--tX),var(--tY),calc(var(--az)*.08));opacity:.75;animation-timing-function:ease-in-out}
+75%{transform:translate3d(var(--tX),var(--tY),0);opacity:1;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+100%{transform:translate3d(var(--bx),var(--by),var(--bz));opacity:.5}}
+
+/* 목표 칸: 12열 x 8행 */
+.box i:nth-child(12n+1){--tx:.04}.box i:nth-child(12n+2){--tx:.12}.box i:nth-child(12n+3){--tx:.21}
+.box i:nth-child(12n+4){--tx:.29}.box i:nth-child(12n+5){--tx:.38}.box i:nth-child(12n+6){--tx:.46}
+.box i:nth-child(12n+7){--tx:.54}.box i:nth-child(12n+8){--tx:.62}.box i:nth-child(12n+9){--tx:.71}
+.box i:nth-child(12n+10){--tx:.79}.box i:nth-child(12n+11){--tx:.88}.box i:nth-child(12n){--tx:.96}
+.box i:nth-child(-n+12){--ty:.06}
+.box i:nth-child(n+13):nth-child(-n+24){--ty:.19}
+.box i:nth-child(n+25):nth-child(-n+36){--ty:.31}
+.box i:nth-child(n+37):nth-child(-n+48){--ty:.44}
+.box i:nth-child(n+49):nth-child(-n+60){--ty:.56}
+.box i:nth-child(n+61):nth-child(-n+72){--ty:.69}
+.box i:nth-child(n+73):nth-child(-n+84){--ty:.81}
+.box i:nth-child(n+85){--ty:.94}
+/* 흩어진 자리(서로소 주기로 불규칙하게) */
+.box i:nth-child(7n+1){--sx:-48}.box i:nth-child(7n+2){--sx:-30}.box i:nth-child(7n+3){--sx:-12}
+.box i:nth-child(7n+4){--sx:8}.box i:nth-child(7n+5){--sx:24}.box i:nth-child(7n+6){--sx:38}.box i:nth-child(7n){--sx:49}
+.box i:nth-child(11n+1){--sy:-46}.box i:nth-child(11n+2){--sy:30}.box i:nth-child(11n+3){--sy:-20}
+.box i:nth-child(11n+4){--sy:44}.box i:nth-child(11n+5){--sy:-6}.box i:nth-child(11n+6){--sy:18}
+.box i:nth-child(11n+7){--sy:-38}.box i:nth-child(11n+8){--sy:8}.box i:nth-child(11n+9){--sy:36}
+.box i:nth-child(11n+10){--sy:-28}.box i:nth-child(11n){--sy:48}
+.box i:nth-child(5n+1){--sz:-40}.box i:nth-child(5n+2){--sz:20}.box i:nth-child(5n+3){--sz:-18}
+.box i:nth-child(5n+4){--sz:36}.box i:nth-child(5n){--sz:-4}
+
+/* 로고 자리(대체 그림: 파일 이름 표시) */
+.logo{position:absolute;inset:0;box-sizing:border-box;border:.9vmin solid transparent;border-radius:3vmin;
+ background:linear-gradient(#070b16,#070b16) padding-box,linear-gradient(90deg,#4FD6FF,#FFB45A) border-box;
+ display:flex;align-items:center;justify-content:center;opacity:0;animation:logo 6s linear 0s 1 both}
+.logo span{font-size:calc(var(--W)*.13);font-weight:800;letter-spacing:.02em;
+ background:linear-gradient(90deg,#4FD6FF,#FFB45A);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes logo{
+0%{opacity:0;filter:brightness(1)}
+31.67%{opacity:0;filter:brightness(1)}
+36.67%{opacity:1;filter:brightness(3) drop-shadow(0 0 5vmin #fff);animation-timing-function:ease-out}
+50%{opacity:1;filter:brightness(1) drop-shadow(0 0 1vmin #4FD6FF)}
+75%{opacity:1;filter:brightness(1) drop-shadow(0 0 1vmin #4FD6FF);animation-timing-function:ease-in}
+88%{opacity:0;filter:brightness(1.4) blur(.8vmin)}
+100%{opacity:0}}
+
+/* 번쩍임 */
+.flash{position:absolute;inset:-40% -25%;border-radius:50%;pointer-events:none;mix-blend-mode:screen;
+ background:radial-gradient(closest-side,rgba(255,255,255,.85),rgba(79,214,255,.35) 45%,rgba(255,180,90,.2) 70%,transparent);
+ opacity:0;animation:flash 6s linear 0s 1 both}
+@keyframes flash{
+0%{opacity:0}
+34%{opacity:0;animation-timing-function:ease-out}
+36.67%{opacity:.9;animation-timing-function:ease-out}
+48%{opacity:0}
+100%{opacity:0}}
+</style>
+<div class="stage"><div class="cloud"><div class="box">
+<div class="flash"></div>
+<div class="logo"><span>logo.png</span></div>
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+<i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+</div></div></div>
+</html>

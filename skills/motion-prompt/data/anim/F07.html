@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F07 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#fff;background:linear-gradient(135deg,#0f1a33 0%,#1a2a52 100%)}
+.stage{display:flex;flex-direction:column;align-items:center;gap:9vmin}
+h1{margin:0;font-size:9vmin;font-weight:900;letter-spacing:-0.02em;text-align:center;word-break:keep-all;animation:drop 0.5s cubic-bezier(.2,.8,.3,1) 0.05s 1 both}
+@keyframes drop{0%{opacity:0;transform:translateY(-14vmin)}100%{opacity:1;transform:translateY(0)}}
+.row{display:grid;grid-template-columns:26vmin 8vmin 26vmin 8vmin 26vmin;align-items:start}
+.step{display:flex;flex-direction:column;align-items:center;text-align:center}
+.c{width:18vmin;height:18vmin;border-radius:50%;background:#fff;color:#14213d;font-size:10vmin;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 1.5vmin 3vmin rgba(0,0,0,.35)}
+.n{margin-top:2.5vmin;font-size:5vmin;font-weight:900;word-break:keep-all}
+.d{margin-top:1vmin;font-size:3.4vmin;line-height:1.35;color:#b9c4e0;word-break:keep-all}
+.s1{animation:pop 0.5s ease-out 0.4s 1 both}
+.s2{animation:pop 0.45s ease-out 0.95s 1 both}
+.s3{animation:pop3 0.5s ease-out 1.5s 1 both}
+.s3 .c{background:#ff6b3d;color:#fff}
+@keyframes pop{0%{opacity:0;transform:scale(0.2)}60%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes pop3{0%{opacity:0;transform:scale(0.1)}35%{opacity:1;transform:scale(1.3)}55%{transform:scale(0.9)}75%{transform:scale(1.08)}90%{transform:scale(0.98)}100%{opacity:1;transform:scale(1)}}
+.a{height:18vmin;display:flex;align-items:center}
+.bar{position:relative;width:8vmin;height:1.8vmin;background:#ff6b3d;border-radius:1vmin;transform-origin:left center}
+.bar::after{content:"";position:absolute;right:-1.2vmin;top:50%;margin-top:-2.4vmin;border-left:3.2vmin solid #ff6b3d;border-top:2.4vmin solid transparent;border-bottom:2.4vmin solid transparent}
+.a1 .bar{animation:grow 0.35s ease-out 0.75s 1 both}
+.a2 .bar{animation:grow 0.35s ease-out 1.3s 1 both}
+@keyframes grow{0%{opacity:0;transform:scaleX(0)}100%{opacity:1;transform:scaleX(1)}}
+</style>
+<div class="stage">
+  <h1>자동화의 3단계</h1>
+  <div class="row">
+    <div class="step s1"><div class="c">1</div><div class="n">모으기</div><div class="d">흩어진 문의를 한곳에</div></div>
+    <div class="a a1"><div class="bar"></div></div>
+    <div class="step s2"><div class="c">2</div><div class="n">정리하기</div><div class="d">AI가 종류별로 분류</div></div>
+    <div class="a a2"><div class="bar"></div></div>
+    <div class="step s3"><div class="c">3</div><div class="n">보내기</div><div class="d">사람이 확인 후 발송</div></div>
+  </div>
+</div>
+</html>

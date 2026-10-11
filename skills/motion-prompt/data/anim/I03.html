@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 I03 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 35%,#5B4636 0%,#2A1F18 100%);font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.slot{position:absolute;top:50%;width:30vw;margin-top:-17.7vw;margin-left:-15vw}
+.s1{left:30vw;animation:bump 0.2s ease-out 2s 1 both}
+.s2{left:50vw;animation:bump 0.2s ease-out 2s 1 both}
+.s3{left:70vw}
+.p{position:relative;width:100%}
+.s1 .p{animation:drop1 0.5s cubic-bezier(.4,0,.8,.6) 0.3s 1 both}
+.s2 .p{animation:drop2 0.5s cubic-bezier(.4,0,.8,.6) 1s 1 both}
+.s3 .p{animation:drop3 0.5s cubic-bezier(.4,0,.8,.6) 1.7s 1 both}
+.card{box-sizing:border-box;width:100%;padding:1.6vw 1.6vw 0;background:#FDFCF8;border-radius:0.4vw;box-shadow:0 1.6vw 3vw rgba(0,0,0,.55),0 0.4vw 0.8vw rgba(0,0,0,.4)}
+.ph{position:relative;width:100%;aspect-ratio:1;overflow:hidden}
+.cap{height:7vw;display:flex;align-items:center;justify-content:center;color:#3B2A1E;font-size:min(4.5vmin,2.9vw);font-style:italic;font-weight:600;white-space:nowrap}
+.ph1{background:linear-gradient(#8EC5E8 0%,#F6E2B8 62%,#F6E2B8 100%)}
+.ph1::before{content:"";position:absolute;left:-10%;right:-10%;bottom:0;height:45%;background:#5E8B5A;clip-path:polygon(0 100%,25% 25%,45% 70%,70% 10%,100% 100%)}
+.ph1::after{content:"";position:absolute;right:15%;top:12%;width:18%;aspect-ratio:1;border-radius:50%;background:#FFE08A}
+.ph2{background:linear-gradient(160deg,#F4A261 0%,#E76F51 55%,#6D4C6F 100%)}
+.ph2::before{content:"";position:absolute;left:8%;bottom:0;width:22%;height:55%;background:#3B2A3F;box-shadow:7vw 4vw 0 0 #4A3550,14vw 8vw 0 0 #2F2233}
+.ph2::after{content:"";position:absolute;left:55%;top:15%;width:20%;aspect-ratio:1;border-radius:50%;background:#FFD9A0}
+.ph3{background:linear-gradient(#BFE3D0 0%,#7FB8A4 55%,#2F6F6A 100%)}
+.ph3::before{content:"";position:absolute;left:0;right:0;bottom:0;height:40%;background:#1F4F52;clip-path:polygon(0 40%,20% 10%,40% 45%,60% 5%,80% 40%,100% 15%,100% 100%,0 100%)}
+.ph3::after{content:"";position:absolute;left:18%;top:20%;width:30%;height:14%;border-radius:10vw;background:rgba(255,255,255,.8)}
+.ring{position:absolute;left:0;right:0;top:0;bottom:0;border-radius:0.4vw;box-shadow:0 0 0 0 rgba(0,0,0,.6);opacity:0;animation:ring 0.2s ease-out 2s 1 both;pointer-events:none}
+@keyframes drop1{0%{transform:translateY(-110vh) rotate(-26deg) scale(1.15)}65%{transform:translateY(2.5vw) rotate(-5deg) scale(1)}100%{transform:translateY(0) rotate(-9deg) scale(1)}}
+@keyframes drop2{0%{transform:translateY(-110vh) rotate(22deg) scale(1.15)}65%{transform:translateY(2.5vw) rotate(1deg) scale(1)}100%{transform:translateY(0) rotate(5deg) scale(1)}}
+@keyframes drop3{0%{transform:translateY(-110vh) rotate(-20deg) scale(1.15)}65%{transform:translateY(2.5vw) rotate(1deg) scale(1)}100%{transform:translateY(0) rotate(-3deg) scale(1)}}
+@keyframes bump{0%{transform:translateY(0)}50%{transform:translateY(-1.2vw)}100%{transform:translateY(0)}}
+@keyframes ring{0%{opacity:.8;box-shadow:0 0 0 0 rgba(0,0,0,.6)}100%{opacity:0;box-shadow:0 1vw 5vw 2.5vw rgba(0,0,0,.6)}}
+</style>
+<div class="stage">
+  <div class="slot s1"><div class="p"><div class="card"><div class="ph ph1"></div><div class="cap">2026 봄 워크숍</div></div></div></div>
+  <div class="slot s2"><div class="p"><div class="card"><div class="ph ph2"></div><div class="cap">2026 봄 워크숍</div></div></div></div>
+  <div class="slot s3"><div class="p"><div class="card"><div class="ph ph3"></div><div class="cap">2026 봄 워크숍</div></div><div class="ring"></div></div></div>
+</div>
+</html>

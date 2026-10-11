@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 I02 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1633;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.photo{position:absolute;inset:-6%;background:linear-gradient(180deg,#5aa4e6 0%,#9fd0f2 45%,#f6d7a8 72%,#e9a56b 100%);transform-origin:50% 55%;
+  animation:zoom 5s linear 0s 1 both,soften 1.2s ease-in-out .4s 1 both}
+.sun{position:absolute;left:68%;top:46%;width:14vmin;height:14vmin;border-radius:50%;background:radial-gradient(circle,#fff6d6 0%,#ffe29a 55%,rgba(255,226,154,0) 72%)}
+.mtn{position:absolute;bottom:22%;left:0;width:100%;height:34%}
+.m1{background:linear-gradient(180deg,#6d86b8,#4c6395);clip-path:polygon(0 100%,0 60%,18% 25%,34% 55%,52% 10%,72% 50%,88% 28%,100% 55%,100% 100%)}
+.m2{bottom:16%;height:28%;background:linear-gradient(180deg,#3f5a7a,#2c4260);clip-path:polygon(0 100%,0 50%,22% 20%,45% 60%,66% 25%,100% 62%,100% 100%)}
+.city{position:absolute;left:0;bottom:0;width:100%;height:34%;display:flex;align-items:flex-end;justify-content:space-around;background:linear-gradient(180deg,#22304a,#141c2e)}
+.city i{display:block;width:8%;background:linear-gradient(180deg,#2b3a58,#18233a);box-shadow:inset 0 0 0 .3vmin rgba(255,214,140,.15)}
+.city i:nth-child(1){height:70%}.city i:nth-child(2){height:95%}.city i:nth-child(3){height:55%}.city i:nth-child(4){height:110%}
+.city i:nth-child(5){height:80%}.city i:nth-child(6){height:65%}.city i:nth-child(7){height:100%}
+.shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,24,64,.08) 0%,rgba(10,24,64,.35) 50%,rgba(10,24,64,.7) 100%);
+  animation:fade 1.2s ease-in-out .4s 1 both}
+.text{position:relative;display:flex;flex-direction:column;align-items:center;gap:2.5vmin;overflow:hidden;padding:4vmin 8vmin;text-align:center}
+.sub{order:1;font-size:5vmin;font-weight:600;letter-spacing:.3em;margin-right:-.3em;color:#FFD27A;text-shadow:0 .4vmin 1.6vmin rgba(0,0,0,.45);
+  animation:soft 0.9s ease-out 1.5s 1 both}
+.title{order:2;font-size:10vmin;font-weight:900;color:#fff;line-height:1.1;text-shadow:0 .8vmin 2.4vmin rgba(5,12,40,.6);
+  animation:rise 1s cubic-bezier(.2,.7,.2,1) 1.2s 1 both}
+.shine{position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(100deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.75) 50%,rgba(255,255,255,0) 100%);
+  mix-blend-mode:overlay;animation:sweep .8s ease-in-out 2.4s 1 both}
+@keyframes zoom{from{transform:scale(1.04)}to{transform:scale(1.08)}}
+@keyframes soften{from{filter:blur(0) brightness(1)}to{filter:blur(1.2vmin) brightness(.75)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(4vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes soft{from{opacity:0;filter:blur(1vmin)}to{opacity:1;filter:blur(0)}}
+@keyframes sweep{0%{opacity:0;transform:translateX(-120%)}15%{opacity:1}85%{opacity:1}100%{opacity:0;transform:translateX(420%)}}
+</style>
+<div class="stage">
+  <div class="photo">
+    <div class="sun"></div>
+    <div class="mtn m1"></div>
+    <div class="mtn m2"></div>
+    <div class="city"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="shade"></div>
+  <div class="text">
+    <div class="sub">2026 가을 특강</div>
+    <div class="title">오늘의 주제</div>
+    <div class="shine"></div>
+  </div>
+</div>
+</html>

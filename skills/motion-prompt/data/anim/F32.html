@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F32 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;display:flex;align-items:flex-end;justify-content:center;
+  background:linear-gradient(180deg,#8fa6b8 0%,#6f879b 45%,#4d6275 100%);overflow:hidden}
+/* 촬영 화면 예시: 강의실 실루엣 */
+.wall{position:absolute;left:0;right:0;top:0;height:55%;background:linear-gradient(180deg,#a9bccb,#869cae)}
+.board{position:absolute;left:18%;right:18%;top:12%;height:26%;border-radius:1vmin;background:linear-gradient(135deg,#dfe8ee,#c3d0da);opacity:.75}
+.desk{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,#53493f,#3a332c)}
+.head{position:absolute;bottom:26%;width:11vmin;height:11vmin;border-radius:50%;background:#2f3a45;opacity:.7}
+.head:nth-child(4){left:14%}.head:nth-child(5){left:34%;bottom:28%}.head:nth-child(6){left:58%}.head:nth-child(7){left:80%;bottom:27%}
+.sub{position:absolute;left:50%;bottom:5vmin;width:56%;height:5vmin;transform:translateX(-50%);border-radius:1vmin;background:rgba(20,24,28,.35)}
+.slot{position:absolute;left:0;right:0;bottom:17vmin;display:flex;justify-content:center}
+.pop{opacity:0;animation:pop .2s 0s 1 both}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
+.pill{display:flex;align-items:center;gap:2.4vmin;padding:2vmin 4.4vmin 2vmin 3vmin;border-radius:10vmin;
+  background:rgba(250,246,238,.86);box-shadow:0 .8vmin 3vmin rgba(20,30,40,.22);
+  animation:breath .3s .2s 1 both}
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.ico{width:7vmin;height:7vmin;display:block;animation:beat .3s .2s 1 both}
+@keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.ico *{fill:none;stroke:#2b2f36;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.txt{font-size:5vmin;font-weight:600;color:#2b2f36;letter-spacing:.02em;white-space:nowrap}
+.song{position:absolute;left:3vmin;bottom:3vmin;display:flex;align-items:center;gap:1.6vmin;padding:1.2vmin 2.4vmin;
+  border-radius:1.2vmin;background:#3b3a44;opacity:0;animation:songin .4s .3s 1 both}
+@keyframes songin{0%{opacity:0;transform:translateY(1vmin)}100%{opacity:1;transform:translateY(0)}}
+.song b{font-size:4vmin;color:#f2b84b;font-weight:400}
+.song span{font-size:3.2vmin;color:#fff;white-space:nowrap}
+</style>
+<div class="stage">
+  <div class="wall"></div><div class="board"></div><div class="desk"></div>
+  <div class="head"></div><div class="head"></div><div class="head"></div><div class="head"></div>
+  <div class="sub"></div>
+  <div class="slot">
+    <div class="pop">
+      <div class="pill">
+        <svg class="ico" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13"/><path d="M9.5 12.5q2-2.6 4 0M18.5 12.5q2-2.6 4 0"/><path d="M8.5 18.5h15q-1 6.5-7.5 6.5t-7.5-6.5z"/></svg>
+        <span class="txt">[수강생들 웃음]</span>
+      </div>
+    </div>
+  </div>
+  <div class="song"><b>♪</b><span>잔잔한 피아노 · 무료 음원</span></div>
+</div>
+</html>

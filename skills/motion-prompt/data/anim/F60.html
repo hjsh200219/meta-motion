@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F60 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+*{box-sizing:border-box}
+.stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,#d9dfeb,#bcc6d8 60%,#a9b5cb);
+  font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.rec{position:relative;width:88vmin;height:58vmin;background:#fff;border-radius:2vmin;box-shadow:0 2vmin 5vmin rgba(30,40,70,.28);overflow:hidden}
+.bar{height:6vmin;background:#eef1f7;display:flex;align-items:center;padding:0 2.5vmin;gap:1vmin}
+.bar i{width:1.6vmin;height:1.6vmin;border-radius:50%;background:#c3cada}
+.head,.row{display:flex;align-items:center;height:8.4vmin;padding:0 2.5vmin;font-size:3.4vmin}
+.head{height:6vmin;color:#6b7590;font-size:2.8vmin;font-weight:700;border-bottom:.3vmin solid #e2e6ef}
+.row{border-bottom:.3vmin solid #eef0f5;color:#2a3350}
+.c1{width:30%;display:flex;align-items:center;gap:1.4vmin}
+.c2{width:40%}.c3{width:30%}
+.av{width:4.4vmin;height:4.4vmin;border-radius:50%;background:linear-gradient(135deg,#7aa2e8,#9b8ae0)}
+.row:nth-child(even) .av{background:linear-gradient(135deg,#f0a58a,#e87a9b)}
+.row .c2,.row .c3{color:#55607f}
+.mosaic{position:absolute;top:12.6vmin;bottom:1.8vmin;border-radius:1.2vmin;overflow:hidden;
+  background:
+    repeating-conic-gradient(#5d6785 0 25%,#8b94ad 0 50%) 0 0/2.2vmin 2.2vmin;
+  -webkit-backdrop-filter:blur(1vmin);backdrop-filter:blur(1vmin)}
+.mosaic::after{content:"";position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.18) 0 .25vmin,transparent .25vmin 2.2vmin),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.18) 0 .25vmin,transparent .25vmin 2.2vmin),
+    linear-gradient(160deg,rgba(120,130,170,.55),rgba(70,80,120,.55))}
+.m1{left:30.5%;width:38%}
+.m2{left:71%;width:27%}
+.tag{position:absolute;z-index:2;top:1.2vmin;left:1.2vmin;padding:.7vmin 1.6vmin;border-radius:5vmin;
+  background:#1f2740;color:#fff;font-size:2.6vmin;font-weight:700;white-space:nowrap}
+.chip{position:absolute;left:3vmin;bottom:3vmin;display:flex;align-items:center;gap:1.4vmin;
+  padding:1.4vmin 2.6vmin 1.4vmin 2vmin;border-radius:6vmin;background:#1f2740;color:#fff;
+  font-size:3vmin;font-weight:600;box-shadow:0 1vmin 3vmin rgba(20,25,50,.35);max-width:84vmin;
+  animation:chipIn .3s ease-out 0s 1 both}
+.lock{position:relative;width:2.6vmin;height:2vmin;background:#fff;border-radius:.5vmin;margin-top:1.2vmin;flex:none}
+.lock::before{content:"";position:absolute;left:.45vmin;top:-1.3vmin;width:1.7vmin;height:1.6vmin;border:.35vmin solid #fff;border-bottom:none;border-radius:1.2vmin 1.2vmin 0 0}
+@keyframes chipIn{from{opacity:0;transform:translateY(1.5vmin)}to{opacity:1;transform:none}}
+</style>
+<div class="stage">
+  <div class="rec">
+    <div class="bar"><i></i><i></i><i></i></div>
+    <div class="head"><div class="c1">이름</div><div class="c2">이메일</div><div class="c3">전화</div></div>
+    <div class="row"><div class="c1"><span class="av"></span>김민수</div><div class="c2">minsu.kim@example.com</div><div class="c3">010-1234-5678</div></div>
+    <div class="row"><div class="c1"><span class="av"></span>이서연</div><div class="c2">seoyeon@example.com</div><div class="c3">010-2345-6789</div></div>
+    <div class="row"><div class="c1"><span class="av"></span>박지훈</div><div class="c2">jihoon.p@example.com</div><div class="c3">010-3456-7890</div></div>
+    <div class="row"><div class="c1"><span class="av"></span>최유나</div><div class="c2">yuna.choi@example.com</div><div class="c3">010-4567-8901</div></div>
+    <div class="mosaic m1"><span class="tag">이메일 가림</span></div>
+    <div class="mosaic m2"><span class="tag">전화 가림</span></div>
+  </div>
+  <div class="chip"><span class="lock"></span><span>개인정보 보호를 위해 일부를 가렸습니다</span></div>
+</div>
+</html>

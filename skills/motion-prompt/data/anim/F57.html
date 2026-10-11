@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F57 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#141a26;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#fff}
+.card{box-sizing:border-box;width:100%;height:100%;padding:8vmin 8vmin 7vmin;display:flex;flex-direction:column;justify-content:space-between;
+  background:radial-gradient(120% 90% at 0% 0%,#1d2638 0%,#141a26 60%,#0f141e 100%)}
+h1{margin:0;font-size:10vmin;font-weight:900;line-height:1.15;letter-spacing:-.02em;
+  animation:rise .4s cubic-bezier(.2,.8,.2,1) 0s 1 both}
+.bar{width:16vmin;height:1.2vmin;border-radius:1vmin;background:#ffc23d;margin-top:2.4vmin;transform-origin:left center;
+  animation:grow .3s ease-out .25s 1 both}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(30vmin,1fr));gap:4vmin 4vmin;margin:4vmin 0}
+.col{animation:up .5s cubic-bezier(.2,.8,.2,1) 1 both}
+.col:nth-child(1){animation-delay:.4s}
+.col:nth-child(2){animation-delay:.6s}
+.col:nth-child(3){animation-delay:.8s}
+.chip{display:inline-block;background:#ffc23d;color:#141a26;font-weight:800;font-size:3.4vmin;padding:.8vmin 2.6vmin;border-radius:5vmin;margin-bottom:2vmin}
+.col p{margin:0 0 1vmin;font-size:3.8vmin;line-height:1.4;color:rgba(255,255,255,.78)}
+.line{height:.3vmin;background:rgba(255,255,255,.35);transform-origin:left center;animation:grow .3s ease-out 1s 1 both}
+.thanks{margin-top:3vmin}
+.lab{font-size:4vmin;font-weight:800;color:#ffc23d;animation:up .6s cubic-bezier(.2,.8,.2,1) 1.1s 1 both,glow .5s ease-in-out 1.5s 1 both}
+.big{font-size:6vmin;font-weight:900;line-height:1.3;margin-top:1.2vmin;animation:up .5s cubic-bezier(.2,.8,.2,1) 1.2s 1 both}
+.note{font-size:3.4vmin;color:#8d95a5;margin-top:2vmin;animation:fade .4s ease-out 1.3s 1 both}
+@keyframes rise{from{opacity:0;transform:translateY(-3vmin)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes up{from{opacity:0;transform:translateY(6vmin)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes glow{0%,100%{text-shadow:0 0 0 rgba(255,194,61,0)}50%{text-shadow:0 0 3vmin rgba(255,194,61,.95),0 0 6vmin rgba(255,194,61,.5)}}
+</style>
+<div class="card">
+  <div>
+    <h1>이 영상에 쓴 것들</h1>
+    <div class="bar"></div>
+  </div>
+  <div class="cols">
+    <div class="col"><span class="chip">자료 출처</span><p>○○ 통계 2025</p><p>현장 사진: 직접 촬영</p></div>
+    <div class="col"><span class="chip">AI 도구</span><p>이미지 생성 도구</p><p>음성 합성 도구</p></div>
+    <div class="col"><span class="chip">음악·효과음</span><p>무료 음원 «○○»</p></div>
+  </div>
+  <div>
+    <div class="line"></div>
+    <div class="thanks">
+      <div class="lab">도움 주신 분</div>
+      <div class="big">촬영 협조 ○○센터 · 참여 ○○반 수강생 여러분</div>
+      <div class="note">링크는 설명란 · 2026.10.4 확인</div>
+    </div>
+  </div>
+</div>
+</html>

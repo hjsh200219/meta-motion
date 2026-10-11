@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F35 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(10,20,30,.55) 100%),
+    linear-gradient(160deg,#3a5a78 0%,#7d94a8 45%,#c9b79c 100%)}
+.floor{position:absolute;left:0;right:0;bottom:0;height:32%;
+  background:linear-gradient(180deg,#8d7b66,#5a4a3c)}
+.win{position:absolute;top:30%;width:22vmin;height:26vmin;border-radius:1vmin;
+  background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,.12))}
+.win:nth-of-type(1){left:10%}
+.win:nth-of-type(2){left:38%}
+.win:nth-of-type(3){left:66%}
+.desk{position:absolute;bottom:22%;left:12%;width:76%;height:7vmin;border-radius:1vmin;
+  background:linear-gradient(180deg,#2f3a45,#1f272f)}
+
+.tag{position:absolute;top:4vmin;right:4vmin;
+  display:flex;flex-direction:column;gap:1.4vmin;
+  padding:2.4vmin 3.4vmin 2.4vmin 4vmin;border-radius:2.4vmin;
+  background:rgba(22,32,44,.72);
+  box-shadow:0 1.2vmin 3vmin rgba(0,0,0,.55);
+  overflow:hidden;
+  animation:slideIn .3s cubic-bezier(.2,.8,.2,1) 0s 1 both}
+.tag::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1.1vmin;background:#ffb020}
+.row{display:flex;align-items:center;gap:2.4vmin}
+.clock{position:relative;width:8vmin;height:8vmin;border-radius:50%;background:#fff;flex:none}
+.hand{position:absolute;left:50%;top:50%;width:.7vmin;border-radius:1vmin;transform-origin:50% 100%}
+.long{height:3.2vmin;margin-left:-.35vmin;margin-top:-3.2vmin;background:#ffb020;
+  animation:spin .6s cubic-bezier(.45,0,.2,1) .3s 1 both}
+.short{height:2.2vmin;margin-left:-.35vmin;margin-top:-2.2vmin;background:#2a3440;transform:rotate(120deg)}
+.dot{position:absolute;left:50%;top:50%;width:1.4vmin;height:1.4vmin;margin:-.7vmin 0 0 -.7vmin;
+  border-radius:50%;background:#ffb020;
+  animation:pop .3s ease-out .9s 1 both}
+.big{font-size:7.5vmin;font-weight:900;color:#fff;white-space:nowrap;letter-spacing:-.02em}
+.sub{font-size:4.2vmin;color:rgba(255,255,255,.62);white-space:nowrap;
+  animation:fadeIn .3s ease-out .9s 1 both}
+
+@keyframes slideIn{from{transform:translateX(120vmin);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.9)}100%{transform:scale(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+</style>
+<div class="stage">
+  <div class="floor"></div>
+  <div class="win"></div><div class="win"></div><div class="win"></div>
+  <div class="desk"></div>
+  <div class="tag">
+    <div class="row">
+      <div class="clock">
+        <div class="hand short"></div>
+        <div class="hand long"></div>
+        <div class="dot"></div>
+      </div>
+      <div class="big">3시간 후</div>
+    </div>
+    <div class="sub">오후 4시 · 2층 실습실</div>
+  </div>
+</div>
+</html>

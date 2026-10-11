@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F56 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b0f17;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+.scene{position:relative;width:min(100vw,177.78vh);aspect-ratio:16/9;overflow:hidden;background:linear-gradient(135deg,#dfe7f5,#c9d6ee 60%,#b8c8e6)}
+.side{position:absolute;left:0;top:0;bottom:0;width:20%;background:linear-gradient(#cfd9ee,#bccaE6);border-right:.2vmin solid #a9b8d8}
+.row{position:absolute;left:24%;width:44%;height:7%;border-radius:1vmin;background:#f6f8fd;box-shadow:0 .3vmin .8vmin #8fa0c433}
+.row:nth-of-type(1){top:22%}.row:nth-of-type(2){top:38%}.row:nth-of-type(3){top:55%;width:50%}
+.sw{position:absolute;right:4%;top:22%;width:7%;height:56%;border-radius:5vmin;background:#9aa8c6}
+.sw::after{content:"";position:absolute;left:8%;top:12%;width:42%;height:76%;border-radius:50%;background:#fff}
+.btn{position:absolute;left:62%;top:73%;width:20%;height:9%;border-radius:1vmin;background:#6b7fae}
+.side i{position:absolute;left:12%;width:70%;height:3.5%;border-radius:1vmin;background:#a5b5d6}
+.side i:nth-child(1){top:20%}.side i:nth-child(2){top:34%}.side i:nth-child(3){top:48%}
+.pt{position:absolute;width:0;height:0}
+.ring{position:absolute;left:-4vmin;top:-4vmin;width:8vmin;height:8vmin;box-sizing:border-box;border:.9vmin solid #ff5a36;border-radius:50%;animation:ring .4s var(--d) 1 both ease-out}
+@keyframes ring{0%{transform:scale(.15);opacity:1}100%{transform:scale(1.7);opacity:0}}
+.dim{position:absolute;inset:0;background:#0b1020;animation:dim .9s 1.8s 1 both linear}
+@keyframes dim{from{opacity:0}to{opacity:.5}}
+svg{position:absolute;inset:0;width:100%;height:100%}
+svg line{stroke:#fff;stroke-width:.9;stroke-linecap:round;stroke-dasharray:.1 2.2;clip-path:inset(0 100% 0 0) stroke-box;animation:draw .2s var(--d) 1 both linear}
+@keyframes draw{from{clip-path:inset(0 100% 0 0) stroke-box}to{clip-path:inset(0 0 0 0) stroke-box}}
+.dot{position:absolute;width:5.2vmin;height:5.2vmin;margin:-2.6vmin 0 0 -2.6vmin;box-sizing:border-box;border-radius:50%;background:#ff5a36;border:.6vmin solid #fff;color:#fff;font-weight:800;font-size:3vmin;display:flex;align-items:center;justify-content:center;animation:pop .3s var(--d) 1 both cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+.panel{position:absolute;right:3%;top:5%;width:34%;box-sizing:border-box;padding:2.4vmin 2.6vmin;border-radius:1.6vmin;background:#141a2b;color:#fff;box-shadow:0 1vmin 3vmin #0008;animation:slide .7s 2.6s 1 both cubic-bezier(.2,.8,.3,1)}
+@keyframes slide{from{transform:translateX(120%)}to{transform:none}}
+.panel h4{margin:0 0 1.6vmin;font-size:2.6vmin;font-weight:600;color:#9fb0d6;letter-spacing:.1vmin}
+.it{display:flex;align-items:center;gap:1.6vmin;font-size:4vmin;font-weight:700;margin:1.1vmin 0;animation:rise .14s var(--d) 1 both ease-out}
+@keyframes rise{from{opacity:0;transform:translateX(3vmin)}to{opacity:1;transform:none}}
+.it b{flex:none;width:5vmin;height:5vmin;box-sizing:border-box;border-radius:50%;background:#ff5a36;border:.5vmin solid #fff;font-size:2.8vmin;display:flex;align-items:center;justify-content:center}
+</style>
+<div class="scene">
+  <div class="side"><i></i><i></i><i></i></div>
+  <div class="row"><div class="sw"></div></div><div class="row"></div><div class="row"></div><div class="btn"></div>
+
+  <div class="pt" style="left:22%;top:30%"><div class="ring" style="--d:.25s"></div></div>
+  <div class="pt" style="left:40%;top:45%"><div class="ring" style="--d:.6s"></div></div>
+  <div class="pt" style="left:58%;top:62%"><div class="ring" style="--d:.95s"></div></div>
+  <div class="pt" style="left:72%;top:78%"><div class="ring" style="--d:1.3s"></div></div>
+
+  <div class="dim"></div>
+  <svg viewBox="0 0 160 90" preserveAspectRatio="none">
+    <line x1="39.2" y1="23.4" x2="68" y2="36.9" style="--d:2.1s"/>
+    <line x1="68" y1="36.9" x2="96.8" y2="52.2" style="--d:2.3s"/>
+    <line x1="96.8" y1="52.2" x2="119.2" y2="66.6" style="--d:2.5s"/>
+  </svg>
+
+  <div class="dot" style="left:24.5%;top:26%;--d:.25s">1</div>
+  <div class="dot" style="left:42.5%;top:41%;--d:.6s">2</div>
+  <div class="dot" style="left:60.5%;top:58%;--d:.95s">3</div>
+  <div class="dot" style="left:74.5%;top:74%;--d:1.3s">4</div>
+
+  <div class="panel">
+    <h4>누른 순서</h4>
+    <div class="it" style="--d:2.8s"><b>1</b>설정</div>
+    <div class="it" style="--d:2.92s"><b>2</b>개인정보</div>
+    <div class="it" style="--d:3.04s"><b>3</b>끄기</div>
+    <div class="it" style="--d:3.16s"><b>4</b>저장</div>
+  </div>
+</div>
+</html>

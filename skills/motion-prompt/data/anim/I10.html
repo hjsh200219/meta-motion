@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 I10 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05070D;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+.stage{position:relative;width:min(90vw,160vh);aspect-ratio:16/9;max-height:94vh}
+.layer{position:absolute;inset:0}
+.ph{position:absolute;inset:0;background:linear-gradient(180deg,#1b2a6b 0%,#6a4a9c 42%,#ff9a6b 70%,#ffd08a 100%);overflow:hidden}
+.ph i{position:absolute;display:block}
+.sun{left:58%;top:34%;width:20%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff7d6 0%,#ffd36b 45%,rgba(255,170,90,0) 72%)}
+.m1{left:-5%;bottom:18%;width:70%;height:42%;background:linear-gradient(180deg,#3b3566,#1c1a3a);clip-path:polygon(0 100%,38% 0,62% 55%,78% 30%,100% 100%)}
+.m2{left:30%;bottom:18%;width:78%;height:34%;background:linear-gradient(180deg,#2a2a55,#12122b);clip-path:polygon(0 100%,30% 25%,52% 70%,76% 0,100% 100%)}
+.gr{left:0;right:0;bottom:0;height:22%;background:linear-gradient(180deg,#1a3b3a,#07161a)}
+.lake{left:0;right:0;bottom:0;height:12%;background:linear-gradient(90deg,#2a5a6a,#e9a56a 60%,#2a5a6a);opacity:.7}
+/* 알갱이 구름 → 점 그림 */
+.wrap{position:absolute;inset:0;transform-origin:50% 50%;
+ animation:conv 2.4s cubic-bezier(.16,.72,.2,1) .2s 1 both,fade .7s linear 2.9s 1 both,spark .5s ease-in-out 2.3s 1 both}
+.wrap.b{animation:convb 2.4s cubic-bezier(.3,.6,.2,1) .2s 1 both,fade .7s linear 2.9s 1 both,spark .5s ease-in-out 2.3s 1 both}
+.dots{position:absolute;inset:0;
+ -webkit-mask-image:radial-gradient(circle,#000 30%,transparent 36%);mask-image:radial-gradient(circle,#000 30%,transparent 36%);
+ -webkit-mask-size:1.3vmin 1.3vmin;mask-size:1.3vmin 1.3vmin;filter:saturate(1.4) brightness(1.25)}
+.b .dots{-webkit-mask-size:1.9vmin 1.9vmin;mask-size:1.9vmin 1.9vmin;-webkit-mask-position:.6vmin .6vmin;mask-position:.6vmin .6vmin}
+.sharp{animation:rise .7s ease-in-out 2.9s 1 both}
+@keyframes conv{0%{transform:scale(2.8) rotate(-10deg);opacity:.75}30%{opacity:.95}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes convb{0%{transform:scale(3.6) rotate(14deg);opacity:.6}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes spark{0%{filter:brightness(1)}50%{filter:brightness(2.4)}100%{filter:brightness(1)}}
+@keyframes fade{0%{opacity:1}100%{opacity:0}}
+@keyframes rise{0%{opacity:0}100%{opacity:1}}
+</style>
+<div class="stage">
+ <div class="layer wrap b"><div class="dots"><div class="ph"><i class="sun"></i><i class="m1"></i><i class="m2"></i><i class="lake"></i><i class="gr"></i></div></div></div>
+ <div class="layer wrap"><div class="dots"><div class="ph"><i class="sun"></i><i class="m1"></i><i class="m2"></i><i class="lake"></i><i class="gr"></i></div></div></div>
+ <div class="layer sharp"><div class="ph"><i class="sun"></i><i class="m1"></i><i class="m2"></i><i class="lake"></i><i class="gr"></i></div></div>
+</div>
+</html>

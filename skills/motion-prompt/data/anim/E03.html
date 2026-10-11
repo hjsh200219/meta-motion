@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 E03 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#1a2a5a 0%,#0e1838 45%,#050914 100%)}
+.title{position:absolute;left:6%;top:5%;margin:0;color:#fff;font-size:7.5vmin;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+.track{position:absolute;left:6%;width:88%;top:58%;height:1.2vmin;margin-top:-.6vmin;border-radius:1vmin;background:rgba(255,255,255,.13)}
+.fill{position:absolute;inset:0;border-radius:1vmin;background:linear-gradient(90deg,#FFB45A,#E8442E);box-shadow:0 0 2vmin rgba(232,68,46,.55);clip-path:inset(-3vmin 100% -3vmin 0);animation:draw 3.6s linear .1s 1 both}
+@keyframes draw{to{clip-path:inset(-3vmin 0 -3vmin 0)}}
+.sw{position:absolute;left:6%;width:88%;top:58%;height:1.2vmin;margin-top:-.6vmin;overflow:hidden;border-radius:1vmin}
+.streak{position:absolute;top:-30%;height:160%;width:14%;background:linear-gradient(90deg,transparent,#fff 60%,transparent);filter:blur(.15vmin);animation:sweep .9s ease-in 3.7s 1 both}
+@keyframes sweep{0%{transform:translateX(-100%);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(715%);opacity:0}}
+.arrow{position:absolute;left:93.6%;top:58%;margin-top:-2.2vmin;width:0;height:0;border-left:3.6vmin solid #E8442E;border-top:2.2vmin solid transparent;border-bottom:2.2vmin solid transparent;filter:drop-shadow(0 0 1vmin rgba(232,68,46,.7));animation:arr .2s ease-out 3.6s 1 both}
+@keyframes arr{0%{opacity:0;transform:translateX(-2vmin) scale(.4)}100%{opacity:1;transform:none}}
+.p{position:absolute;inset:0;pointer-events:none}
+.p:nth-of-type(1){--x:14%;--t:.43;--n:4;--r:-3deg;--g:linear-gradient(180deg,#7ec0ee,#f6d7a7)}
+.p:nth-of-type(2){--x:38%;--t:1.41;--n:3;--r:2.5deg;--g:linear-gradient(180deg,#9aa8e8,#f0b0b8)}
+.p:nth-of-type(3){--x:62%;--t:2.39;--n:2;--r:-2deg;--g:linear-gradient(180deg,#6fd0c0,#e9e6a0)}
+.p:nth-of-type(4){--x:86%;--t:3.37;--n:2;--r:3deg;--g:linear-gradient(180deg,#f3a36b,#fbe3a0)}
+.dot{position:absolute;left:var(--x);top:58%;width:3.2vmin;height:3.2vmin;margin:-1.6vmin 0 0 -1.6vmin;box-sizing:border-box;border-radius:50%;background:#fff;border:.7vmin solid #E8442E;animation:pop .35s ease-out calc(var(--t)*1s) 1 both}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.4)}100%{transform:scale(1)}}
+.ring{position:absolute;left:var(--x);top:58%;width:3.2vmin;height:3.2vmin;margin:-1.6vmin 0 0 -1.6vmin;box-sizing:border-box;border-radius:50%;border:.4vmin solid #E8442E;opacity:0;animation:ring 1.4s ease-out calc(var(--t)*1s + .25s) var(--n) both}
+@keyframes ring{0%{opacity:0;transform:scale(1)}1%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(4.2)}}
+.stem{position:absolute;left:var(--x);bottom:calc(42% + 1.6vmin);width:0;height:0;border-left:.5vmin dotted rgba(255,210,122,.85);margin-left:-.25vmin;animation:stem .3s ease-out calc(var(--t)*1s + .1s) 1 both}
+@keyframes stem{to{height:12.5vmin}}
+.card{position:absolute;left:var(--x);bottom:calc(42% + 14vmin);width:min(21vw,34vmin);aspect-ratio:3/2;margin-left:calc(min(21vw,34vmin)/-2);background:#fff;border-radius:.6vmin;box-shadow:0 1vmin 2.5vmin rgba(0,0,0,.5);transform:rotate(var(--r));animation:cardpop .4s ease-out calc(var(--t)*1s + .4s) 1 both}
+@keyframes cardpop{0%{transform:translateY(2vmin) rotate(var(--r)) scale(0)}60%{transform:translateY(0) rotate(var(--r)) scale(1.12)}100%{transform:translateY(0) rotate(var(--r)) scale(1)}}
+.ph{position:absolute;inset:.8vmin;overflow:hidden;background:var(--g)}
+.ph::before{content:"";position:absolute;left:-5%;right:-5%;bottom:0;height:48%;background:rgba(12,24,52,.55);clip-path:polygon(0 100%,0 60%,25% 20%,45% 65%,70% 10%,100% 60%,100% 100%)}
+.ph::after{content:"";position:absolute;right:14%;top:14%;width:16%;aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.85)}
+.lab{position:absolute;left:var(--x);top:calc(58% + 3.2vmin);width:22vw;margin-left:-11vw;text-align:center}
+.yr{display:block;color:#FFD27A;font-size:6vmin;font-weight:900;line-height:1.1;text-shadow:0 .3vmin 1vmin rgba(0,0,0,.4);animation:yr .35s ease-out calc(var(--t)*1s + .4s) 1 both}
+@keyframes yr{0%{transform:scale(0)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+.nt{display:block;margin-top:.8vmin;color:#c3c9d6;font-size:3.6vmin;line-height:1.25;word-break:keep-all;animation:nt .4s ease-out calc(var(--t)*1s + .75s) 1 both}
+@keyframes nt{0%{opacity:0;transform:translateY(1.5vmin)}100%{opacity:1;transform:none}}
+</style>
+<div class="stage">
+  <h1 class="title">우리의 발자취</h1>
+  <div class="track"><div class="fill"></div></div>
+  <div class="sw"><div class="streak"></div></div>
+  <div class="arrow"></div>
+  <div class="p"><div class="stem"></div><div class="card"><div class="ph"></div></div><div class="ring"></div><div class="dot"></div><div class="lab"><b class="yr">2010</b><span class="nt">○○센터 개소</span></div></div>
+  <div class="p"><div class="stem"></div><div class="card"><div class="ph"></div></div><div class="ring"></div><div class="dot"></div><div class="lab"><b class="yr">2016</b><span class="nt">제2사업장</span></div></div>
+  <div class="p"><div class="stem"></div><div class="card"><div class="ph"></div></div><div class="ring"></div><div class="dot"></div><div class="lab"><b class="yr">2020</b><span class="nt">우수기관 선정</span></div></div>
+  <div class="p"><div class="stem"></div><div class="card"><div class="ph"></div></div><div class="ring"></div><div class="dot"></div><div class="lab"><b class="yr">2024</b><span class="nt">이용자 1만 명</span></div></div>
+</div>
+</html>

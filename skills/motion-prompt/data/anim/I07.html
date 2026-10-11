@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 I07 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#1b1410;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.back,.front{position:absolute;left:0;right:0;animation-duration:6s;animation-delay:0s;animation-iteration-count:1;animation-fill-mode:both;animation-timing-function:linear}
+.back{top:0;bottom:0;transform-origin:50% 55%;filter:blur(.5vmin) brightness(.8);animation-name:backMove}
+.sky{position:absolute;inset:0;background:radial-gradient(circle at 68% 38%,#ffe2a8 0,#ffb872 10%,rgba(255,170,110,0) 38%),linear-gradient(180deg,#5d7fa8 0%,#e9a98a 48%,#f4c58f 62%,#6a4a3a 62.5%,#3b2a22 100%)}
+.mtn{position:absolute;left:0;right:0;bottom:36%;height:26%;background:#5b5470;clip-path:polygon(0 100%,0 55%,12% 30%,22% 52%,36% 8%,50% 48%,63% 22%,78% 55%,90% 28%,100% 50%,100% 100%)}
+.mtn.m2{bottom:34%;height:18%;background:#3f3a52;clip-path:polygon(0 100%,0 60%,18% 25%,34% 62%,55% 20%,72% 60%,88% 30%,100% 58%,100% 100%)}
+.field{position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(180deg,#6b5a3a,#3a2c20)}
+.front{bottom:-15%;height:70%;transform-origin:50% 100%;animation-name:frontMove;
+-webkit-mask-image:linear-gradient(180deg,transparent 0,rgba(0,0,0,.6) 14%,#000 34%);mask-image:linear-gradient(180deg,transparent 0,rgba(0,0,0,.6) 14%,#000 34%)}
+.hill{position:absolute;inset:0;background:linear-gradient(180deg,#5a4a2c 0%,#3d3020 35%,#1e150f 100%);clip-path:polygon(0 18%,20% 8%,45% 16%,70% 6%,100% 14%,100% 100%,0 100%)}
+.grass{position:absolute;left:0;right:0;top:12%;height:20%;background:repeating-linear-gradient(90deg,rgba(120,100,50,.35) 0 .6vmin,rgba(0,0,0,0) .6vmin 2.2vmin);opacity:.7}
+.person{position:absolute;left:58%;top:6%;width:8vmin;height:26vmin}
+.head{position:absolute;left:25%;top:0;width:50%;height:22%;border-radius:50%;background:#160f0c}
+.body{position:absolute;left:8%;top:20%;width:84%;height:80%;border-radius:45% 45% 8% 8%/30% 30% 4% 4%;background:#160f0c}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.35) 100%)}
+.dust{position:absolute;left:0;top:0;width:var(--s);height:var(--s);margin-left:var(--l);margin-top:var(--t);border-radius:50%;background:radial-gradient(circle,rgba(255,244,220,.9) 0,rgba(255,240,210,.45) 45%,rgba(255,240,210,0) 72%);filter:blur(.15vmin);
+animation-name:drift,bob;animation-duration:6s,1.5s;animation-delay:0s,0s;animation-iteration-count:1,4;animation-fill-mode:both,both;animation-timing-function:linear,ease-in-out}
+.big{position:absolute;left:100%;top:34%;width:30vmin;height:30vmin;border-radius:50%;background:radial-gradient(circle,rgba(255,244,222,.75) 0,rgba(255,240,210,.35) 40%,rgba(255,240,210,0) 70%);filter:blur(2.5vmin);animation:pass 2s linear 2s 1 both}
+.tag{position:absolute;left:4vmin;top:4vmin;padding:1.2vmin 2.4vmin;font-size:4vmin;color:#fff4e0;background:rgba(0,0,0,.35);border-radius:2vmin}
+@keyframes backMove{
+0%{transform:translate(0,0) scale(1.06)}
+33.333%{transform:translate(1.5%,0) scale(1.1)}
+66.667%{transform:translate(4%,0) scale(1.14)}
+100%{transform:translate(6.5%,0) scale(1.18)}}
+@keyframes frontMove{
+0%{transform:translate(0,0) scale(1)}
+33.333%{transform:translate(-2%,-1%) scale(1.12)}
+66.667%{transform:translate(-7%,-3.5%) scale(1.28)}
+100%{transform:translate(-12%,-6%) scale(1.44)}}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(var(--dx),0)}}
+@keyframes bob{0%,100%{translate:0 0}50%{translate:0 var(--b)}}
+@keyframes pass{0%{transform:translateX(0);opacity:0}15%{opacity:1}85%{opacity:1}100%{transform:translateX(-170vw);opacity:0}}
+</style>
+<div class="stage">
+  <div class="back">
+    <div class="sky"></div><div class="mtn"></div><div class="mtn m2"></div><div class="field"></div>
+  </div>
+  <div class="front">
+    <div class="hill"></div><div class="grass"></div>
+    <div class="person"><div class="head"></div><div class="body"></div></div>
+  </div>
+  <div class="vig"></div>
+  <span class="dust" style="--l:92vw;--t:20vh;--s:1.2vmin;--dx:-35vw;--b:-1.5vmin"></span>
+  <span class="dust" style="--l:70vw;--t:70vh;--s:2vmin;--dx:-50vw;--b:2vmin"></span>
+  <span class="dust" style="--l:55vw;--t:35vh;--s:1vmin;--dx:-30vw;--b:-1vmin"></span>
+  <span class="dust" style="--l:85vw;--t:55vh;--s:3vmin;--dx:-70vw;--b:2.5vmin"></span>
+  <span class="dust" style="--l:30vw;--t:15vh;--s:1.4vmin;--dx:-35vw;--b:1.5vmin"></span>
+  <span class="dust" style="--l:98vw;--t:80vh;--s:1.8vmin;--dx:-45vw;--b:-2vmin"></span>
+  <span class="dust" style="--l:45vw;--t:62vh;--s:2.4vmin;--dx:-60vw;--b:2vmin"></span>
+  <span class="dust" style="--l:15vw;--t:45vh;--s:1vmin;--dx:-14vw;--b:-1vmin"></span>
+  <span class="dust" style="--l:78vw;--t:8vh;--s:2.6vmin;--dx:-65vw;--b:-2.5vmin"></span>
+  <span class="dust" style="--l:62vw;--t:48vh;--s:1.2vmin;--dx:-32vw;--b:1.2vmin"></span>
+  <span class="dust" style="--l:95vw;--t:40vh;--s:1.6vmin;--dx:-42vw;--b:-1.8vmin"></span>
+  <span class="dust" style="--l:38vw;--t:78vh;--s:3.2vmin;--dx:-75vw;--b:3vmin"></span>
+  <span class="dust" style="--l:22vw;--t:30vh;--s:1.1vmin;--dx:-18vw;--b:-1vmin"></span>
+  <span class="dust" style="--l:88vw;--t:25vh;--s:2.2vmin;--dx:-55vw;--b:2vmin"></span>
+  <span class="dust" style="--l:50vw;--t:88vh;--s:1.4vmin;--dx:-36vw;--b:-1.4vmin"></span>
+  <span class="dust" style="--l:72vw;--t:58vh;--s:1vmin;--dx:-28vw;--b:1vmin"></span>
+  <span class="dust" style="--l:8vw;--t:68vh;--s:2vmin;--dx:-10vw;--b:-2vmin"></span>
+  <span class="dust" style="--l:66vw;--t:12vh;--s:1.5vmin;--dx:-40vw;--b:1.6vmin"></span>
+  <div class="big"></div>
+  <div class="tag">photo.jpg · 6초</div>
+</div>
+</html>

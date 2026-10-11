@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F29 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;background:#f6f1e7;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-weight:800;color:#2a2622}
+.stage{width:92vw;max-height:96vh;display:flex;flex-direction:column;gap:2.4vmin}
+h1{margin:0;font-size:8vmin;line-height:1.15;text-align:left;word-break:keep-all;animation:title .5s ease-out 0.05s 1 both}
+.tbl{display:flex;flex-direction:column;gap:1.2vmin}
+.row{display:flex;gap:1.2vmin;align-items:stretch}
+.row>div{display:flex;align-items:center;justify-content:center;text-align:center;word-break:keep-all;font-size:4.4vmin;line-height:1.25;padding:2.2vmin 1vmin;border-radius:2vmin;box-sizing:border-box}
+.row>div:nth-child(1){flex:0 0 24%}
+.row>div:nth-child(2){flex:1 1 0}
+.row>div:nth-child(3){flex:1 1 0}
+.head{animation:fade .4s ease-out 0.3s 1 both}
+.head>div:nth-child(1){background:transparent}
+.head>div:nth-child(2){background:#d9d6cf;color:#3b3732}
+.head>div:nth-child(3){background:#1f2a44;color:#fff}
+.item{animation:rise .45s ease-out 1 both}
+.r1{animation-delay:.6s}
+.r2{animation-delay:.95s}
+.r3{animation-delay:1.3s}
+.item>div:nth-child(1){background:#e6dcc7}
+.item>div:nth-child(2){background:#fff}
+.item>div:nth-child(3){background:#fff;border:.7vmin solid #ff6a3d;animation:glow .6s ease-in-out 1 both}
+.r1>div:nth-child(3){animation-delay:1.75s}
+.r2>div:nth-child(3){animation-delay:1.9s}
+.r3>div:nth-child(3){animation-delay:2.05s}
+@keyframes title{from{transform:translateX(-60vw);opacity:0}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{transform:translateY(6vmin);opacity:0}to{transform:none;opacity:1}}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(255,106,61,0);border-color:#ff6a3d}50%{box-shadow:0 0 4vmin 1.2vmin rgba(255,150,100,.9);border-color:#ffd0a8}100%{box-shadow:0 0 0 0 rgba(255,106,61,0);border-color:#ff6a3d}}
+</style>
+<div class="stage">
+  <h1>직접 하기 vs AI에게 맡기기</h1>
+  <div class="tbl">
+    <div class="row head"><div></div><div>직접 하기</div><div>AI에게 맡기기</div></div>
+    <div class="row item r1"><div>걸리는 시간</div><div>하루 2시간</div><div>20분 + 확인</div></div>
+    <div class="row item r2"><div>실수</div><div>피곤하면 늘어남</div><div>규칙대로 일정</div></div>
+    <div class="row item r3"><div>마지막 확인</div><div>나</div><div>나</div></div>
+  </div>
+</div>
+</html>

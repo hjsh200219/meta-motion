@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F54 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#1b2540;display:flex;align-items:center;justify-content:center;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;--ac:#ff7a1a}
+.stage{display:flex;flex-direction:column;align-items:center;width:100%;padding-bottom:5vmin}
+.card{box-sizing:border-box;width:min(90vw,150vmin);background:#fff;border-radius:2.4vmin;padding:4vmin 5vmin 3.4vmin;box-shadow:0 2vmin 6vmin rgba(0,0,0,.4);animation:rise .4s cubic-bezier(.2,.8,.3,1) 0s 1 both}
+@keyframes rise{from{transform:translateY(40vmin);opacity:0}to{transform:none;opacity:1}}
+.head{display:flex;justify-content:space-between;align-items:center;gap:2vmin;margin-bottom:3vmin}
+.title{font-size:5vmin;font-weight:900;color:#1b2540}
+.chip{background:#1b2540;color:#fff;font-size:2.8vmin;font-weight:700;padding:1vmin 2.4vmin;border-radius:5vmin;white-space:nowrap}
+.line{font-size:4.2vmin;line-height:2.6;font-weight:800;color:#8b9099;margin:0}
+.b{position:relative;display:inline-block;white-space:nowrap;padding:.1em .3em;margin:0 .05em;color:#0d1220;font-weight:900;animation:pop .2s ease-out var(--p) 1 both}
+.b::before{content:"";position:absolute;inset:0;border:.45vmin dashed var(--ac);border-radius:1vmin;animation:gone .1s linear var(--e) 1 both}
+.b::after{content:"";position:absolute;left:0;right:0;bottom:.02em;height:.7vmin;background:var(--ac);border-radius:1vmin;transform-origin:left center;animation:ul .3s ease-out var(--e) 1 both}
+.b.k2::after{animation:ul .3s ease-out var(--e) 1 both,glow .3s ease-in-out 2.7s 1 both}
+.n{position:absolute;left:.2em;bottom:100%;font-size:2.4vmin;line-height:1;font-weight:700;color:#9aa0a6;animation:gone .1s linear var(--e) 1 both}
+.b i{font-style:normal;animation:ch .05s linear calc(var(--s) + var(--i)*var(--d)) 1 both}
+.k0{--p:.4s;--s:.9s;--e:1.35s;--d:.04s}
+.k1{--p:.5s;--s:1.5s;--e:1.95s;--d:.065s}
+.k2{--p:.6s;--s:2.1s;--e:2.55s;--d:.045s}
+@keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes gone{from{opacity:1}to{opacity:0}}
+@keyframes ch{from{opacity:0}to{opacity:1}}
+@keyframes ul{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(255,122,26,0)}50%{box-shadow:0 0 2.6vmin .9vmin rgba(255,150,60,.9)}100%{box-shadow:0 0 0 0 rgba(255,122,26,0)}}
+.bar{width:16vmin;height:1.1vmin;background:var(--ac);border-radius:1vmin;margin-top:4vmin;transform-origin:left center;animation:ul .3s ease-out .4s 1 both}
+.hint{margin-top:2vmin;color:#fff;font-size:3.6vmin;font-weight:700;animation:up .3s ease-out .6s 1 both}
+@keyframes up{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:none}}
+</style>
+<div class="stage">
+  <div class="card">
+    <div class="head"><div class="title">프롬프트 틀</div><div class="chip">틀 · 자료실에 있음</div></div>
+    <p class="line">저는 <span class="b k0"><span class="n">역할</span><i style="--i:0">○</i><i style="--i:1">○</i><i style="--i:2">센</i><i style="--i:3">터</i><i style="--i:4"> </i><i style="--i:5">교</i><i style="--i:6">육</i><i style="--i:7"> </i><i style="--i:8">담</i><i style="--i:9">당</i><i style="--i:10">자</i></span>입니다.</p>
+    <p class="line"><span class="b k1"><span class="n">대상</span><i style="--i:0">어</i><i style="--i:1">르</i><i style="--i:2">신</i><i style="--i:3"> </i><i style="--i:4">2</i><i style="--i:5">0</i><i style="--i:6">명</i></span>에게 보낼 교육 안내문을 써 주세요.</p>
+    <p class="line">조건: <span class="b k2"><span class="n">형식</span><i style="--i:0">5</i><i style="--i:1">줄</i><i style="--i:2"> </i><i style="--i:3">이</i><i style="--i:4">내</i><i style="--i:5">,</i><i style="--i:6"> </i><i style="--i:7">존</i><i style="--i:8">댓</i><i style="--i:9">말</i></span></p>
+  </div>
+  <div class="bar"></div>
+  <div class="hint">회색 글자는 그대로, 상자만 바꾸세요</div>
+</div>
+</html>

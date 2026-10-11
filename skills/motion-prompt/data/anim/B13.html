@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B13 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+@property --r{syntax:"<length>";inherits:true;initial-value:0px}
+@property --b{syntax:"<length>";inherits:true;initial-value:0px}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#16130E;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden}
+.scene{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2vmin;color:#fff}
+.scene h1{margin:0;font-size:11vmin;letter-spacing:.3vmin;z-index:2}
+.scene p{margin:0;font-size:4.6vmin;opacity:.9;z-index:2}
+.scene small{font-size:4vmin;opacity:.8;z-index:2}
+
+/* 앞 장면: 맑은 낮 */
+.a{background:linear-gradient(180deg,#5fb4e8 0%,#bfe6f7 55%,#f4efd8 100%)}
+.a .sun{position:absolute;right:14%;top:12%;width:16vmin;height:16vmin;border-radius:50%;background:radial-gradient(circle,#fff6c2 30%,#ffd96a 70%,#ffd96a00 72%)}
+.a .hill1{position:absolute;left:-10%;bottom:-8%;width:80%;height:38%;border-radius:50% 50% 0 0;background:#5aa469}
+.a .hill2{position:absolute;right:-15%;bottom:-10%;width:85%;height:30%;border-radius:50% 50% 0 0;background:#3f8754}
+.a h1,.a p,.a small{color:#17324a}
+
+/* 다음 장면: 해질녘 도시 */
+.b{background:linear-gradient(180deg,#2b1f55 0%,#8a3f7a 48%,#f08a4b 100%)}
+.b .moon{position:absolute;left:12%;top:10%;width:11vmin;height:11vmin;border-radius:50%;background:#ffe9c4;box-shadow:0 0 6vmin #ffe9c466}
+.b .city{position:absolute;left:0;right:0;bottom:0;height:34%;background:
+ linear-gradient(#1a1230,#1a1230) 4% 100%/9% 70% no-repeat,
+ linear-gradient(#1a1230,#1a1230) 16% 100%/7% 95% no-repeat,
+ linear-gradient(#1a1230,#1a1230) 28% 100%/10% 60% no-repeat,
+ linear-gradient(#1a1230,#1a1230) 42% 100%/8% 85% no-repeat,
+ linear-gradient(#1a1230,#1a1230) 55% 100%/11% 100% no-repeat,
+ linear-gradient(#1a1230,#1a1230) 70% 100%/8% 72% no-repeat,
+ linear-gradient(#1a1230,#1a1230) 83% 100%/10% 90% no-repeat,
+ linear-gradient(#1a1230,#1a1230) 96% 100%/9% 65% no-repeat}
+
+/* 먹물 번짐 마스크: 겹친 원 8개의 합집합 = 구름 같은 가장자리 */
+.ink,.b{
+ -webkit-mask-image:
+ radial-gradient(circle at 30vw 50vh,#000 calc(var(--r)*1 + var(--b) - .5vmin),#0000 calc(var(--r)*1 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw - 6vmin) calc(50vh + 5vmin),#000 calc(var(--r)*.85 + var(--b) - .5vmin),#0000 calc(var(--r)*.85 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw + 5vmin) calc(50vh - 7vmin),#000 calc(var(--r)*.92 + var(--b) - .5vmin),#0000 calc(var(--r)*.92 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw + 9vmin) calc(50vh + 8vmin),#000 calc(var(--r)*.8 + var(--b) - .5vmin),#0000 calc(var(--r)*.8 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw - 9vmin) calc(50vh - 6vmin),#000 calc(var(--r)*.78 + var(--b) - .5vmin),#0000 calc(var(--r)*.78 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw + 14vmin) calc(50vh - 2vmin),#000 calc(var(--r)*.7 + var(--b) - .5vmin),#0000 calc(var(--r)*.7 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw + 2vmin) calc(50vh + 12vmin),#000 calc(var(--r)*.74 + var(--b) - .5vmin),#0000 calc(var(--r)*.74 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw - 3vmin) calc(50vh - 13vmin),#000 calc(var(--r)*.72 + var(--b) - .5vmin),#0000 calc(var(--r)*.72 + var(--b) + .5vmin));
+ mask-image:
+ radial-gradient(circle at 30vw 50vh,#000 calc(var(--r)*1 + var(--b) - .5vmin),#0000 calc(var(--r)*1 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw - 6vmin) calc(50vh + 5vmin),#000 calc(var(--r)*.85 + var(--b) - .5vmin),#0000 calc(var(--r)*.85 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw + 5vmin) calc(50vh - 7vmin),#000 calc(var(--r)*.92 + var(--b) - .5vmin),#0000 calc(var(--r)*.92 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw + 9vmin) calc(50vh + 8vmin),#000 calc(var(--r)*.8 + var(--b) - .5vmin),#0000 calc(var(--r)*.8 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw - 9vmin) calc(50vh - 6vmin),#000 calc(var(--r)*.78 + var(--b) - .5vmin),#0000 calc(var(--r)*.78 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw + 14vmin) calc(50vh - 2vmin),#000 calc(var(--r)*.7 + var(--b) - .5vmin),#0000 calc(var(--r)*.7 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw + 2vmin) calc(50vh + 12vmin),#000 calc(var(--r)*.74 + var(--b) - .5vmin),#0000 calc(var(--r)*.74 + var(--b) + .5vmin)),
+ radial-gradient(circle at calc(30vw - 3vmin) calc(50vh - 13vmin),#000 calc(var(--r)*.72 + var(--b) - .5vmin),#0000 calc(var(--r)*.72 + var(--b) + .5vmin));
+}
+/* 먹색 띠: 다음 장면보다 --b 만큼 더 크게 번진 먹물 층 */
+.ink{position:absolute;inset:0;background:
+ repeating-linear-gradient(97deg,#16130E 0 .8vmin,#241f17 .8vmin 1.1vmin,#16130E 1.1vmin 2.3vmin),#16130E}
+.ink,.b{animation:grow 1s 0s 1 both}
+.ink{animation:grow 1s 0s 1 both,band 1s 0s 1 both}
+
+@keyframes grow{
+ 0%{--r:1vmin;animation-timing-function:cubic-bezier(.4,0,.9,.6)}
+ 40%{--r:12vmin;animation-timing-function:linear}
+ 80%{--r:70vmax;animation-timing-function:cubic-bezier(.2,.6,.4,1)}
+ 100%{--r:92vmax}
+}
+@keyframes band{
+ 0%{--b:0px}
+ 40%{--b:1.4vmin}
+ 60%{--b:4.8vmin}
+ 80%{--b:2vmin}
+ 100%{--b:0px}
+}
+</style>
+<div class="stage">
+ <div class="scene a">
+  <div class="sun"></div><div class="hill1"></div><div class="hill2"></div>
+  <h1>앞 장면</h1><p>a.mp4</p><small>전환 시점 2:05</small>
+ </div>
+ <div class="ink"></div>
+ <div class="scene b">
+  <div class="moon"></div><div class="city"></div>
+  <h1>다음 장면</h1><p>b.mp4</p><small>전환 길이 1.5초</small>
+ </div>
+</div>
+</html>

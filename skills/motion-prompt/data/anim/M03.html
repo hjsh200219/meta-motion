@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 M03 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:grid;place-items:center;background:#ECE8DE;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100vmin;height:100vmin;overflow:hidden;background:#ECE8DE}
+.stage *{box-sizing:border-box}
+.road{position:absolute;background:#fff}
+.v18{left:15.5%;width:5%;top:0;height:100%}
+.v50{left:47.5%;width:5%;top:0;height:100%}
+.v74{left:71.5%;width:5%;top:0;height:100%}
+.h22{top:19.5%;height:5%;left:0;width:100%}
+.h58{top:55%;height:6%;left:0;width:100%}
+.h58::after{content:"";position:absolute;left:0;right:0;top:calc(50% - .3vmin);height:.6vmin;background:repeating-linear-gradient(90deg,#FFD400 0 3vmin,transparent 3vmin 5.5vmin)}
+.park{position:absolute;left:24%;top:30%;width:20%;height:20%;border-radius:2vmin;background:#CFE8C4}
+.park::before,.park::after{content:"";position:absolute;border-radius:50%;background:#A9D39C}
+.park::before{left:18%;top:22%;width:28%;height:28%}
+.park::after{left:55%;top:50%;width:25%;height:25%}
+.park2{position:absolute;left:78%;top:64%;width:16%;height:14%;border-radius:2vmin;background:#CFE8C4}
+.bld{position:absolute;background:#DDD7C8;border-radius:.8vmin}
+.b1{left:4%;top:28%;width:8%;height:10%}
+.b2{left:56%;top:30%;width:12%;height:14%}
+.b3{left:24%;top:68%;width:20%;height:12%}
+.b4{left:56%;top:68%;width:12%;height:20%}
+.b5{left:80%;top:30%;width:14%;height:16%}
+svg.route{position:absolute;left:0;top:0;width:100%;height:100%}
+svg.route path{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:114;stroke-dashoffset:114;animation:draw 2.15s .85s linear 1 both}
+.rw{stroke:#fff;stroke-width:2.4}
+.rr{stroke:#E8442E;stroke-width:1.4}
+@keyframes draw{from{stroke-dashoffset:114}to{stroke-dashoffset:0}}
+
+.title{position:absolute;left:4%;top:4%;padding:1.6vmin 3vmin;background:#fff;border-radius:2vmin;font-size:6vmin;font-weight:800;color:#111;box-shadow:0 .6vmin 1.6vmin rgba(0,0,0,.18);animation:slide .5s .15s ease-out 1 both}
+@keyframes slide{0%{opacity:0;transform:translateX(-6vmin)}100%{opacity:1;transform:none}}
+
+.st{position:absolute;left:18%;top:80%;width:0;height:0}
+.ic{position:absolute;left:-4.5vmin;top:-4.5vmin;width:9vmin;height:9vmin;border-radius:50%;background:#2563EB;border:.8vmin solid #fff;box-shadow:0 .5vmin 1.4vmin rgba(0,0,0,.3);color:#fff;font-weight:900;font-size:4.6vmin;display:grid;place-items:center;animation:pop .5s .15s ease-out 1 both}
+.tagw{position:absolute;height:0;display:flex;align-items:center}
+.tagw.s{left:24%;top:80%}
+.tagw.d{left:78.5%;top:17%}
+.tag{white-space:nowrap;padding:1.2vmin 2.4vmin;border-radius:1.6vmin;font-size:4.4vmin;font-weight:800;transform-origin:left center}
+.tag.s{background:#fff;color:#111;box-shadow:0 .5vmin 1.4vmin rgba(0,0,0,.25);animation:tagpop .5s .15s ease-out 1 both}
+.tag.d{background:#E8442E;color:#fff;box-shadow:0 .5vmin 1.4vmin rgba(0,0,0,.25);animation:tagpop .65s .35s ease-out 1 both}
+@keyframes pop{0%{transform:scale(0)}55%{transform:scale(1.3)}78%{transform:scale(.9)}100%{transform:scale(1)}}
+@keyframes tagpop{0%,40%{transform:scale(0);opacity:0}70%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:1}}
+
+.dot{position:absolute;left:18%;top:80%;width:3.8vmin;height:3.8vmin;margin:-1.9vmin 0 0 -1.9vmin;border-radius:50%;background:#2563EB;border:.7vmin solid #fff;box-shadow:0 0 1.4vmin rgba(37,99,235,.8);isolation:isolate;animation:walk 2.15s .85s linear 1 both}
+.dot::before{content:"";position:absolute;left:-.7vmin;top:-.7vmin;right:-.7vmin;bottom:-.7vmin;border-radius:50%;background:rgba(37,99,235,.5);z-index:-1;animation:pulse .5375s .85s ease-out 4 both,pulse .6333s 3.4s ease-out 3 both}
+@keyframes walk{0%{left:18%;top:80%;opacity:0}2%{left:18%;top:80%;opacity:1}19.3%{left:18%;top:58%}47.4%{left:50%;top:58%}78.9%{left:50%;top:22%}100%{left:74%;top:22%;opacity:1}}
+@keyframes pulse{0%{transform:scale(1);opacity:0}15%{opacity:.8}100%{transform:scale(3.4);opacity:0}}
+
+.pin{position:absolute;left:74%;top:22%;width:0;height:0;animation:drop .65s .35s ease-in 1 both}
+@keyframes drop{0%{transform:translateY(-40vmin);opacity:0}8%{opacity:1}50%{transform:translateY(0)}65%{transform:translateY(-4vmin)}80%{transform:translateY(0)}90%{transform:translateY(-1.2vmin)}100%{transform:translateY(0);opacity:1}}
+.pinb{position:absolute;left:-3.5vmin;top:-8.45vmin;width:7vmin;height:7vmin;transform-origin:50% calc(100% + 1.45vmin);animation:press .4s 3s ease-in-out 1 both}
+@keyframes press{0%{transform:scale(1,1)}35%{transform:scale(1.2,.62)}70%{transform:scale(.92,1.18)}100%{transform:scale(1,1)}}
+.pshape{position:absolute;inset:0;background:#E8442E;border:.6vmin solid #fff;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:.4vmin .4vmin 1.2vmin rgba(0,0,0,.3)}
+.pshape::after{content:"";position:absolute;left:28%;top:28%;width:44%;height:44%;border-radius:50%;background:#fff}
+
+.chipw{position:absolute;left:74%;top:26%;width:0;display:flex;justify-content:center}
+.chip{display:flex;align-items:center;gap:1.2vmin;white-space:nowrap;padding:1.2vmin 2.6vmin 1.2vmin 1.8vmin;background:#FFD400;color:#111;border-radius:5vmin;font-size:4.8vmin;font-weight:900;box-shadow:0 .6vmin 1.6vmin rgba(0,0,0,.28);transform-origin:50% 0;animation:chip .4s 3s ease-out 1 both}
+.chip svg{width:5vmin;height:5vmin}
+@keyframes chip{0%{transform:scale(0);opacity:0}8%{opacity:1}45%{transform:scale(1.4)}65%{transform:scale(.92)}82%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+
+.src{position:absolute;right:2%;bottom:1.5%;font-size:2.6vmin;color:#8a8574}
+</style>
+<div class="stage">
+  <div class="park"></div><div class="park2"></div>
+  <div class="bld b1"></div><div class="bld b2"></div><div class="bld b3"></div><div class="bld b4"></div><div class="bld b5"></div>
+  <div class="road v18"></div><div class="road v50"></div><div class="road v74"></div>
+  <div class="road h22"></div><div class="road h58"></div>
+
+  <svg class="route" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <path class="rw" d="M18 80V58H50V22H74"/>
+    <path class="rr" d="M18 80V58H50V22H74"/>
+  </svg>
+
+  <div class="title">📍 오시는 길</div>
+
+  <div class="st"><div class="ic">역</div></div>
+  <div class="tagw s"><div class="tag s">○○역 2번 출구</div></div>
+
+  <div class="dot"></div>
+
+  <div class="pin"><div class="pinb"><div class="pshape"></div></div></div>
+  <div class="tagw d"><div class="tag d">우리 가게</div></div>
+
+  <div class="chipw"><div class="chip">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4.5" r="2" fill="#111"/><path d="M12 8l-2.5 5 3 3 1 5M12 8l3 3 3 1M9.5 13L7 12M13 11l-1.5 5"/></svg>
+    도보 5분
+  </div></div>
+
+  <div class="src">지도 이미지 · 샘플</div>
+</div>
+</html>

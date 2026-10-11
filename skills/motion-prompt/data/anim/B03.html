@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B03 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.shake{position:absolute;inset:-4vmin;animation:shake .3s linear .17s 1 both}
+.scene{position:absolute;inset:4vmin;overflow:hidden;background:linear-gradient(180deg,#7fb2d9 0%,#cfe3ee 55%,#6f8a6a 55.2%,#41584a 100%)}
+.hill{position:absolute;left:-10%;bottom:44%;width:70%;height:22%;background:#8aa0a8;border-radius:50% 50% 0 0}
+.body{position:absolute;left:12%;bottom:0;width:26vmin;height:34vmin;background:#35465e;border-radius:40% 40% 0 0}
+.head{position:absolute;left:17%;bottom:30vmin;width:16vmin;height:16vmin;background:#e2b898;border-radius:50%}
+.tc{position:absolute;left:4vmin;top:3vmin;font-size:4vmin;color:#fff;opacity:.75;font-weight:700}
+.pos{position:absolute;right:10vmin;top:50%;width:46vmin;height:46vmin;margin-top:-23vmin}
+.stamp{position:absolute;inset:0;box-sizing:border-box;border:2.2vmin solid #E8442E;border-radius:50%;background:#FFF6E5;display:flex;align-items:center;justify-content:center;box-shadow:0 1vmin 3vmin rgba(0,0,0,.3);z-index:2;animation:stamp 1.5s cubic-bezier(.3,0,.5,1) 0s 1 both}
+.stamp::before{content:"";position:absolute;inset:2.4vmin;border:.7vmin solid #E8442E;border-radius:50%}
+.stamp b{position:relative;font-size:13vmin;font-weight:900;color:#E8442E;letter-spacing:.5vmin}
+.drop{position:absolute;left:50%;top:50%;width:var(--s,3vmin);height:var(--s,3vmin);margin:calc(var(--s,3vmin)/-2) 0 0 calc(var(--s,3vmin)/-2);background:#E8442E;border-radius:50%;z-index:1;animation:drop 1.33s ease-out .17s 1 both}
+.drop:nth-child(1){--a:0deg;--d:36vmin;--s:3.4vmin}
+.drop:nth-child(2){--a:36deg;--d:32vmin;--s:2.2vmin}
+.drop:nth-child(3){--a:72deg;--d:38vmin;--s:3vmin}
+.drop:nth-child(4){--a:108deg;--d:33vmin;--s:2vmin}
+.drop:nth-child(5){--a:144deg;--d:40vmin;--s:3.6vmin}
+.drop:nth-child(6){--a:180deg;--d:34vmin;--s:2.4vmin}
+.drop:nth-child(7){--a:216deg;--d:39vmin;--s:3vmin}
+.drop:nth-child(8){--a:252deg;--d:31vmin;--s:2vmin}
+.drop:nth-child(9){--a:288deg;--d:37vmin;--s:3.2vmin}
+.drop:nth-child(10){--a:324deg;--d:33vmin;--s:2.4vmin}
+@keyframes stamp{
+0%{transform:scale(2.6) rotate(38deg);opacity:0}
+11.33%{transform:scale(1) rotate(15deg);opacity:1}
+20%{transform:scale(1.05) rotate(15deg);opacity:1}
+31.33%{transform:scale(1) rotate(15deg);opacity:1}
+70%{transform:scale(1) rotate(15deg);opacity:1}
+100%{transform:scale(1) rotate(15deg);opacity:0}}
+@keyframes drop{
+0%{transform:rotate(var(--a)) translateX(10vmin) scale(.2);opacity:0}
+22.6%{transform:rotate(var(--a)) translateX(var(--d)) scale(1);opacity:1}
+66.2%{transform:rotate(var(--a)) translateX(calc(var(--d) + 2vmin)) scale(1);opacity:1}
+100%{transform:rotate(var(--a)) translateX(calc(var(--d) + 3vmin)) scale(.8);opacity:0}}
+@keyframes shake{
+0%{transform:translate(0,0)}
+15%{transform:translate(2.6vmin,-3vmin)}
+32%{transform:translate(-2.2vmin,2.2vmin)}
+50%{transform:translate(1.4vmin,-1.4vmin)}
+68%{transform:translate(-.9vmin,.8vmin)}
+85%{transform:translate(.4vmin,-.3vmin)}
+100%{transform:translate(0,0)}}
+</style>
+<div class="shake">
+  <div class="scene">
+    <div class="hill"></div>
+    <div class="body"></div>
+    <div class="head"></div>
+    <div class="tc">0:20</div>
+    <div class="pos">
+      <i class="drop"></i><i class="drop"></i><i class="drop"></i><i class="drop"></i><i class="drop"></i>
+      <i class="drop"></i><i class="drop"></i><i class="drop"></i><i class="drop"></i><i class="drop"></i>
+      <div class="stamp"><b>정답</b></div>
+    </div>
+  </div>
+</div>
+</html>

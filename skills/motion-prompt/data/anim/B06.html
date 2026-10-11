@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B06 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.bg{position:fixed;inset:0;background:
+radial-gradient(ellipse at 28% 24%,rgba(92,120,200,.55),transparent 60%),
+radial-gradient(ellipse at 78% 82%,rgba(140,80,150,.45),transparent 55%),
+linear-gradient(160deg,#1a2036,#2a3050 55%,#191d2e)}
+.stage{position:fixed;inset:0;perspective:80vmin;perspective-origin:55% 56%}
+.stage>i{position:absolute;left:55%;top:56%;width:1em;height:1em;margin-top:-.5em;margin-left:-.5em;
+font-style:normal;font-size:var(--s,9vmin);line-height:1;text-align:center;
+--x:0vmin;--up:24vmin;--dn:16vmin;--r:540deg;--ry:180deg;--z1:8vmin;--z2:-4vmin;--pn:p0;
+animation-name:var(--pn),fx,fy,ft,fr,gx,gy,go;
+animation-delay:0s,.15s,.15s,.15s,.15s,1.6s,1.6s,1.6s;
+animation-duration:.4s,1.45s,1.45s,1.45s,1.45s,.95s,.95s,.95s;
+animation-timing-function:ease,linear,linear,linear,cubic-bezier(.2,.6,.5,1),linear,linear,linear;
+animation-iteration-count:1;animation-fill-mode:both}
+
+.stage>i:nth-child(7n+1){--x:-40vmin}
+.stage>i:nth-child(7n+2){--x:-27vmin}
+.stage>i:nth-child(7n+3){--x:-14vmin}
+.stage>i:nth-child(7n+4){--x:-3vmin}
+.stage>i:nth-child(7n+5){--x:12vmin}
+.stage>i:nth-child(7n+6){--x:26vmin}
+.stage>i:nth-child(7n+7){--x:39vmin}
+
+.stage>i:nth-child(5n+1){--up:18vmin}
+.stage>i:nth-child(5n+2){--up:26vmin}
+.stage>i:nth-child(5n+3){--up:34vmin}
+.stage>i:nth-child(5n+4){--up:22vmin}
+.stage>i:nth-child(5n+5){--up:30vmin}
+
+.stage>i:nth-child(3n+1){--dn:10vmin;--z1:26vmin;--z2:8vmin}
+.stage>i:nth-child(3n+2){--dn:18vmin;--z1:-10vmin;--z2:-24vmin}
+.stage>i:nth-child(3n+3){--dn:26vmin}
+
+.stage>i:nth-child(6n+1){--s:6vmin}
+.stage>i:nth-child(6n+2){--s:7.5vmin}
+.stage>i:nth-child(6n+3){--s:9vmin}
+.stage>i:nth-child(6n+4){--s:10.5vmin}
+.stage>i:nth-child(6n+5){--s:12vmin}
+.stage>i:nth-child(6n+6){--s:8.5vmin}
+
+.stage>i:nth-child(8n+1){--r:540deg}
+.stage>i:nth-child(8n+2){--r:-720deg}
+.stage>i:nth-child(8n+3){--r:360deg}
+.stage>i:nth-child(8n+4){--r:-450deg}
+.stage>i:nth-child(8n+5){--r:630deg}
+.stage>i:nth-child(8n+6){--r:-360deg}
+.stage>i:nth-child(8n+7){--r:720deg}
+.stage>i:nth-child(8n+8){--r:-600deg}
+
+.stage>i:nth-child(9n+1){--ry:180deg}
+.stage>i:nth-child(9n+2){--ry:-360deg}
+.stage>i:nth-child(9n+3){--ry:540deg}
+.stage>i:nth-child(9n+4){--ry:-180deg}
+.stage>i:nth-child(9n+5){--ry:360deg}
+.stage>i:nth-child(9n+6){--ry:0deg}
+.stage>i:nth-child(9n+7){--ry:720deg}
+.stage>i:nth-child(9n+8){--ry:-540deg}
+.stage>i:nth-child(9n+9){--ry:90deg}
+
+.stage>i:nth-child(4n+1){--pn:p0}
+.stage>i:nth-child(4n+2){--pn:p1}
+.stage>i:nth-child(4n+3){--pn:p2}
+.stage>i:nth-child(4n+4){--pn:p3}
+
+/* 터지는 순간 앞으로 크게 스치는 몇 개 */
+.stage>i:nth-child(8n+3){--z1:64vmin;--z2:-18vmin;--s:11vmin;--up:12vmin;--dn:30vmin}
+.stage>i:nth-child(16n+3){--x:-10vmin}
+.stage>i:nth-child(16n+11){--x:14vmin}
+
+@keyframes p0{0%{scale:.1}60%{scale:1.25}100%{scale:1}}
+@keyframes p1{0%,10%{scale:0}60%{scale:1.25}100%{scale:1}}
+@keyframes p2{0%,22%{scale:0}65%{scale:1.25}100%{scale:1}}
+@keyframes p3{0%,36%{scale:0}70%{scale:1.2}100%{scale:1}}
+
+@keyframes fx{from{margin-left:-.5em}to{margin-left:calc(-.5em + var(--x))}}
+@keyframes fy{
+0%{translate:0 0;animation-timing-function:cubic-bezier(.15,.75,.35,1)}
+38%{translate:0 calc(var(--up) * -1);animation-timing-function:cubic-bezier(.55,0,.85,.5)}
+100%{translate:0 var(--dn)}}
+@keyframes ft{
+0%{transform:translateZ(0) rotateY(0deg)}
+25%{transform:translateZ(var(--z1)) rotateY(calc(var(--ry) * .25))}
+100%{transform:translateZ(var(--z2)) rotateY(var(--ry))}}
+@keyframes fr{from{rotate:0deg}to{rotate:var(--r)}}
+
+@keyframes gx{from{left:55%}to{left:calc(55% + var(--x) * .62)}}
+@keyframes gy{from{top:56%}to{top:calc(56% + (var(--up) + var(--dn)) * 2)}}
+@keyframes go{from{opacity:1}to{opacity:0}}
+</style>
+<div class="bg"></div>
+<div class="stage">
+<i>🎉</i><i>👏</i><i>✨</i><i>🎉</i>
+<i>✨</i><i>👏</i><i>🎉</i><i>✨</i>
+<i>👏</i><i>🎉</i><i>✨</i><i>👏</i>
+<i>🎉</i><i>🎉</i><i>✨</i><i>👏</i>
+<i>✨</i><i>🎉</i><i>👏</i><i>✨</i>
+<i>🎉</i><i>👏</i><i>👏</i><i>✨</i>
+<i>🎉</i><i>✨</i><i>🎉</i><i>👏</i>
+<i>✨</i><i>👏</i><i>🎉</i><i>✨</i>
+<i>👏</i><i>🎉</i><i>✨</i><i>🎉</i>
+<i>✨</i><i>👏</i><i>🎉</i><i>👏</i>
+</div>
+</html>

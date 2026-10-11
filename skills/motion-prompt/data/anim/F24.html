@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F24 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;background:#efeaff;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#1c1640}
+.wrap{width:min(90vw,170vmin);display:flex;flex-direction:column;gap:5vmin}
+.head{display:flex;align-items:flex-start;gap:3vmin}
+.q{font-size:16vmin;font-weight:900;line-height:1;color:#6c4dff;animation:pop .45s cubic-bezier(.3,1.6,.5,1) .05s 1 both}
+.qt{flex:1;font-size:7.5vmin;font-weight:900;line-height:1.25;padding-top:1.5vmin;animation:up .5s ease-out .3s 1 both}
+.opts{display:flex;flex-direction:column;gap:3vmin}
+.opt{position:relative;animation:up .5s ease-out 0.8s 1 both}
+.opt:nth-child(2){animation-delay:1.1s}
+.in{position:relative;display:flex;align-items:center;gap:3vmin;background:#fff;border-radius:3vmin;padding:2.6vmin 3vmin;box-shadow:0 1vmin 3vmin rgba(80,60,160,.15)}
+.n{flex:none;width:9vmin;height:9vmin;border-radius:50%;background:#6c4dff;color:#fff;font-size:5.5vmin;font-weight:900;display:flex;align-items:center;justify-content:center}
+.opt:nth-child(2) .n{background:#a690ff}
+.t{font-size:5.8vmin;font-weight:900}
+.ring{position:absolute;inset:0;border:1vmin solid #e5231b;border-radius:3vmin;opacity:0;animation:fadein .2s ease-out 3.3s 1 both}
+.in.hit{animation:shake .3s linear 3.5s 1 both}
+.stamp{position:absolute;right:-1.5vmin;top:-6vmin;width:15vmin;height:15vmin;border-radius:50%;background:#e5231b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:5.4vmin;font-weight:900;box-shadow:inset 0 0 0 1vmin #e5231b,inset 0 0 0 1.4vmin #fff;transform:rotate(-14deg);animation:stamp .4s cubic-bezier(.3,1.4,.5,1) 3.3s 1 both}
+.bar{height:2.2vmin;border-radius:1.1vmin;background:#6c4dff;transform-origin:left center;animation:shrink 1.8s linear 1.4s 1 both,fadein .3s ease-out .8s 1 both}
+@keyframes pop{0%{transform:scale(.2);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes up{0%{transform:translateY(8vmin);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes fadein{0%{opacity:0}100%{opacity:1}}
+@keyframes shrink{0%{transform:scaleX(1)}100%{transform:scaleX(0)}}
+@keyframes stamp{0%{transform:rotate(-14deg) scale(2.6);opacity:0}60%{transform:rotate(-14deg) scale(.9);opacity:1}100%{transform:rotate(-14deg) scale(1);opacity:1}}
+@keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-1.2vmin)}40%{transform:translateX(1.2vmin)}60%{transform:translateX(-.8vmin)}80%{transform:translateX(.6vmin)}100%{transform:translateX(0)}}
+</style>
+<div class="wrap">
+  <div class="head">
+    <div class="q">Q.</div>
+    <div class="qt">밤사이 문의 40건, 무엇부터 답할까?</div>
+  </div>
+  <div class="opts">
+    <div class="opt"><div class="in"><div class="n">1</div><div class="t">먼저 온 순서대로</div></div></div>
+    <div class="opt"><div class="in hit"><div class="n">2</div><div class="t">급한 내용부터</div><div class="ring"></div></div><div class="stamp">정답</div></div>
+  </div>
+  <div class="bar"></div>
+</div>
+</html>

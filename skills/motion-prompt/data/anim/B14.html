@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B14 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.scene{position:absolute;inset:0}
+.a{background:linear-gradient(180deg,#1d3b66 0%,#3e7cb1 55%,#9cc5e0 100%)}
+.a .sun{position:absolute;left:68%;top:22%;width:16vmin;height:16vmin;border-radius:50%;background:radial-gradient(circle,#fff6d6,#ffd98a 70%,transparent 72%)}
+.a .m1{position:absolute;left:-10%;bottom:0;width:80%;height:46%;background:#173049;clip-path:polygon(0 100%,35% 8%,60% 55%,80% 25%,100% 100%)}
+.a .m2{position:absolute;left:30%;bottom:0;width:80%;height:34%;background:#0e2033;clip-path:polygon(0 100%,30% 20%,55% 60%,75% 10%,100% 100%)}
+.b{background:linear-gradient(180deg,#2a1348 0%,#6a2f7d 50%,#e07a8f 100%);animation:swapB .15s linear .4s 1 both}
+.b .moon{position:absolute;left:18%;top:20%;width:13vmin;height:13vmin;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#d8e4ff 70%)}
+.b .city{position:absolute;left:0;bottom:0;width:100%;height:42%;background:#12091f;clip-path:polygon(0 100%,0 55%,8% 55%,8% 30%,16% 30%,16% 60%,26% 60%,26% 15%,35% 15%,35% 50%,45% 50%,45% 35%,56% 35%,56% 65%,66% 65%,66% 20%,76% 20%,76% 48%,86% 48%,86% 30%,94% 30%,94% 58%,100% 58%,100% 100%)}
+.b .win{position:absolute;left:0;bottom:0;width:100%;height:42%;background:radial-gradient(circle at 30% 50%,#ffd27a 0 .6vmin,transparent .7vmin) 0 0/7vmin 6vmin,radial-gradient(circle at 70% 60%,#ffd27a 0 .6vmin,transparent .7vmin) 0 0/9vmin 8vmin;opacity:.7;clip-path:polygon(0 100%,0 55%,8% 55%,8% 30%,16% 30%,16% 60%,26% 60%,26% 15%,35% 15%,35% 50%,45% 50%,45% 35%,56% 35%,56% 65%,66% 65%,66% 20%,76% 20%,76% 48%,86% 48%,86% 30%,94% 30%,94% 58%,100% 58%,100% 100%)}
+.blob{position:absolute;left:50%;top:50%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;border-radius:50%;mix-blend-mode:screen;
+background:radial-gradient(circle,#fff8ec 0%,#fff1dc 12%,#ffb366 30%,#ff7aa8 48%,rgba(255,110,160,.35) 62%,rgba(255,110,160,0) 72%);
+animation:move 1s linear 0s 1 both,glow 1s linear 0s 1 both}
+.flash{position:absolute;inset:0;background:#fff;mix-blend-mode:screen;opacity:0;animation:flash .15s linear .4s 1 both}
+@keyframes swapB{0%{opacity:0}49%{opacity:0}50%{opacity:1}100%{opacity:1}}
+@keyframes move{0%{transform:translate(-65vw,-65vh)}47.5%{transform:translate(0,0)}100%{transform:translate(88vw,88vh)}}
+@keyframes glow{0%{opacity:0}40%{opacity:.9}47.5%{opacity:1}100%{opacity:0}}
+@keyframes flash{0%{opacity:0}50%{opacity:.9}100%{opacity:0}}
+</style>
+<div class="stage">
+  <div class="scene a"><div class="sun"></div><div class="m1"></div><div class="m2"></div></div>
+  <div class="scene b"><div class="moon"></div><div class="city"></div><div class="win"></div></div>
+  <div class="blob"></div>
+  <div class="flash"></div>
+</div>
+</html>

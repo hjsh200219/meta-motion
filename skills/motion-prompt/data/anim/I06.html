@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 I06 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0B1020;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 60%,#16204a 0,#0B1020 65%);perspective:204vmin}
+.tilt{position:relative;width:0;height:0;transform-style:preserve-3d;transform:translateY(4vmin) rotateX(-18deg)}
+.plate{position:absolute;left:-24vmin;top:-24vmin;width:48vmin;height:48vmin;border-radius:50%;
+  background:radial-gradient(circle,#2a3a78 0,#1d2a5e 55%,#16204a 100%);box-shadow:0 0 6vmin #3550b055;
+  transform:rotateX(90deg) translateZ(-13vmin) scale(1.75)}
+.ring{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;
+  animation:spin 8s linear 0s 1 both}
+@keyframes spin{from{transform:rotateY(0deg)}to{transform:rotateY(360deg)}}
+.card{position:absolute;left:-11vmin;top:-8.25vmin;width:22vmin;height:16.5vmin;transform-style:preserve-3d;
+  transform:rotateY(calc(var(--i)*45deg)) translateZ(34vmin)}
+.bob{position:absolute;inset:0;transform-style:preserve-3d;animation:bobA 8s ease-in-out 0s 1 both}
+.card:nth-child(even) .bob{animation-name:bobB}
+@keyframes bobA{0%,100%{transform:translateY(0)}25%{transform:translateY(-1vmin)}50%{transform:translateY(0)}75%{transform:translateY(1vmin)}}
+@keyframes bobB{0%,100%{transform:translateY(0)}25%{transform:translateY(1vmin)}50%{transform:translateY(0)}75%{transform:translateY(-1vmin)}}
+.face,.back{position:absolute;inset:0;box-sizing:border-box;border:.4vmin solid #fff;border-radius:.8vmin;overflow:hidden;backface-visibility:hidden}
+.face{background:linear-gradient(180deg,var(--a),var(--b))}
+.face::before{content:"";position:absolute;left:0;right:0;bottom:0;height:55%;background:var(--m);
+  clip-path:polygon(0 100%,0 55%,22% 20%,40% 50%,62% 5%,84% 45%,100% 30%,100% 100%)}
+.face::after{content:"";position:absolute;right:16%;top:14%;width:20%;height:26%;border-radius:50%;background:#fff7;box-shadow:0 0 2vmin #fff6}
+.face i{position:absolute;left:0;right:0;bottom:0;padding:.6vmin 1.2vmin;font-style:normal;font-size:2.4vmin;color:#fff;background:#0B102099;z-index:2}
+.back{transform:rotateY(180deg);background:#141c40}
+.p1{--a:#ff9a6b;--b:#ffd36b;--m:#7a3b5e}
+.p2{--a:#4fb3e8;--b:#b8ecff;--m:#2b5d7a}
+.p3{--a:#8d6bff;--b:#f0a6ff;--m:#3c2a78}
+.p4{--a:#46c98f;--b:#d4ff9a;--m:#1f6a58}
+.shine{position:absolute;inset:0;z-index:3;opacity:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 35%,#ffffffcc 50%,transparent 65%);background-size:250% 100%;
+  animation:shine 1s ease-in-out 7s 1 both}
+@keyframes shine{0%{opacity:0;background-position:120% 0}20%{opacity:1}80%{opacity:1}100%{opacity:0;background-position:-20% 0}}
+</style>
+<div class="stage">
+  <div class="tilt">
+    <div class="plate"></div>
+    <div class="ring">
+      <div class="card" style="--i:0"><div class="bob"><div class="face p1"><i>photo1.jpg</i><span class="shine"></span></div><div class="back"></div></div></div>
+      <div class="card" style="--i:1"><div class="bob"><div class="face p2"><i>photo2.jpg</i></div><div class="back"></div></div></div>
+      <div class="card" style="--i:2"><div class="bob"><div class="face p3"><i>photo3.jpg</i></div><div class="back"></div></div></div>
+      <div class="card" style="--i:3"><div class="bob"><div class="face p4"><i>photo4.jpg</i></div><div class="back"></div></div></div>
+      <div class="card" style="--i:4"><div class="bob"><div class="face p1"><i>photo1.jpg</i></div><div class="back"></div></div></div>
+      <div class="card" style="--i:5"><div class="bob"><div class="face p2"><i>photo2.jpg</i></div><div class="back"></div></div></div>
+      <div class="card" style="--i:6"><div class="bob"><div class="face p3"><i>photo3.jpg</i></div><div class="back"></div></div></div>
+      <div class="card" style="--i:7"><div class="bob"><div class="face p4"><i>photo4.jpg</i></div><div class="back"></div></div></div>
+    </div>
+  </div>
+</div>
+</html>

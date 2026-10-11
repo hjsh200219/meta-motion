@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 E06 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05071A;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(#05071A 30%,#0b0f33 100%)}
+.cam{position:absolute;inset:0;animation:sway 4.5s linear 0s 1 both}
+@keyframes sway{0%{transform:translateX(0) scale(1.05)}25%{transform:translateX(-1vmin) scale(1.05)}50%{transform:translateX(1vmin) scale(1.05)}75%{transform:translateX(-.8vmin) scale(1.05)}100%{transform:translateX(0) scale(1.05)}}
+.stars{position:absolute;inset:0;opacity:.7;
+background-image:radial-gradient(circle,#fff 0 .12vmin,transparent .22vmin),radial-gradient(circle,#cfe0ff 0 .1vmin,transparent .2vmin),radial-gradient(circle,#fff 0 .16vmin,transparent .28vmin);
+background-size:17vmin 13vmin,23vmin 19vmin,41vmin 33vmin;background-position:2vmin 3vmin,9vmin 11vmin,17vmin 6vmin;
+animation:tw2 .75s linear 0s 6 both}
+@keyframes tw2{0%,100%{opacity:.5}50%{opacity:.95}}
+.tint{position:absolute;inset:0;opacity:0}
+.t1{background:radial-gradient(circle at 25% 28%,rgba(255,150,40,.55),transparent 55%);animation:pulse .85s linear .45s 1 both}
+.t2{background:radial-gradient(circle at 76% 24%,rgba(255,80,160,.5),transparent 55%);animation:pulse 1.05s linear 1.3s 1 both}
+.t3{background:radial-gradient(circle at 50% 27%,rgba(255,250,235,.85),rgba(255,180,92,.5) 40%,rgba(90,123,255,.35) 100%);animation:flash .65s linear 2.35s 1 both}
+@keyframes pulse{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+@keyframes flash{0%{opacity:0}18%{opacity:1}100%{opacity:0}}
+.r{position:absolute;width:.7vmin;height:10vmin;border-radius:1vmin;left:calc(var(--x) - .35vmin);top:var(--y);
+background:linear-gradient(to top,transparent,rgba(255,190,90,.85) 85%,#fff);
+animation:rise var(--d) cubic-bezier(.2,.6,.4,1) var(--s) 1 both}
+@keyframes rise{0%{transform:translate(var(--dx),70vh);opacity:1}85%{opacity:1}100%{transform:translate(0,0);opacity:0}}
+.b{position:absolute;width:0;height:0;left:var(--x);top:var(--y);
+animation:fall var(--fd) ease-in var(--fs) 1 both,fade var(--od) linear var(--os) 1 both}
+@keyframes fall{0%{transform:translateY(0)}100%{transform:translateY(var(--g))}}
+@keyframes fade{0%{opacity:1}100%{opacity:0}}
+.b1{--x:25%;--y:28%;--c:#ffb23c;--s:.45s;--d:.7s;--R:17vmin;--fs:1.3s;--fd:1.5s;--g:20vmin;--os:1.8s;--od:1.2s;--f:1.2s}
+.b2{--x:76%;--y:24%;--c:#ff5fa8;--s:1.3s;--d:.75s;--R:19vmin;--fs:2.2s;--fd:1.6s;--g:20vmin;--os:2.6s;--od:1.2s;--f:2.05s}
+.b3{--x:50%;--y:27%;--c:#6fd0ff;--s:2.35s;--d:.65s;--R:25vmin;--fs:3.05s;--fd:1.4s;--g:12vmin;--os:3.05s;--od:1.4s;--f:3s}
+.b i{position:absolute;left:0;top:0;width:3vmin;height:.55vmin;margin-top:-.28vmin;border-radius:1vmin;--k:1;
+background:linear-gradient(90deg,transparent,var(--c) 70%,#fff);box-shadow:0 0 1.2vmin var(--c);transform-origin:0 50%;
+animation:out var(--d) cubic-bezier(.1,.7,.3,1) var(--s) 1 both}
+.b i:nth-child(even){--k:.68}
+.b i:nth-child(3n){--c:#fff4d6}
+.b i::after{content:"";position:absolute;right:0;top:-.12vmin;width:.8vmin;height:.8vmin;border-radius:50%;background:#fff;animation:tw .18s linear var(--f) 8 both}
+@keyframes tw{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes out{0%{transform:rotate(var(--a)) translateX(0) scaleX(.2);opacity:0}8%{opacity:1}100%{transform:rotate(var(--a)) translateX(calc(var(--R)*var(--k))) scaleX(1);opacity:1}}
+.b i:nth-child(1){--a:0deg}.b i:nth-child(2){--a:20deg}.b i:nth-child(3){--a:40deg}.b i:nth-child(4){--a:60deg}.b i:nth-child(5){--a:80deg}.b i:nth-child(6){--a:100deg}.b i:nth-child(7){--a:120deg}.b i:nth-child(8){--a:140deg}.b i:nth-child(9){--a:160deg}.b i:nth-child(10){--a:180deg}.b i:nth-child(11){--a:200deg}.b i:nth-child(12){--a:220deg}.b i:nth-child(13){--a:240deg}.b i:nth-child(14){--a:260deg}.b i:nth-child(15){--a:280deg}.b i:nth-child(16){--a:300deg}.b i:nth-child(17){--a:320deg}.b i:nth-child(18){--a:340deg}
+.city{position:absolute;left:0;right:0;bottom:0;height:20%;background:#010208;
+clip-path:polygon(0 100%,0 55%,6% 55%,6% 40%,12% 40%,12% 62%,18% 62%,18% 30%,24% 30%,24% 50%,30% 50%,30% 65%,38% 65%,38% 45%,44% 45%,44% 20%,50% 20%,50% 55%,57% 55%,57% 38%,63% 38%,63% 60%,70% 60%,70% 28%,76% 28%,76% 48%,83% 48%,83% 36%,90% 36%,90% 60%,95% 60%,95% 50%,100% 50%,100% 100%)}
+.city b{position:absolute;width:.8vmin;height:.8vmin;background:#ffd98a;box-shadow:0 0 1vmin #ffb85c}
+.name{position:absolute;left:0;right:0;top:55%;display:flex;flex-direction:column;align-items:center;gap:1.4vmin;
+animation:glow 1.45s ease-in-out 3.05s 1 both}
+@keyframes glow{0%{filter:drop-shadow(0 0 1vmin rgba(255,150,40,.5))}50%{filter:drop-shadow(0 0 3vmin rgba(255,170,60,.95))}100%{filter:drop-shadow(0 0 2vmin rgba(255,150,40,.7))}}
+.name h1{margin:0;font-size:11vmin;font-weight:900;white-space:nowrap;color:#fff3dc;
+text-shadow:0 0 2vmin #ff9a3c,0 0 5vmin rgba(255,140,40,.7);animation:focus .65s ease-out 2.35s 1 both}
+@keyframes focus{0%{opacity:0;letter-spacing:4vmin;filter:blur(2.4vmin);transform:translateY(2vmin) scale(1.06)}100%{opacity:1;letter-spacing:.6vmin;filter:blur(0);transform:none}}
+.fe{font-size:3.6vmin;font-weight:800;letter-spacing:2vmin;color:#ffc98a;animation:up .18s ease-out 2.7s 1 both}
+.dt{font-size:4.6vmin;font-weight:700;color:#ffe9cc;letter-spacing:.3vmin;animation:up .17s ease-out 2.88s 1 both}
+@keyframes up{0%{opacity:0;transform:translateY(1.5vmin)}100%{opacity:1;transform:none}}
+</style>
+<div class="stage"><div class="cam">
+<div class="stars"></div>
+<div class="tint t1"></div><div class="tint t2"></div>
+<div class="r" style="--x:25%;--y:28%;--dx:8vmin;--s:0s;--d:.45s"></div>
+<div class="r" style="--x:76%;--y:24%;--dx:-8vmin;--s:.45s;--d:.85s"></div>
+<div class="r" style="--x:50%;--y:27%;--dx:0vmin;--s:1.3s;--d:1.05s"></div>
+<div class="b b1"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="b b2"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="b b3"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="tint t3"></div>
+<div class="city">
+<b style="left:9%;top:52%"></b><b style="left:21%;top:45%"></b><b style="left:21%;top:60%"></b><b style="left:47%;top:35%"></b><b style="left:47%;top:50%"></b><b style="left:60%;top:55%"></b><b style="left:73%;top:42%"></b><b style="left:73%;top:58%"></b><b style="left:86%;top:50%"></b><b style="left:32%;top:78%"></b><b style="left:80%;top:70%"></b>
+</div>
+<div class="name"><div class="fe">FESTIVAL</div><h1>○○시 빛 축제</h1><div class="dt">10월 3일 ~ 5일</div></div>
+</div></div>
+</html>

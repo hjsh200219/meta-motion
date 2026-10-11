@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B07 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.scene{position:relative;width:100%;height:100%;overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(0,0,0,0) 55%,rgba(0,0,0,.35) 100%),
+    radial-gradient(ellipse at 70% 30%,#f7c98b 0,rgba(247,201,139,0) 35%),
+    linear-gradient(180deg,#2c4a6e 0%,#6f8fae 45%,#d9a47a 70%,#3a3a48 71%,#22222c 100%)}
+.hill{position:absolute;left:-10%;width:120%;border-radius:50% 50% 0 0}
+.h1{bottom:30%;height:22%;background:#31404f;opacity:.9}
+.h2{bottom:26%;height:16%;left:20%;background:#26303c}
+.city{position:absolute;left:0;right:0;bottom:25%;height:16%;
+  background:
+    linear-gradient(#1b1e27,#1b1e27) 6% 100%/7% 70% no-repeat,
+    linear-gradient(#1b1e27,#1b1e27) 16% 100%/5% 100% no-repeat,
+    linear-gradient(#1b1e27,#1b1e27) 26% 100%/8% 55% no-repeat,
+    linear-gradient(#1b1e27,#1b1e27) 62% 100%/6% 85% no-repeat,
+    linear-gradient(#1b1e27,#1b1e27) 72% 100%/9% 60% no-repeat,
+    linear-gradient(#1b1e27,#1b1e27) 86% 100%/6% 95% no-repeat}
+.stack{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column}
+.row{display:flex;align-items:stretch}
+.tag{flex:none;background:#E8442E;color:#fff;font-weight:900;font-size:min(5.2vmin,4.2vw);
+  padding:.45em .9em;display:flex;align-items:center;letter-spacing:.08em;
+  animation:tagin .3s ease-out .2s 1 both,flash .3s linear .5s 1 both}
+.title{flex:1;min-width:0;background:#F4F1EA;color:#16130E;font-weight:900;font-size:min(5.2vmin,4vw);
+  display:flex;align-items:center;padding:0 .8em;white-space:nowrap;overflow:hidden;
+  animation:reveal .45s ease-out .45s 1 both}
+.bar{background:#16130E;color:#F4F1EA;overflow:hidden;font-size:min(3.6vmin,3vw);
+  padding:.7em 0;animation:rise .3s ease-out .1s 1 both}
+.track{display:flex;width:max-content;white-space:nowrap;
+  animation:flow 5.9s linear .1s 1 both}
+.track span{padding-right:.8em}
+@keyframes rise{from{transform:translateY(101%)}to{transform:translateY(0)}}
+@keyframes tagin{from{transform:translateX(-110%)}to{transform:translateX(0)}}
+@keyframes flash{0%{filter:brightness(1)}40%{filter:brightness(2.6) saturate(.6)}100%{filter:brightness(1)}}
+@keyframes reveal{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes flow{from{transform:translateX(100vw)}to{transform:translateX(-96.7vw)}}
+</style>
+<div class="scene">
+  <div class="hill h1"></div>
+  <div class="hill h2"></div>
+  <div class="city"></div>
+  <div class="stack">
+    <div class="row">
+      <div class="tag">속보</div>
+      <div class="title">오늘의 핵심: 질문을 바꾸면 답이 바뀐다</div>
+    </div>
+    <div class="bar">
+      <div class="track">
+        <span>● 다음 시간 안내 /</span><span>● 자료는 고정 댓글에 /</span><span>● 질문은 댓글로 /</span>
+        <span>● 다음 시간 안내 /</span><span>● 자료는 고정 댓글에 /</span><span>● 질문은 댓글로 /</span>
+        <span>● 다음 시간 안내 /</span><span>● 자료는 고정 댓글에 /</span><span>● 질문은 댓글로 /</span>
+        <span>● 다음 시간 안내 /</span><span>● 자료는 고정 댓글에 /</span><span>● 질문은 댓글로 /</span>
+        <span>● 다음 시간 안내 /</span><span>● 자료는 고정 댓글에 /</span><span>● 질문은 댓글로 /</span>
+      </div>
+    </div>
+  </div>
+</div>
+</html>

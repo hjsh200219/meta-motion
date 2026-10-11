@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F15 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#f6b26b 0%,#e98a5b 38%,#7a5a8c 62%,#2b2f4a 100%)}
+.sun{position:absolute;left:62%;top:26%;width:18vmin;height:18vmin;border-radius:50%;background:radial-gradient(circle,#fff6d6 0%,#ffd98a 55%,rgba(255,217,138,0) 72%)}
+.mt{position:absolute;bottom:0;left:-10%;width:120%;height:46%;background:#4a3d66;clip-path:polygon(0 100%,0 55%,14% 30%,28% 52%,44% 14%,60% 48%,76% 26%,90% 50%,100% 38%,100% 100%)}
+.mt.b{height:34%;background:#2e2a4a;clip-path:polygon(0 100%,0 60%,20% 38%,38% 62%,58% 30%,80% 58%,100% 40%,100% 100%)}
+.city{position:absolute;bottom:0;left:0;width:100%;height:22%;background:
+linear-gradient(#1a1b30,#1a1b30) 6% 100%/7% 70% no-repeat,
+linear-gradient(#1a1b30,#1a1b30) 15% 100%/6% 95% no-repeat,
+linear-gradient(#1a1b30,#1a1b30) 24% 100%/8% 60% no-repeat,
+linear-gradient(#1a1b30,#1a1b30) 36% 100%/6% 85% no-repeat,
+linear-gradient(#1a1b30,#1a1b30) 48% 100%/9% 55% no-repeat,
+linear-gradient(#1a1b30,#1a1b30) 60% 100%/6% 100% no-repeat,
+linear-gradient(#1a1b30,#1a1b30) 71% 100%/8% 70% no-repeat,
+linear-gradient(#1a1b30,#1a1b30) 82% 100%/6% 88% no-repeat,
+linear-gradient(#1a1b30,#1a1b30) 92% 100%/7% 62% no-repeat}
+.tag{position:absolute;padding:1.2vmin 2.4vmin;border-radius:1.2vmin;background:rgba(24,22,44,.68);color:#fff;font-weight:800;font-size:4vmin;line-height:1.2;white-space:nowrap;opacity:0;animation-iteration-count:1;animation-fill-mode:both}
+.label{top:3vmin;right:3vmin;transform-origin:100% 0;animation-name:pop;animation-delay:.4s;animation-duration:.3s;animation-timing-function:ease-out}
+.credit{bottom:3vmin;left:3vmin;animation-name:slide;animation-delay:.6s;animation-duration:.4s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{0%{opacity:0;transform:scale(.8)}60%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes slide{0%{opacity:0;transform:translateX(-120%)}100%{opacity:1;transform:translateX(0)}}
+</style>
+<div class="stage">
+  <div class="sun"></div>
+  <div class="mt"></div>
+  <div class="mt b"></div>
+  <div class="city"></div>
+  <div class="tag label">AI 생성 이미지</div>
+  <div class="tag credit">출처: ○○기관 보도자료</div>
+</div>
+</html>

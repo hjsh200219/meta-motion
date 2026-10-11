@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 M04 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:#E7EFD8}
+.cam{position:absolute;left:50%;top:50%;width:0;height:0;transform-origin:0 0;animation:cam 7.9s 0s 1 both cubic-bezier(.45,0,.25,1)}
+.m{position:absolute;left:-110vmin;top:-110vmin;width:220vmin;height:220vmin;overflow:visible}
+.pp{position:absolute;width:0;height:0}
+.pin{position:absolute;left:0;top:0;width:0;height:0}
+.g{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0}
+.b{position:absolute;left:-2.5vmin;top:-7.04vmin;width:5vmin;height:5vmin;background:#E8442E;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:.3vmin .5vmin 1vmin rgba(0,0,0,.3)}
+.b span{display:block;transform:rotate(45deg);color:#fff;font-size:3vmin;font-weight:800;line-height:1}
+.p1{left:-22vmin;top:-15vmin}
+.p2{left:18vmin;top:-5vmin}
+.p3{left:-5vmin;top:24vmin}
+.p1 .pin{animation:drop .35s .1s 1 both ease-in}
+.p2 .pin{animation:drop .35s .25s 1 both ease-in}
+.p3 .pin{animation:drop .35s .4s 1 both ease-in}
+.p1 .g{animation:grow 1.4s 1.4s 1 both ease-in-out}
+.p2 .g{animation:grow 1.9s 3.4s 1 both ease-in-out}
+.p3 .g{animation:grow 1.2s 6s 1 both ease-in-out}
+.r1{animation:rv1 .6s 2.8s 1 both ease-in-out}
+.r2{animation:rv2 .7s 5.3s 1 both ease-in-out}
+.glow{animation:run .7s 7.2s 1 both linear}
+.card{position:absolute;left:calc(50% + 6vmin);bottom:calc(50% + 7vmin);width:42vmin;transform-origin:0 100%;animation:pop .35s 1.4s 1 both ease-out}
+.card.c2{animation-delay:3.5s}
+.card.c3{animation-delay:6s}
+.ci{position:relative;box-sizing:border-box;padding:2vmin;background:#fff;border-radius:3vmin;box-shadow:0 2.5vmin 5vmin rgba(0,0,0,.4);transform-origin:0 100%;animation:out .3s 2.5s 1 both ease-in}
+.c2 .ci{animation-delay:5s}
+.c3 .ci{animation-delay:6.9s}
+.ci::after{content:"";position:absolute;left:2.5vmin;bottom:-2.6vmin;border-left:2vmin solid transparent;border-right:2vmin solid transparent;border-top:2.6vmin solid #fff}
+.ph{position:relative;height:22vmin;border-radius:2vmin;overflow:hidden;background:linear-gradient(#bfe3f7,#e9f6ff)}
+.ph::before{content:"";position:absolute;left:0;right:0;bottom:0;height:60%;background:#5c9a63;clip-path:polygon(0 100%,22% 35%,45% 80%,70% 20%,100% 100%)}
+.ph::after{content:"";position:absolute;right:15%;top:12%;width:5vmin;height:5vmin;border-radius:50%;background:#ffe27a}
+.ph.n{background:linear-gradient(#1a2250,#6a4a9c)}
+.ph.n::before{background:#151a3a}
+.ph.n::after{background:#fff3c4}
+.ph.w{background:linear-gradient(#ffd7a0,#ff9a6b)}
+.ph.w::before{background:#7a4a3a;clip-path:polygon(0 100%,0 55%,18% 55%,18% 30%,38% 30%,38% 65%,60% 65%,60% 40%,82% 40%,82% 60%,100% 60%,100% 100%)}
+.ph.w::after{background:#fff}
+.cap{display:flex;align-items:center;gap:2vmin;margin-top:1.8vmin}
+.no{flex:none;width:7vmin;height:7vmin;border-radius:50%;background:#E8442E;color:#fff;font-size:4.6vmin;font-weight:800;display:flex;align-items:center;justify-content:center}
+.nm{font-size:4vmin;font-weight:700;color:#222;white-space:nowrap}
+.src{position:absolute;right:2vmin;bottom:1.6vmin;font-size:2.4vmin;color:rgba(50,60,30,.75);background:rgba(255,255,255,.6);padding:.5vmin 1.4vmin;border-radius:1vmin}
+@keyframes cam{
+0%,10.13%{transform:scale(1) translate(0vmin,0vmin)}
+17.72%,35.44%{transform:scale(2.3) translate(22vmin,15vmin)}
+39.24%{transform:scale(1.7) translate(2vmin,10vmin)}
+43.04%,67.09%{transform:scale(2.3) translate(-18vmin,5vmin)}
+71.5%{transform:scale(1.8) translate(-6.5vmin,-9.5vmin)}
+75.95%,91.14%{transform:scale(2.3) translate(5vmin,-24vmin)}
+100%{transform:scale(1) translate(0vmin,0vmin)}}
+@keyframes drop{
+0%{transform:translateY(-70vmin);opacity:0}
+15%{opacity:1}
+70%{transform:translateY(0)}
+85%{transform:translateY(-2vmin)}
+100%{transform:translateY(0);opacity:1}}
+@keyframes grow{0%{transform:scale(1)}20%{transform:scale(1.3)}85%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.12);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes out{0%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}
+@keyframes rv1{0%{clip-path:inset(0 60% 0 0)}100%{clip-path:inset(0 41% 0 0)}}
+@keyframes rv2{0%{clip-path:inset(0 0 52.3% 0)}100%{clip-path:inset(0 0 38% 0)}}
+@keyframes run{
+0%{transform:translate(28px,35px);opacity:0}
+5%{opacity:1}
+12.5%{transform:translate(38px,33.75px)}
+25%{transform:translate(48px,35px)}
+37.5%{transform:translate(58px,38.75px)}
+50%{transform:translate(68px,45px)}
+62.5%{transform:translate(64.3px,53.2px)}
+75%{transform:translate(59.25px,60.75px)}
+87.5%{transform:translate(52.8px,67.7px)}
+96%{opacity:1}
+100%{transform:translate(45px,74px);opacity:0}}
+</style>
+<div class="stage">
+ <div class="cam">
+  <svg class="m" viewBox="-60 -60 220 220">
+   <rect x="-60" y="-60" width="220" height="220" fill="#E7EFD8"/>
+   <path d="M-60 5 L-10 5 C5 8 20 18 21 30 C21 42 8 52 -10 55 L-60 58 Z" fill="#CFE6F2"/>
+   <ellipse cx="-8" cy="30" rx="14" ry="12" fill="#DDEEF7"/>
+   <circle cx="30" cy="36" r="8" fill="#D6E6BC"/>
+   <ellipse cx="68" cy="43" rx="11" ry="8" fill="#D2E3B4"/>
+   <ellipse cx="68" cy="43" rx="6" ry="4" fill="#C6DAA2"/>
+   <path d="M20 44 C40 52 30 62 55 66 S100 70 160 90" fill="none" stroke="#CFE6F2" stroke-width="4"/>
+   <g fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+    <path d="M-60 78 C-10 70 20 84 60 76 S120 70 160 74"/>
+    <path d="M42 -60 C48 -10 34 30 48 76 S54 130 52 160"/>
+    <path d="M20 50 C50 40 80 55 160 30"/>
+    <path d="M70 -60 C72 -20 66 20 68 45"/>
+   </g>
+   <g fill="#F3EBD6">
+    <rect x="88" y="58" width="6" height="5"/><rect x="97" y="60" width="6" height="5"/>
+    <rect x="106" y="57" width="6" height="5"/><rect x="92" y="68" width="6" height="5"/>
+    <rect x="102" y="69" width="6" height="5"/>
+    <rect x="30" y="80" width="6" height="5"/><rect x="38" y="81" width="6" height="5"/>
+    <rect x="56" y="80" width="6" height="5"/><rect x="64" y="79" width="6" height="5"/>
+   </g>
+   <g fill="#CFE2B0">
+    <circle cx="10" cy="68" r="3"/><circle cx="90" cy="20" r="3.5"/><circle cx="110" cy="40" r="3"/><circle cx="2" cy="-10" r="4"/>
+   </g>
+  </svg>
+  <svg class="m r1" viewBox="-60 -60 220 220">
+   <path d="M28 35 Q48 30 68 45" fill="none" stroke="#E8442E" stroke-width="1" stroke-dasharray="2.4 2" stroke-linecap="round"/>
+  </svg>
+  <svg class="m r2" viewBox="-60 -60 220 220">
+   <path d="M68 45 Q62 62 45 74" fill="none" stroke="#E8442E" stroke-width="1" stroke-dasharray="2.4 2" stroke-linecap="round"/>
+  </svg>
+  <svg class="m" viewBox="-60 -60 220 220">
+   <g class="glow"><circle r="3.4" fill="#ffd23f" opacity=".5"/><circle r="1.4" fill="#fff4a8"/></g>
+  </svg>
+  <div class="pp p1"><div class="pin"><div class="g"><div class="b"><span>1</span></div></div></div></div>
+  <div class="pp p2"><div class="pin"><div class="g"><div class="b"><span>2</span></div></div></div></div>
+  <div class="pp p3"><div class="pin"><div class="g"><div class="b"><span>3</span></div></div></div></div>
+ </div>
+ <div class="card c1"><div class="ci"><div class="ph"></div><div class="cap"><div class="no">1</div><div class="nm">○○호수 공원</div></div></div></div>
+ <div class="card c2"><div class="ci"><div class="ph n"></div><div class="cap"><div class="no">2</div><div class="nm">야경 전망대</div></div></div></div>
+ <div class="card c3"><div class="ci"><div class="ph w"></div><div class="cap"><div class="no">3</div><div class="nm">카페 거리</div></div></div></div>
+ <div class="src">지도 출처 · 샘플 지도</div>
+</div>
+</html>

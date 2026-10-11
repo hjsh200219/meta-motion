@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F05 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d1118;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.screen{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.photo{background:
+  radial-gradient(ellipse 14% 10% at 60% 40%,#f1c9a5 0,#d9a47d 70%,transparent 72%),
+  radial-gradient(ellipse 22% 7% at 42% 64%,#fdfdfb 0,#e4e8ec 80%,transparent 82%),
+  radial-gradient(ellipse 28% 20% at 42% 70%,#cfd6dc 0,#8f9aa5 75%,transparent 77%),
+  linear-gradient(180deg,#8fb3c9 0%,#c9dbe3 45%,#6f8b7d 46%,#4d6a5f 100%)}
+.bg{position:absolute;left:-10%;top:-10%;width:120%;height:120%;filter:blur(2.2vmin) brightness(.35)}
+.bg .photo{width:100%;height:100%}
+.bgwrap{position:absolute;inset:0;overflow:hidden;animation:bgin .15s linear 0s 1 both}
+@keyframes bgin{from{opacity:.4}to{opacity:1}}
+.stage{position:relative;width:100vmin;height:100vmin}
+.frame{position:absolute;left:12vmin;top:22vmin;width:54vmin;height:40vmin;border:2.4vmin solid #fff;box-shadow:0 3vmin 6vmin rgba(0,0,0,.65),0 1vmin 2vmin rgba(0,0,0,.4);transform:rotate(-3deg);transform-origin:50% 50%;animation:pop .6s cubic-bezier(.3,.7,.3,1) .15s 1 both}
+.frame .photo{width:100%;height:100%}
+@keyframes pop{
+  0%{transform:scale(0) rotate(-14deg);opacity:0}
+  40%{opacity:1}
+  65%{transform:scale(1.14) rotate(-1deg);opacity:1}
+  100%{transform:scale(1) rotate(-3deg);opacity:1}}
+.cap{position:absolute;left:50vmin;top:56vmin;width:42vmin;box-sizing:border-box;padding:2.4vmin 3vmin 2.4vmin 3.6vmin;background:#1b2433;border-left:1.4vmin solid #ff7a2f;box-shadow:0 2vmin 4vmin rgba(0,0,0,.55);animation:slide .5s cubic-bezier(.2,.8,.25,1) .8s 1 both}
+@keyframes slide{from{transform:translateX(60vmin);opacity:0}15%{opacity:1}to{transform:translateX(0);opacity:1}}
+.cap b{display:block;color:#fff;font-size:4.2vmin;line-height:1.3;font-weight:800;word-break:keep-all}
+.cap small{display:block;margin-top:1.4vmin;color:#aab4c3;font-size:2.8vmin}
+</style>
+<div class="screen">
+  <div class="bgwrap"><div class="bg"><div class="photo"></div></div></div>
+  <div class="stage">
+    <div class="frame"><div class="photo"></div></div>
+    <div class="cap">
+      <b>그릇을 닦는 손 — 반복 작업의 대표 장면</b>
+      <small>이미지: AI 생성</small>
+    </div>
+  </div>
+</div>
+</html>

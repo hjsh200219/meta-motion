@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 M07 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#9fd3f5;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.view{position:relative;width:100%;height:100%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(#5aaeea,#cfeaff 70%,#eaf6ff)}
+.stage{position:absolute;left:50%;top:50%;width:max(100vw,177.78vh);height:max(56.25vw,100vh);margin-left:calc(max(100vw,177.78vh) / -2);margin-top:calc(max(56.25vw,100vh) / -2);transform-origin:0 0;background:linear-gradient(#5aaeea,#cfeaff 60%,#eaf6ff);animation:cam 7.9s linear 0s 1 both}
+.stage{left:0;top:0;margin:0;transform-origin:0 0}
+.stagewrap{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+@keyframes cam{
+0%{transform:translate(0,0) scale(1);animation-timing-function:ease-in-out}
+19%{transform:translate(0%,-106.4%) scale(2.2);animation-timing-function:linear}
+44.3%{transform:translate(-47.5%,-52.2%) scale(2)}
+79.7%{transform:translate(-100%,0%) scale(2)}
+84.8%{transform:translate(-100%,0%) scale(2);animation-timing-function:ease-in-out}
+100%{transform:translate(0,0) scale(1)}}
+svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.fo{transform-box:fill-box;transform-origin:50% 100%}
+.sflag{animation:rise 1.4s ease-out .1s 1 both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.bounce{animation:bnc .7s ease-out 6.3s 1 both}
+@keyframes bnc{0%{transform:scale(1)}30%{transform:scale(1.7)}55%{transform:scale(.9)}78%{transform:scale(1.2)}100%{transform:scale(1)}}
+.draw{stroke-dasharray:100;animation:dr 5.6s linear .7s 1 both}
+@keyframes dr{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.dot{opacity:0;animation:mv 5.6s linear .7s 1 both,show .01s linear .69s 1 both}
+@keyframes show{from{opacity:0}to{opacity:1}}
+@keyframes mv{
+0%{transform:translate(22px,70px)}
+16.6%{transform:translate(40px,58px)}
+31.2%{transform:translate(58px,63px)}
+50.5%{transform:translate(78px,46px)}
+65.1%{transform:translate(96px,52px)}
+84.7%{transform:translate(114px,34px)}
+100%{transform:translate(130px,22px)}}
+.ring{transform-box:fill-box;transform-origin:50% 50%;animation:pl 1.4s ease-out .7s 4 both}
+@keyframes pl{from{transform:scale(.8);opacity:1}to{transform:scale(1.8);opacity:.1}}
+.burst{opacity:0;transform-box:fill-box;transform-origin:50% 50%;animation:bs .9s ease-out 6.3s 1 both}
+@keyframes bs{0%{opacity:0;transform:scale(1)}8%{opacity:.95}100%{opacity:0;transform:scale(8)}}
+.title{position:absolute;left:3vmin;top:3vmin;background:#14213d;color:#fff;padding:2vmin 3vmin;border-radius:1.5vmin;box-shadow:0 1vmin 3vmin rgba(0,0,0,.3)}
+.title b{display:block;font-size:5.4vmin;line-height:1.2}
+.title span{display:block;font-size:3.6vmin;margin-top:.8vmin;color:#c9d6ee}
+.dist{position:absolute;right:3vmin;top:3vmin;background:rgba(20,33,61,.85);color:#fff;border-radius:1.5vmin;padding:0 3vmin;height:8vmin;overflow:hidden;font-size:5.4vmin;font-weight:800}
+.dist div{height:8vmin;line-height:8vmin;white-space:nowrap}
+.dist .col{animation:cnt 5.6s steps(9,end) .7s 1 both}
+@keyframes cnt{from{transform:translateY(0)}to{transform:translateY(-72vmin)}}
+.dist{--h:8vmin}
+.graph{position:absolute;left:50%;bottom:3vmin;width:70vmin;height:14vmin;margin-left:-35vmin;background:rgba(20,33,61,.8);border-radius:1.5vmin;overflow:hidden}
+.graph svg{position:absolute;left:0;top:0;width:70vmin;height:14vmin}
+.fill{position:absolute;left:0;top:0;height:100%;width:0;overflow:hidden;animation:fw 5.6s linear .7s 1 both}
+@keyframes fw{from{width:0}to{width:70vmin}}
+.pt{position:absolute;top:0;left:0;width:0;height:100%;animation:pp 5.6s linear .7s 1 both}
+.pt i{position:absolute;left:-1.2vmin;top:3vmin;width:2.4vmin;height:2.4vmin;border-radius:50%;background:#fff;border:.5vmin solid #ff8a2e}
+@keyframes pp{from{left:0}to{left:70vmin}}
+</style>
+<div class="view"><div class="stage">
+<svg viewBox="0 0 160 90" preserveAspectRatio="none">
+<polygon points="0,90 0,60 20,50 45,40 70,48 95,38 115,28 130,16 145,30 160,45 160,90" fill="#4f9a56"/>
+<polygon points="30,62 45,40 70,48 95,38 115,28 130,16 145,30 152,62 100,58" fill="#8a6a45"/>
+<polygon points="121,23 130,16 139,24 134,21 130,25 126,21" fill="#fff"/>
+<polygon points="0,90 0,72 30,66 60,74 100,70 160,76 160,90" fill="#3f8548"/>
+<ellipse cx="100" cy="78" rx="12" ry="3.2" fill="#4aa3d8"/>
+<path d="M10,78l2-6 2 6zM16,80l2-6 2 6zM70,80l2-6 2 6zM76,78l2-6 2 6zM140,72l2-6 2 6zM148,76l2-6 2 6zM30,76l2-6 2 6z" fill="#1f5d33"/>
+<path d="M22,70L40,58L58,63L78,46L96,52L114,34L130,22" fill="none" stroke="#fff" stroke-opacity=".65" stroke-width=".8" stroke-linejoin="round"/>
+<path class="draw" pathLength="100" d="M22,70L40,58L58,63L78,46L96,52L114,34L130,22" fill="none" stroke="#FF4D2E" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round"/>
+<g transform="translate(22,70)"><g class="fo"><rect x="-6" y="-8" width="12" height="5" rx="1" fill="#2fa84f"/><text x="0" y="-4.2" font-size="3.4" fill="#fff" text-anchor="middle" font-weight="700">출발</text><path d="M-1.5-3h3l-1.5 3z" fill="#2fa84f"/></g></g>
+<g transform="translate(130,22)"><g class="fo sflag"><g class="fo bounce"><rect x="-8" y="-13" width="16" height="6" rx="1.2" fill="#e8281c"/><text x="0" y="-8.6" font-size="3.8" fill="#fff" text-anchor="middle" font-weight="700">정상 ▲</text><path d="M-2-7h4l-2 4z" fill="#e8281c"/></g></g></g>
+<g transform="translate(130,22)"><circle class="burst" r="2" fill="none" stroke="#ff8a2e" stroke-width=".6"/></g>
+<g class="dot"><circle class="ring" r="2.6" fill="none" stroke="#ff8a2e" stroke-width=".7"/><circle r="1.3" fill="#fff" stroke="#ff8a2e" stroke-width=".4"/></g>
+</svg></div>
+<div class="title"><b>○○산 둘레길 1코스</b><span>4.2km · 약 2시간</span></div>
+<div class="dist"><div class="col"><div>0.0km</div><div>0.5km</div><div>1.0km</div><div>1.5km</div><div>2.0km</div><div>2.5km</div><div>3.0km</div><div>3.5km</div><div>4.0km</div><div>4.2km</div></div></div>
+<div class="graph">
+<svg viewBox="0 0 100 20" preserveAspectRatio="none"><polygon points="0,20 0,16 15,12 30,15 50,9 65,12 85,5 100,2 100,20" fill="#5b6a8a"/></svg>
+<div class="fill"><svg viewBox="0 0 100 20" preserveAspectRatio="none"><polygon points="0,20 0,16 15,12 30,15 50,9 65,12 85,5 100,2 100,20" fill="#FF4D2E"/></svg></div>
+<div class="pt"><i></i></div>
+</div></div>
+</html>

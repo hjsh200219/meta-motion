@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 M09 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1630;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden}
+/* 촬영 화면 예시(사진 대체) */
+.bg{position:absolute;inset:-8%;background:linear-gradient(180deg,#7fb6e6 0%,#bfe0f0 42%,#e8e4c8 60%,#6fa86a 61%,#3f7d4a 100%);transform-origin:50% 55%;animation:zoom 6s linear 0s 1 both}
+.bg i{position:absolute;display:block}
+.m1{left:2%;bottom:39%;width:46%;height:30%;background:linear-gradient(#6d8aa8,#4d6a86);clip-path:polygon(0 100%,45% 0,100% 100%)}
+.m2{left:36%;bottom:39%;width:52%;height:38%;background:linear-gradient(#7a97b3,#56738f);clip-path:polygon(0 100%,55% 0,100% 100%)}
+.sun{right:14%;top:14%;width:12%;aspect-ratio:1;border-radius:50%;background:#fff3b0;box-shadow:0 0 6vmin #fff3b0}
+.b1,.b2,.b3{bottom:39%;background:#8a9bb0}
+.b1{left:5%;width:6%;height:14%}.b2{left:12%;width:5%;height:20%}.b3{left:18%;width:7%;height:10%}
+@keyframes zoom{from{transform:scale(1)}to{transform:scale(1.16)}}
+/* 어두운 막 */
+.veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,20,56,.88) 0%,rgba(10,26,70,.5) 35%,rgba(10,26,70,.5) 55%,rgba(8,20,56,.92) 100%);animation:fade .45s linear 0s 1 both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.ui{position:absolute;inset:0;box-sizing:border-box;padding:5vmin 6vmin;display:flex;flex-direction:column;justify-content:space-between}
+.pill{align-self:flex-start;background:#FFD400;color:#10204a;font-weight:800;font-size:4.2vmin;padding:1.2vmin 3.4vmin;border-radius:10vmin;animation:pill .45s ease-out 0s 1 both}
+@keyframes pill{from{opacity:0;transform:translateX(-4vmin)}to{opacity:1;transform:none}}
+.head{display:flex;flex-direction:column;align-items:flex-start;gap:1.6vmin}
+.mask{overflow:hidden;padding:0 1vmin;line-height:1.15}
+.title{display:block;color:#fff;font-weight:900;font-size:12.5vmin;letter-spacing:-.02em;text-shadow:0 .6vmin 2vmin rgba(0,0,0,.4);animation:rise .6s cubic-bezier(.2,.9,.25,1) .35s 1 both}
+@keyframes rise{from{transform:translateY(115%)}to{transform:translateY(0)}}
+.line{height:1.4vmin;width:34vmin;background:#FFD400;border-radius:1vmin;transform-origin:0 50%;animation:draw .35s ease-out .95s 1 both}
+@keyframes draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.mid{flex:1}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4vmin}
+@media (max-aspect-ratio:6/5){.grid{grid-template-columns:repeat(2,1fr)}}
+.card{display:flex;align-items:center;gap:2vmin;box-sizing:border-box;padding:2.2vmin 2.4vmin;background:rgba(8,20,56,.62);border:.45vmin solid #fff;border-radius:3vmin;color:#fff;min-width:0;animation:pop .75s cubic-bezier(.2,.9,.3,1) 1.3s 1 both}
+.card:nth-child(2),.card:nth-child(2) .ic{animation-delay:1.6s}
+.card:nth-child(3),.card:nth-child(3) .ic{animation-delay:1.9s}
+.card:nth-child(4),.card:nth-child(4) .ic{animation-delay:2.2s}
+@keyframes pop{0%{opacity:0;transform:translateY(12vmin)}60%{opacity:1;transform:translateY(-1.8vmin)}100%{opacity:1;transform:translateY(0)}}
+.txt{display:flex;flex-direction:column;gap:.6vmin;min-width:0}
+.txt small{font-size:3.2vmin;color:#cfd9f5;font-weight:600}
+.txt b{font-size:4.2vmin;font-weight:800;line-height:1.2}
+.ic{flex:none;width:10vmin;height:10vmin;border-radius:50%;display:grid;place-items:center;animation:spin .75s cubic-bezier(.2,.9,.3,1) 1.3s 1 both,wow .45s ease-in-out 2.5s 1 both}
+.c1 .ic{background:#ef5350}.c2 .ic{background:#f59e0b}.c3 .ic{background:#22a559}.c4 .ic{background:#8e5cf0}
+@keyframes spin{from{transform:rotate(-90deg)}to{transform:rotate(0)}}
+@keyframes wow{0%{scale:1;box-shadow:0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}50%{scale:1.25;box-shadow:0 0 3vmin 1vmin rgba(255,255,255,.9);filter:brightness(1.4)}100%{scale:1;box-shadow:0 0 0 0 rgba(255,255,255,0);filter:brightness(1)}}
+/* 흰 아이콘 */
+.g{position:relative;display:block;width:5vmin;height:5vmin}
+.person::before{content:"";position:absolute;left:1.5vmin;top:0;width:2vmin;height:2vmin;border-radius:50%;background:#fff}
+.person::after{content:"";position:absolute;left:.6vmin;top:2.5vmin;width:3.8vmin;height:2.5vmin;border-radius:2vmin 2vmin .4vmin .4vmin;background:#fff}
+.apple{top:.8vmin;width:4.4vmin;height:4vmin;border-radius:50% 50% 46% 46%;background:#fff}
+.apple::before{content:"";position:absolute;left:2.2vmin;top:-1.2vmin;width:.4vmin;height:1.4vmin;background:#fff;border-radius:.3vmin}
+.apple::after{content:"";position:absolute;left:2.6vmin;top:-1.2vmin;width:1.8vmin;height:1vmin;background:#fff;border-radius:0 1vmin 0 1vmin}
+.mount{background:#fff;clip-path:polygon(0 100%,32% 22%,52% 60%,74% 0,100% 100%);width:5.6vmin}
+.star{background:#fff;clip-path:polygon(50% 0,62% 36%,100% 38%,70% 60%,80% 100%,50% 76%,20% 100%,30% 60%,0 38%,38% 36%)}
+</style>
+<div class="stage">
+  <div class="bg"><i class="sun"></i><i class="m1"></i><i class="m2"></i><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+  <div class="veil"></div>
+  <div class="ui">
+    <div class="head">
+      <div class="pill">우리 지역 한눈에</div>
+      <div class="mask"><span class="title">○○시</span></div>
+      <div class="line"></div>
+    </div>
+    <div class="mid"></div>
+    <div class="grid">
+      <div class="card c1"><div class="ic"><i class="g person"></i></div><div class="txt"><small>인구</small><b>약 00만 명</b></div></div>
+      <div class="card c2"><div class="ic"><i class="g apple"></i></div><div class="txt"><small>특산물</small><b>○○ 사과</b></div></div>
+      <div class="card c3"><div class="ic"><i class="g mount"></i></div><div class="txt"><small>명소</small><b>○○산</b></div></div>
+      <div class="card c4"><div class="ic"><i class="g star"></i></div><div class="txt"><small>축제</small><b>○○ 축제</b></div></div>
+    </div>
+  </div>
+</div>
+</html>

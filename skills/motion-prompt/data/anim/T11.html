@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T11 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.screen{width:100%;height:100%;background:#F4F6FA;display:flex;flex-direction:column;align-items:center;box-sizing:border-box;padding:5vmin 3vmin 4vmin}
+.chat{width:min(94vw,120vmin);display:flex;flex-direction:column;gap:3.5vmin;flex:1;min-height:0}
+.row{display:flex;width:100%}
+.row.me{justify-content:flex-end}
+.row.ai{justify-content:flex-start}
+.bubble{font-size:5vmin;line-height:1.5;padding:2.2vmin 3.6vmin;border-radius:4vmin;white-space:nowrap}
+.me .bubble{background:#2563EB;color:#fff;font-weight:700;border-bottom-right-radius:0.8vmin;opacity:0;animation:fadeIn 0.1s linear 0.3s 1 both}
+.stack{display:grid}
+.stack>*{grid-area:1/1;align-self:start}
+.ai .bubble{background:#fff;color:#14234B;box-shadow:0 0.8vmin 3vmin rgba(20,35,75,.12);border-bottom-left-radius:0.8vmin}
+.dotsb{display:flex;gap:1.6vmin;align-items:center;opacity:0;animation:dotsLife 0.8s linear 1.7s 1 both}
+.dot{width:2.4vmin;height:2.4vmin;border-radius:50%;background:#9AA3B5;animation:blink 0.3s ease-in-out 1.7s 2 both}
+.dot:nth-child(2){animation-delay:1.8s}
+.dot:nth-child(3){animation-delay:1.9s}
+.ans{opacity:0;transform-origin:left bottom;animation:fadeIn 0.1s linear 2.5s 1 both,pop 0.28s ease-out 4.72s 1 both}
+.ln{display:block}
+.c{white-space:pre;opacity:0}
+.me .c{animation:show 0.05s linear calc(0.3s + var(--i)*0.09s) 1 both}
+.ans .c{animation:show 0.05s linear calc(2.55s + var(--i)*0.065s) 1 both}
+.input{width:min(94vw,120vmin);box-sizing:border-box;margin-top:3vmin;background:#fff;border-radius:8vmin;padding:2.4vmin 2.4vmin 2.4vmin 4.5vmin;display:flex;align-items:center;justify-content:space-between;box-shadow:0 0.6vmin 3vmin rgba(20,35,75,.1);font-size:4.4vmin;color:#A7AEBE}
+.send{width:7vmin;height:7vmin;border-radius:50%;background:#2563EB;display:flex;align-items:center;justify-content:center;color:#fff;font-size:4vmin;font-weight:700}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes show{from{opacity:0}to{opacity:1}}
+@keyframes dotsLife{0%{opacity:0}12%{opacity:1}98%{opacity:1}100%{opacity:0}}
+@keyframes blink{0%,100%{opacity:.25;transform:translateY(0)}50%{opacity:1;transform:translateY(-0.8vmin)}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.07)}70%{transform:scale(.98)}100%{transform:scale(1)}}
+</style>
+<div class="screen">
+  <div class="chat">
+    <div class="row me">
+      <div class="bubble">
+        <span class="c" style="--i:0">회</span><span class="c" style="--i:1">의</span><span class="c" style="--i:2">록</span><span class="c" style="--i:3"> </span><span class="c" style="--i:4">3</span><span class="c" style="--i:5">줄</span><span class="c" style="--i:6">로</span><span class="c" style="--i:7"> </span><span class="c" style="--i:8">요</span><span class="c" style="--i:9">약</span><span class="c" style="--i:10">해</span><span class="c" style="--i:11">줘</span>
+      </div>
+    </div>
+    <div class="row ai">
+      <div class="stack">
+        <div class="bubble dotsb"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <div class="bubble ans">
+          <span class="ln"><span class="c" style="--i:0">①</span><span class="c" style="--i:1"> </span><span class="c" style="--i:2">예</span><span class="c" style="--i:3">산</span><span class="c" style="--i:4">은</span><span class="c" style="--i:5"> </span><span class="c" style="--i:6">다</span><span class="c" style="--i:7">음</span><span class="c" style="--i:8"> </span><span class="c" style="--i:9">주</span><span class="c" style="--i:10"> </span><span class="c" style="--i:11">확</span><span class="c" style="--i:12">정</span></span>
+          <span class="ln"><span class="c" style="--i:13">②</span><span class="c" style="--i:14"> </span><span class="c" style="--i:15">담</span><span class="c" style="--i:16">당</span><span class="c" style="--i:17">은</span><span class="c" style="--i:18"> </span><span class="c" style="--i:19">기</span><span class="c" style="--i:20">획</span><span class="c" style="--i:21">팀</span></span>
+          <span class="ln"><span class="c" style="--i:22">③</span><span class="c" style="--i:23"> </span><span class="c" style="--i:24">교</span><span class="c" style="--i:25">육</span><span class="c" style="--i:26">은</span><span class="c" style="--i:27"> </span><span class="c" style="--i:28">1</span><span class="c" style="--i:29">1</span><span class="c" style="--i:30">월</span><span class="c" style="--i:31"> </span><span class="c" style="--i:32">진</span><span class="c" style="--i:33">행</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="input"><span>메시지를 입력하세요</span><span class="send">↑</span></div>
+</div>
+</html>

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T08 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+@property --n{syntax:'<integer>';inherits:false;initial-value:0}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#0D1322;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#fff}
+.stage{position:relative;width:100vw;height:100vh;overflow:hidden;background:radial-gradient(120vmax 80vmax at 20% 0%,#16203a 0%,#0D1322 60%)}
+.cap{position:absolute;left:3vw;top:2.6vmin;font-size:3.6vmin;color:#8f9bb8;letter-spacing:.2vmin}
+.chart{position:absolute;left:0;right:0;top:9vmin;height:60vmin}
+.row{position:absolute;left:0;top:0;width:100vw;height:11vmin;animation-duration:5s;animation-delay:0s;animation-iteration-count:1;animation-fill-mode:both;animation-timing-function:linear}
+.name{position:absolute;left:3vw;width:18vw;top:0;height:9vmin;display:flex;align-items:center;font-size:4.6vmin;color:#c3cadb;white-space:nowrap}
+.bar{position:absolute;left:22vw;top:0;height:9vmin;width:20vw;border-radius:4.5vmin;background:var(--c);transform-origin:left center;counter-reset:n var(--n);animation-duration:5s;animation-delay:0s;animation-iteration-count:1;animation-fill-mode:both;animation-timing-function:linear}
+.num{position:absolute;left:100%;top:0;height:9vmin;margin-left:1.8vmin;display:flex;align-items:center;font-size:5.6vmin;font-weight:900;color:#fff}
+.num::before{content:counter(n)}
+.i1{--c:#4FD6FF;animation-name:y1}.i1 .bar{animation-name:b1}
+.i2{--c:#FFB45A;animation-name:y2}.i2 .bar{animation-name:b2}
+.i3{--c:#FF6B8B;animation-name:y3}.i3 .bar{animation-name:b3}
+.i4{--c:#3DDC97;animation-name:y4}.i4 .bar{animation-name:b4}
+.i5{--c:#A78BFA;animation-name:y5}.i5 .bar{animation-name:b5}
+.i1 .bar{animation:b1 5s 0s 1 both linear,glow 0.9s 5s 1 both ease-in-out}
+/* 막대 길이 = 값 × 0.5vw (값과 정확히 비례) */
+@keyframes b1{0%{width:20vw;--n:40}30%{width:29vw;--n:58}50%{width:36vw;--n:72}70%{width:43vw;--n:86}100%{width:50vw;--n:100}}
+@keyframes b2{0%{width:36vw;--n:72}30%{width:38vw;--n:76}50%{width:40vw;--n:80}70%{width:42vw;--n:84}100%{width:43vw;--n:86}}
+@keyframes b3{0%{width:27.5vw;--n:55}30%{width:28.5vw;--n:57}50%{width:31vw;--n:62}70%{width:33vw;--n:66}100%{width:34vw;--n:68}}
+@keyframes b4{0%{width:32.5vw;--n:65}30%{width:35vw;--n:70}50%{width:41vw;--n:82}70%{width:44vw;--n:88}100%{width:46vw;--n:92}}
+@keyframes b5{0%{width:15vw;--n:30}30%{width:22.5vw;--n:45}50%{width:30vw;--n:60}70%{width:35vw;--n:70}100%{width:39vw;--n:78}}
+/* 순위 이동 0.45초 (1.05–1.5, 2.05–2.5, 3.05–3.5, 4.55–5.0초) */
+@keyframes y1{0%{transform:translateY(33vmin)}21%{transform:translateY(33vmin);animation-timing-function:ease-in-out}30%{transform:translateY(22vmin)}41%{transform:translateY(22vmin)}50%{transform:translateY(22vmin)}61%{transform:translateY(22vmin);animation-timing-function:ease-in-out}70%{transform:translateY(11vmin)}91%{transform:translateY(11vmin);animation-timing-function:ease-in-out}100%{transform:translateY(0)}}
+@keyframes y2{0%{transform:translateY(0)}30%{transform:translateY(0)}41%{transform:translateY(0);animation-timing-function:ease-in-out}50%{transform:translateY(11vmin)}61%{transform:translateY(11vmin);animation-timing-function:ease-in-out}70%{transform:translateY(22vmin)}100%{transform:translateY(22vmin)}}
+@keyframes y3{0%{transform:translateY(22vmin)}21%{transform:translateY(22vmin);animation-timing-function:ease-in-out}30%{transform:translateY(33vmin)}61%{transform:translateY(33vmin);animation-timing-function:ease-in-out}70%{transform:translateY(44vmin)}100%{transform:translateY(44vmin)}}
+@keyframes y4{0%{transform:translateY(11vmin)}30%{transform:translateY(11vmin)}41%{transform:translateY(11vmin);animation-timing-function:ease-in-out}50%{transform:translateY(0)}70%{transform:translateY(0)}91%{transform:translateY(0);animation-timing-function:ease-in-out}100%{transform:translateY(11vmin)}}
+@keyframes y5{0%{transform:translateY(44vmin)}61%{transform:translateY(44vmin);animation-timing-function:ease-in-out}70%{transform:translateY(33vmin)}100%{transform:translateY(33vmin)}}
+/* 1등 확정: 한 번 빛나며 살짝 부풀었다 돌아옴 */
+@keyframes glow{0%{transform:scaleY(1);box-shadow:0 0 0 0 rgba(79,214,255,0);filter:brightness(1)}40%{transform:scaleY(1.22);box-shadow:0 0 5vmin 1.5vmin rgba(79,214,255,.85);filter:brightness(1.35)}100%{transform:scaleY(1);box-shadow:0 0 0 0 rgba(79,214,255,0);filter:brightness(1)}}
+/* 기간 큰 글자 */
+.per{position:absolute;right:4vmin;bottom:3vmin;height:16vmin;width:50vmin}
+.per span{position:absolute;right:0;bottom:0;font-size:14vmin;font-weight:900;line-height:1;color:#fff;opacity:0;text-shadow:0 0 3vmin rgba(79,214,255,.35)}
+.per .p0{animation:s0 5s 0s 1 both linear}
+.per .p1{animation:s1 5s 0s 1 both linear}
+.per .p2{animation:s2 5s 0s 1 both linear}
+.per .p3{animation:s3 5s 0s 1 both linear}
+.per .p4{animation:s4 0.01s 4.99s 1 both linear}
+@keyframes s0{0%,29.9%{opacity:1}30%,100%{opacity:0}}
+@keyframes s1{0%,29.9%{opacity:0}30%,49.9%{opacity:1}50%,100%{opacity:0}}
+@keyframes s2{0%,49.9%{opacity:0}50%,69.9%{opacity:1}70%,100%{opacity:0}}
+@keyframes s3{0%,69.9%{opacity:0}70%,99.7%{opacity:1}99.8%,100%{opacity:0}}
+@keyframes s4{0%{opacity:0}100%{opacity:1}}
+</style>
+<div class="stage">
+  <div class="cap">data.csv · 5개 항목</div>
+  <div class="chart">
+    <div class="row i1"><div class="name">서울</div><div class="bar"><div class="num"></div></div></div>
+    <div class="row i2"><div class="name">부산</div><div class="bar"><div class="num"></div></div></div>
+    <div class="row i3"><div class="name">대구</div><div class="bar"><div class="num"></div></div></div>
+    <div class="row i4"><div class="name">인천</div><div class="bar"><div class="num"></div></div></div>
+    <div class="row i5"><div class="name">광주</div><div class="bar"><div class="num"></div></div></div>
+  </div>
+  <div class="per"><span class="p0">2020</span><span class="p1">2021</span><span class="p2">2022</span><span class="p3">2023</span><span class="p4">2024</span></div>
+</div>
+</html>

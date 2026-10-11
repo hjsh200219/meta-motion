@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 M01 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;display:grid;place-items:center;perspective:200vmin;
+background:linear-gradient(#CFE7F3 0%,#E9F4F8 38%,#CFE7F3 55%)}
+.world{position:relative;width:100vmin;height:100vmin;transform-style:preserve-3d;
+transform:rotateX(48deg) rotateZ(-8deg) scale(.85) translate(0,0);
+animation:cam 7s 0s 1 both}
+@keyframes cam{
+0%,5%{transform:rotateX(48deg) rotateZ(-8deg) scale(.85) translate(0vmin,0vmin);animation-timing-function:ease-in-out}
+39%{transform:rotateX(66deg) rotateZ(10deg) scale(1.7) translate(26vmin,-24vmin);animation-timing-function:ease-in-out}
+66%{transform:rotateX(62deg) rotateZ(-6deg) scale(1.5) translate(12vmin,6vmin);animation-timing-function:ease-in-out}
+78%{transform:rotateX(60deg) rotateZ(-14deg) scale(1.5) translate(-20vmin,24vmin);animation-timing-function:ease-in-out}
+91%{transform:rotateX(52deg) rotateZ(-10deg) scale(1.05) translate(-8vmin,10vmin);animation-timing-function:ease-in-out}
+100%{transform:rotateX(48deg) rotateZ(-8deg) scale(.85) translate(0vmin,0vmin)}}
+.world>*{position:absolute}
+.ground{inset:-40vmin;background:radial-gradient(circle at 50% 50%,#9BD58A,#86C97A 60%,#78BE70);transform:translateZ(-.3vmin)}
+.river{left:-40vmin;right:-40vmin;top:5vmin;height:8vmin;background:linear-gradient(#7CC3E8,#5BAEDD);transform:translateZ(0)}
+.road{background:#B9BCC4;transform:translateZ(.1vmin)}
+.rh{left:-40vmin;right:-40vmin;top:52vmin;height:4vmin}
+.rv{left:44vmin;width:4vmin;top:-40vmin;bottom:-40vmin}
+.bridge{left:43vmin;width:6vmin;top:3vmin;height:12vmin;background:linear-gradient(90deg,#8A8D96 0 12%,#C9CCD3 12% 88%,#8A8D96 88%);transform:translateZ(.4vmin)}
+.rail{left:-40vmin;right:-40vmin;top:88vmin;height:5vmin;background:repeating-linear-gradient(90deg,#6A5A4A 0 .8vmin,#C9B79F .8vmin 2.2vmin);transform:translateZ(.1vmin)}
+.rail::before,.rail::after{content:"";position:absolute;left:0;right:0;height:.7vmin;background:#4C4F57}
+.rail::before{top:1vmin}.rail::after{bottom:1vmin}
+.b{left:var(--x);top:var(--y);width:var(--w);height:var(--d);transform-style:preserve-3d}
+.b i{position:absolute;inset:0;background:var(--c);transform:translateZ(var(--h))}
+.b::before,.b::after{content:"";position:absolute;background:linear-gradient(rgba(0,0,0,.16),rgba(0,0,0,.16)),var(--c)}
+.b::before{left:0;top:100%;width:100%;height:var(--h);transform-origin:top;transform:rotateX(90deg)}
+.b::after{left:100%;top:0;width:var(--h);height:100%;transform-origin:left;transform:rotateY(-90deg);filter:brightness(.82)}
+.t{width:3.4vmin;height:3.4vmin;--h:2.5vmin;--c:#5FB36B}
+.t i{border-radius:50%;box-shadow:0 0 0 .3vmin #4A9A59}
+.t::before{left:0;top:0;width:100%;height:100%;border-radius:50%;background:rgba(0,0,0,.2);transform:none}
+.t::after{display:none}
+.fog{position:absolute;left:0;right:0;top:0;height:45%;background:linear-gradient(rgba(207,231,243,.95),rgba(207,231,243,.5) 55%,rgba(207,231,243,0))}
+.title{position:absolute;left:3vmin;top:3vmin;z-index:5;display:flex;align-items:center;gap:1.6vmin;background:#1B1D2A;color:#fff;font-weight:800;font-size:5vmin;padding:1.4vmin 3.4vmin;border-radius:99vmin}
+.tag{position:absolute;z-index:4;display:flex;align-items:center;gap:1.4vmin;background:#fff;color:#111;font-weight:900;font-size:5.2vmin;padding:1.2vmin 3vmin;border-radius:99vmin;white-space:nowrap;box-shadow:0 1vmin 2vmin rgba(0,0,0,.22);opacity:0;transform:translate(-50%,-50%) scale(0)}
+.tag b{width:2.6vmin;height:2.6vmin;border-radius:50%}
+.t1{left:36%;top:58%;animation:pop 2.4s .35s 1 both}
+.t2{left:52%;top:38%;animation:pop 2.75s 1.85s 1 both}
+.t3{left:64%;top:48%;animation:pop 2.85s 3.55s 1 both}
+@keyframes pop{
+0%,18%{opacity:0;transform:translate(-50%,-50%) scale(0)}
+28%{opacity:1;transform:translate(-50%,-62%) scale(1.18)}
+36%{opacity:1;transform:translate(-50%,-60%) scale(1)}
+80%{opacity:1;transform:translate(-50%,-72%) scale(1)}
+100%{opacity:0;transform:translate(-50%,-80%) scale(.85)}}
+.sun{position:absolute;z-index:3;top:-10%;bottom:-10%;left:0;width:45%;background:linear-gradient(90deg,rgba(255,214,140,0),rgba(255,214,140,.6),rgba(255,214,140,0));transform:skewX(-20deg) translateX(-130%);animation:sweep .8s 6.2s 1 both}
+@keyframes sweep{0%{transform:skewX(-20deg) translateX(-130%)}100%{transform:skewX(-20deg) translateX(300%)}}
+</style>
+<div class="stage">
+<div class="world">
+<div class="ground"></div>
+<div class="river"></div>
+<div class="road rh"></div>
+<div class="road rv"></div>
+<div class="bridge"></div>
+<div class="rail"></div>
+
+<div class="b" style="--x:6vmin;--y:20vmin;--w:8vmin;--d:8vmin;--h:6vmin;--c:#F6E7C8"><i></i></div>
+<div class="b" style="--x:17vmin;--y:20vmin;--w:9vmin;--d:9vmin;--h:9vmin;--c:#BFDDF5"><i></i></div>
+<div class="b" style="--x:30vmin;--y:22vmin;--w:8vmin;--d:8vmin;--h:5vmin;--c:#F9C9B0"><i></i></div>
+<div class="b" style="--x:6vmin;--y:34vmin;--w:9vmin;--d:8vmin;--h:8vmin;--c:#D4C8F0"><i></i></div>
+<div class="b" style="--x:19vmin;--y:35vmin;--w:8vmin;--d:9vmin;--h:5vmin;--c:#BFEBD4"><i></i></div>
+<div class="b" style="--x:52vmin;--y:20vmin;--w:8vmin;--d:8vmin;--h:7vmin;--c:#BFEBD4"><i></i></div>
+<div class="b" style="--x:84vmin;--y:20vmin;--w:8vmin;--d:8vmin;--h:8vmin;--c:#D4C8F0"><i></i></div>
+<div class="b" style="--x:52vmin;--y:35vmin;--w:9vmin;--d:8vmin;--h:6vmin;--c:#F9C9B0"><i></i></div>
+<div class="b" style="--x:64vmin;--y:40vmin;--w:8vmin;--d:8vmin;--h:9vmin;--c:#BFDDF5"><i></i></div>
+<div class="b" style="--x:76vmin;--y:39vmin;--w:9vmin;--d:9vmin;--h:5vmin;--c:#F6E7C8"><i></i></div>
+<div class="b" style="--x:88vmin;--y:40vmin;--w:7vmin;--d:8vmin;--h:7vmin;--c:#BFEBD4"><i></i></div>
+<div class="b" style="--x:6vmin;--y:58vmin;--w:8vmin;--d:8vmin;--h:6vmin;--c:#F9C9B0"><i></i></div>
+<div class="b" style="--x:18vmin;--y:58vmin;--w:9vmin;--d:7vmin;--h:8vmin;--c:#F6E7C8"><i></i></div>
+<div class="b" style="--x:34vmin;--y:60vmin;--w:8vmin;--d:8vmin;--h:5vmin;--c:#BFDDF5"><i></i></div>
+<div class="b" style="--x:52vmin;--y:60vmin;--w:9vmin;--d:9vmin;--h:7vmin;--c:#D4C8F0"><i></i></div>
+<div class="b" style="--x:64vmin;--y:60vmin;--w:8vmin;--d:8vmin;--h:10vmin;--c:#BFEBD4"><i></i></div>
+<div class="b" style="--x:76vmin;--y:62vmin;--w:9vmin;--d:9vmin;--h:5vmin;--c:#F6E7C8"><i></i></div>
+<div class="b" style="--x:88vmin;--y:60vmin;--w:7vmin;--d:8vmin;--h:8vmin;--c:#F9C9B0"><i></i></div>
+<div class="b" style="--x:54vmin;--y:74vmin;--w:9vmin;--d:8vmin;--h:6vmin;--c:#BFDDF5"><i></i></div>
+<div class="b" style="--x:68vmin;--y:76vmin;--w:8vmin;--d:8vmin;--h:8vmin;--c:#F6E7C8"><i></i></div>
+<div class="b" style="--x:82vmin;--y:74vmin;--w:10vmin;--d:8vmin;--h:6vmin;--c:#D4C8F0"><i></i></div>
+<div class="b" style="--x:34vmin;--y:76vmin;--w:8vmin;--d:8vmin;--h:7vmin;--c:#BFEBD4"><i></i></div>
+
+<div class="b" style="--x:8vmin;--y:68vmin;--w:22vmin;--d:9vmin;--h:5vmin;--c:#3F7FE0"><i></i></div>
+<div class="b" style="--x:12vmin;--y:71vmin;--w:8vmin;--d:3vmin;--h:9vmin;--c:#F28C28"><i></i></div>
+<div class="b" style="--x:32vmin;--y:38vmin;--w:11vmin;--d:11vmin;--h:12vmin;--c:#8E6FD8"><i></i></div>
+<div class="b" style="--x:36vmin;--y:42vmin;--w:4vmin;--d:4vmin;--h:22vmin;--c:#6B4BC0"><i></i></div>
+<div class="b" style="--x:66vmin;--y:24vmin;--w:16vmin;--d:10vmin;--h:5vmin;--c:repeating-linear-gradient(90deg,#F5A03A 0 2vmin,#FFF4E0 2vmin 4vmin)"><i></i></div>
+
+<div class="b t" style="--x:3vmin;--y:50vmin"><i></i></div>
+<div class="b t" style="--x:15vmin;--y:50vmin"><i></i></div>
+<div class="b t" style="--x:30vmin;--y:50vmin"><i></i></div>
+<div class="b t" style="--x:58vmin;--y:30vmin"><i></i></div>
+<div class="b t" style="--x:62vmin;--y:50vmin"><i></i></div>
+<div class="b t" style="--x:84vmin;--y:34vmin"><i></i></div>
+<div class="b t" style="--x:93vmin;--y:52vmin"><i></i></div>
+<div class="b t" style="--x:46vmin;--y:84vmin"><i></i></div>
+<div class="b t" style="--x:30vmin;--y:84vmin"><i></i></div>
+<div class="b t" style="--x:4vmin;--y:80vmin"><i></i></div>
+<div class="b t" style="--x:78vmin;--y:84vmin"><i></i></div>
+<div class="b t" style="--x:2vmin;--y:28vmin"><i></i></div>
+<div class="b t" style="--x:42vmin;--y:18vmin"><i></i></div>
+<div class="b t" style="--x:95vmin;--y:70vmin"><i></i></div>
+</div>
+<div class="fog"></div>
+<div class="sun"></div>
+<div class="title"><span>✈</span><span>○○시</span></div>
+<div class="tag t1"><b style="background:#2F7CF0"></b>○○역</div>
+<div class="tag t2"><b style="background:#8B5CF6"></b>시청</div>
+<div class="tag t3"><b style="background:#F59E0B"></b>전통시장</div>
+</div>
+</html>

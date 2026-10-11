@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 M02 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#CFE6F0;overflow:hidden}
+.map{position:relative;width:100vmin;height:100vmin;flex:none;transform-origin:61% 45%;animation:zoom 1.7s cubic-bezier(.65,0,.35,1) .6s 1 both}
+.map svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.d{stroke:#fff;stroke-width:.9;stroke-linejoin:round}
+.veil{fill:#fff;animation:veil .6s linear 1.9s 1 both}
+.tg{fill:#DCEBC8;stroke:#fff;stroke-width:.9;stroke-linejoin:round;animation:glow .6s ease-out 1.9s 1 both}
+.dot{position:absolute;left:61%;top:45%;width:0;height:0;animation:dotout .4s linear .6s 1 both}
+.dot i{position:absolute;left:-1.6vmin;top:-1.6vmin;width:3.2vmin;height:3.2vmin;border-radius:50%;background:#E8442E;border:.5vmin solid #fff;box-sizing:border-box;animation:blink .3s ease-in-out 0s 2 both}
+.dot b{position:absolute;left:-1.6vmin;top:-1.6vmin;width:3.2vmin;height:3.2vmin;border-radius:50%;border:.6vmin solid #E8442E;box-sizing:border-box;opacity:0}
+.dot b:nth-child(1){animation:ring .3s ease-out 0s 2 both}
+.dot b:nth-child(2){animation:ring .25s ease-out .1s 2 both}
+.ov{position:absolute;left:50%;top:50%;width:100vmin;height:100vmin;margin:-50vmin 0 0 -50vmin;pointer-events:none}
+.ov svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.pen{fill:none;stroke:#E8442E;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:100;stroke-dashoffset:100;animation:draw .75s ease-in-out 2.45s 1 both}
+.tag{position:absolute;right:3%;top:17%;background:#16130F;border-radius:2.4vmin;padding:1.6vmin 3vmin 1.8vmin;box-shadow:0 1vmin 2.4vmin rgba(0,0,0,.28);transform-origin:left bottom;animation:pop .4s ease-out 3s 1 both}
+.tag strong{display:block;color:#fff;font-size:9vmin;line-height:1.15;font-weight:800;white-space:nowrap}
+.tag span{display:block;color:#FFC9D6;font-size:3.8vmin;line-height:1.3;white-space:nowrap}
+.nav{position:absolute;right:3vmin;top:3vmin;width:9vmin;height:9vmin;border-radius:50%;background:rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 .5vmin 1.4vmin rgba(0,0,0,.15)}
+.nav em{font-style:normal;font-weight:800;font-size:3.6vmin;color:#16130F;line-height:1}
+.nav u{display:block;width:0;height:0;border-left:1.6vmin solid transparent;border-right:1.6vmin solid transparent;border-bottom:3.2vmin solid #E8442E;margin-top:.4vmin}
+@keyframes zoom{from{transform:translate(0,0) scale(1)}to{transform:translate(-11%,5%) scale(2.3)}}
+@keyframes veil{from{opacity:0}to{opacity:.72}}
+@keyframes glow{from{fill:#DCEBC8}to{fill:#FFD35C}}
+@keyframes dotout{from{opacity:1}to{opacity:0}}
+@keyframes blink{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+@keyframes ring{from{transform:scale(.5);opacity:.9}to{transform:scale(4.5);opacity:0}}
+@keyframes draw{0%{opacity:0;stroke-dashoffset:100}2%{opacity:1;stroke-dashoffset:100}100%{opacity:1;stroke-dashoffset:0}}
+@keyframes pop{0%{transform:scale(0);opacity:0}50%{transform:scale(1.2);opacity:1}100%{transform:scale(1);opacity:1}}
+</style>
+<div class="stage">
+  <div class="map">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+      <rect width="100" height="100" fill="#CFE6F0"/>
+      <polygon points="8,12 36,8 52,14 78,9 93,22 90,50 94,78 70,92 40,90 12,84 6,55 10,30" fill="#F6EFD6"/>
+      <polygon class="d" fill="#DCEBC8" points="8,12 36,8 52,14 50,35 34,40 10,30"/>
+      <polygon class="d" fill="#F6EFD6" points="52,14 78,9 93,22 73,37 61,33 50,35"/>
+      <polygon class="d" fill="#EAD9BC" points="10,30 34,40 49,46 55,56 52,78 30,66 6,55"/>
+      <polygon class="d" fill="#C9E3B8" points="93,22 90,50 94,78 78,70 68,57 73,50 73,37"/>
+      <polygon class="d" fill="#F6EFD6" points="55,56 68,57 78,70 94,78 70,92 40,90 52,78"/>
+      <polygon class="d" fill="#DCEBC8" points="6,55 30,66 52,78 40,90 12,84"/>
+      <rect class="veil" width="100" height="100"/>
+      <polygon class="tg" points="50,35 61,33 72,37 73,50 68,57 55,56 49,46"/>
+    </svg>
+    <div class="dot"><b></b><b></b><i></i></div>
+  </div>
+  <div class="ov">
+    <svg viewBox="0 0 100 100">
+      <path class="pen" pathLength="100" d="M34 33 C40 27 46 25.5 52 25.5 C68 25.5 77 37 77 50 C77 64 66 75 50 75 C35 75 23.5 64 23.5 50 C23.5 38 30 30 40 27.5"/>
+    </svg>
+    <div class="tag"><strong>○○시</strong><span>우리 센터가 있는 곳</span></div>
+  </div>
+  <div class="nav"><em>N</em><u></u></div>
+</div>
+</html>

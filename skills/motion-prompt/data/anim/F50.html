@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F50 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4vmin;background:linear-gradient(160deg,#f4f6fa,#e6ebf3);font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#1f2430}
+h1{margin:0;font-size:7vmin;font-weight:900;letter-spacing:-.02em;text-align:center;padding:0 4vmin}
+.legend{font-size:3.6vmin;font-weight:600;color:#5b6272;background:#fff;border-radius:5vmin;padding:1vmin 3vmin}
+.legend b{color:#d93025;text-decoration:line-through}
+.legend u{color:#188038;font-weight:700}
+.doc{width:86vmin;max-width:90vw;box-sizing:border-box;background:#fff;border-radius:2vmin;padding:3vmin 4vmin;box-shadow:0 1.5vmin 5vmin rgba(30,40,70,.15)}
+.ln{font-size:5vmin;font-weight:800;line-height:1.5;border-left:1vmin solid #b9bec9;padding:.3vmin 0 .3vmin 2.4vmin;margin:1.2vmin 0;word-break:keep-all}
+del{position:relative;text-decoration:none;color:#e8a29c}
+del::after{content:"";position:absolute;left:0;right:0;top:56%;height:.7vmin;background:#d93025;transform-origin:left center;animation:strike var(--s) var(--d) 1 both}
+ins{display:inline-block;vertical-align:bottom;white-space:nowrap;overflow:hidden;text-decoration:underline;text-decoration-thickness:.5vmin;text-underline-offset:.8vmin;color:#188038;background:#e3f4e7;border-radius:.8vmin;padding:0 .5vmin;transform-origin:left center;animation:reveal var(--w) var(--i) 1 both}
+ins.pop{animation:reveal var(--w) var(--i) 1 both,pop .4s var(--i) 1 both}
+.add{overflow:hidden;color:#188038;background:#e3f4e7;text-decoration:underline;text-decoration-thickness:.5vmin;text-underline-offset:.8vmin;animation:addline .5s 1.6s 1 both}
+@keyframes strike{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes reveal{from{max-width:0;opacity:0;margin-left:0}to{max-width:16em;opacity:1;margin-left:.3em}}
+@keyframes pop{0%{transform:scale(.9)}55%{transform:scale(1.18)}100%{transform:scale(1)}}
+@keyframes addline{from{max-height:0;opacity:0;padding-top:0;padding-bottom:0;margin-top:0;margin-bottom:0}to{max-height:6em;opacity:1;padding-top:.3vmin;padding-bottom:.3vmin;margin-top:1.2vmin;margin-bottom:1.2vmin}}
+</style>
+<h1>원문 → AI가 다듬은 안내문</h1>
+<div class="legend"><b>취소선</b> = 지움 · <u>밑줄</u> = 더함</div>
+<div class="doc">
+  <div class="ln">행사에 <del style="--d:.4s;--s:.5s">참석하여 주시기 바랍니다</del><ins class="pop" style="--i:.7s;--w:.4s">참석해 주세요</ins>.</div>
+  <div class="ln">장소는 ○○센터 3층 대회의실<del style="--d:1.2s;--s:.3s">이며</del><ins style="--i:1.4s;--w:.4s">이에요</ins>.</div>
+  <div class="ln add">주차는 2시간 무료예요.</div>
+  <div class="ln">문의는 <del style="--d:2s;--s:.3s">담당 부서로</del><ins style="--i:2.2s;--w:.4s">02-000-0000으로</ins> 연락 <del style="--d:2.4s;--s:.3s">주시기 바랍니다</del><ins style="--i:2.6s;--w:.4s">주세요</ins>.</div>
+</div>
+</html>

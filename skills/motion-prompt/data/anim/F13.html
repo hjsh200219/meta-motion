@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F13 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:radial-gradient(120% 120% at 50% 40%,#10131d 0%,#06070b 100%);display:flex;align-items:center;justify-content:center;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.win{position:relative;width:min(94vw,135vh);aspect-ratio:16/10;background:#fff;border-radius:2.4vmin;box-shadow:0 4vmin 10vmin rgba(0,0,0,.85),0 0 0 .2vmin rgba(255,255,255,.08);display:flex;flex-direction:column;animation:pop .5s cubic-bezier(.2,.8,.3,1) .05s 1 both;transform-origin:50% 55%}
+@keyframes pop{0%{opacity:0;transform:scale(.6)}60%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+.bar{height:9%;background:#e3e5e9;border-radius:2.4vmin 2.4vmin 0 0;display:flex;align-items:center;padding:0 2.5vmin;gap:1.3vmin;flex:none}
+.dot{width:2vmin;height:2vmin;border-radius:50%;background:#ff5f57}
+.dot:nth-child(2){background:#febc2e}
+.dot:nth-child(3){background:#28c840}
+.addr{margin-left:2vmin;flex:1;height:60%;background:#f6f7f9;border-radius:2vmin;display:flex;align-items:center;padding:0 2vmin;font-size:2.4vmin;color:#8a8f99}
+.main{flex:1;display:flex;min-height:0}
+.side{width:22%;background:#f1f3f7;padding:3vmin 2vmin;box-sizing:border-box;display:flex;flex-direction:column;gap:2vmin;border-radius:0 0 0 2.4vmin}
+.side i{display:block;height:3vmin;border-radius:1vmin;background:#d6dae3}
+.side i:first-child{background:#9db4f0}
+.content{flex:1;padding:3vmin 3.5vmin;box-sizing:border-box;display:flex;flex-direction:column;gap:2.6vmin}
+.head{display:flex;align-items:center;justify-content:space-between}
+.title{font-size:4vmin;font-weight:800;color:#222a3a}
+.btnwrap{position:relative}
+.btn{background:#3b6cf6;color:#fff;font-weight:700;font-size:3vmin;padding:1.4vmin 3vmin;border-radius:1.4vmin;white-space:nowrap}
+.pen{position:absolute;left:-18%;top:-55%;width:136%;height:210%;overflow:visible;pointer-events:none}
+.pen ellipse{fill:none;stroke:#e5251f;stroke-width:5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1.02;opacity:0;animation:draw .7s linear .9s 1 both}
+@keyframes draw{0%{opacity:0;stroke-dashoffset:1.02}2%{opacity:1;stroke-dashoffset:1.0}100%{opacity:1;stroke-dashoffset:0}}
+.tip{position:absolute;right:-2%;top:calc(100% + 4.5vmin);background:#e5251f;color:#fff;font-weight:900;font-size:3.6vmin;padding:1.8vmin 3vmin;border-radius:2.2vmin;white-space:nowrap;box-shadow:0 1.2vmin 3vmin rgba(229,37,31,.45);transform-origin:80% 0;animation:bounce .4s ease-out 1.5s 1 both}
+.tip::before{content:"";position:absolute;right:12%;top:-1.8vmin;border:1.1vmin solid transparent;border-bottom:1.8vmin solid #e5251f;border-top:0}
+@keyframes bounce{0%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1.25)}75%{transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4vmin}
+.card{height:13vmin;border-radius:1.6vmin;background:linear-gradient(135deg,#e8ecf6,#d5dcec)}
+.card:nth-child(2){background:linear-gradient(135deg,#f3e9dd,#e6d3bd)}
+.card:nth-child(3){background:linear-gradient(135deg,#e1f0e6,#c6dfd0)}
+.rows{display:flex;flex-direction:column;gap:1.8vmin}
+.rows i{display:block;height:3vmin;border-radius:1vmin;background:#e9ecf2}
+.rows i:nth-child(2){width:85%}
+.rows i:nth-child(3){width:70%}
+.rows i:nth-child(4){width:90%}
+</style>
+<div class="win">
+  <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="addr">app.example.com/files</div></div>
+  <div class="main">
+    <div class="side"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="content">
+      <div class="head">
+        <div class="title">파일 정리</div>
+        <div class="btnwrap">
+          <div class="btn">자동 분류</div>
+          <svg class="pen" viewBox="0 0 100 50" preserveAspectRatio="none"><ellipse cx="50" cy="25" rx="47" ry="22" pathLength="1" vector-effect="non-scaling-stroke" transform="rotate(-4 50 25)"/></svg>
+          <div class="tip">여기를 누르면 자동 분류</div>
+        </div>
+      </div>
+      <div class="cards"><div class="card"></div><div class="card"></div><div class="card"></div></div>
+      <div class="rows"><i></i><i></i><i></i><i></i></div>
+    </div>
+  </div>
+</div>
+</html>

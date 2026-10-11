@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 S09 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+*{box-sizing:border-box}
+body{--s:min(1vmin,.7vw);display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#FFE6CF 0%,#FFD1A8 55%,#FFC191 100%);
+  font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#2B2118}
+.stage{display:flex;align-items:center;justify-content:center;gap:calc(var(--s)*7)}
+@media (max-aspect-ratio:3/4){.stage{flex-direction:column;gap:calc(var(--s)*5)}}
+
+/* 상품 그림 */
+.product{position:relative;width:calc(var(--s)*34);height:calc(var(--s)*34);
+  animation:rise .45s ease-out 0s 1 both}
+.apple{position:absolute;width:calc(var(--s)*12);height:calc(var(--s)*12);border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#FF7A5C 0%,#E8442E 45%,#B8281A 100%);
+  box-shadow:inset 0 calc(var(--s)*-1) calc(var(--s)*1.5) rgba(0,0,0,.15);
+  animation:fadeApple .4s ease-in-out 9s 1 both}
+.apple::before{content:"";position:absolute;left:50%;top:calc(var(--s)*-1.2);width:calc(var(--s)*3);height:calc(var(--s)*2);
+  border-radius:0 100% 0 100%;background:#4E9A3A;transform:translateX(-10%) rotate(-10deg)}
+.apple:nth-child(1){left:calc(var(--s)*1);top:calc(var(--s)*4);animation-delay:1.8s}
+.apple:nth-child(2){left:calc(var(--s)*11);top:calc(var(--s)*2)}
+.apple:nth-child(3){left:calc(var(--s)*21);top:calc(var(--s)*4);animation-delay:1.2s}
+.apple:nth-child(4){left:calc(var(--s)*6);top:calc(var(--s)*9)}
+.apple:nth-child(5){left:calc(var(--s)*16);top:calc(var(--s)*9);animation-delay:2.4s}
+.crate{position:absolute;left:0;top:calc(var(--s)*16);width:100%;height:calc(var(--s)*16);
+  border-radius:calc(var(--s)*1.5);border:calc(var(--s)*.8) solid #A8743F;
+  background:repeating-linear-gradient(180deg,#D9A25F 0 calc(var(--s)*4),#C58B49 calc(var(--s)*4) calc(var(--s)*4.6));
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:calc(var(--s)*3.6);color:#6B431B;
+  box-shadow:0 calc(var(--s)*1.5) calc(var(--s)*2) rgba(120,60,10,.25)}
+
+/* 문구 */
+.info{display:flex;flex-direction:column;align-items:flex-start;gap:calc(var(--s)*1.6)}
+.pill{background:#E8442E;color:#fff;font-weight:900;font-size:calc(var(--s)*4.5);
+  padding:calc(var(--s)*.9) calc(var(--s)*3.2);border-radius:calc(var(--s)*9);white-space:nowrap;
+  animation:rise .4s ease-out .05s 1 both}
+.title{font-weight:900;font-size:calc(var(--s)*9);line-height:1.1;white-space:nowrap;
+  animation:rise .35s ease-out .1s 1 both}
+.label{font-weight:700;font-size:calc(var(--s)*4.6);animation:rise .3s ease-out .15s 1 both}
+.numrow{display:flex;align-items:center;gap:calc(var(--s)*2);animation:rise .25s ease-out .2s 1 both}
+.num{font-size:calc(var(--s)*24);line-height:1;transform-origin:50% 100%;
+  animation:thump .4s ease-out 2.8s 1 both}
+.win{height:1em;width:1.25em;overflow:hidden;color:#E8442E;font-weight:900;
+  font-variant-numeric:tabular-nums;text-align:right}
+.strip{animation:roll 2.2s ease-in-out .6s 1 both}
+.strip div{height:1em;line-height:1;text-align:right;font-variant-numeric:tabular-nums}
+.unit{display:flex;flex-direction:column;align-items:flex-start;gap:calc(var(--s)*.4)}
+.unit b{font-size:calc(var(--s)*8);line-height:1;color:#E8442E}
+.unit span{font-size:calc(var(--s)*3.4);font-weight:700;white-space:nowrap}
+.tagw{animation:beat .3s ease-in-out 3s 5 both}
+.tag{background:#2B2118;color:#FFD400;font-weight:900;font-size:calc(var(--s)*5.5);white-space:nowrap;
+  padding:calc(var(--s)*1.2) calc(var(--s)*3);border-radius:calc(var(--s)*1.6);
+  box-shadow:0 calc(var(--s)*.8) calc(var(--s)*1.6) rgba(0,0,0,.25);
+  animation:pop .3s ease-out 2.7s 1 both}
+
+/* 막대 */
+.track{position:relative;width:100%;height:calc(var(--s)*4.5);border-radius:calc(var(--s)*3);
+  background:rgba(43,33,24,.16);animation:rise .25s ease-out .25s 1 both}
+.fill{position:absolute;left:0;top:0;height:100%;border-radius:calc(var(--s)*3);
+  background:#3BB54A;
+  animation:bar 2.2s ease-in-out .6s 1 both,tint 2.2s linear .6s 1 both}
+.fill::after{content:"";position:absolute;right:0;top:50%;width:calc(var(--s)*4.5);height:calc(var(--s)*4.5);
+  margin-top:calc(var(--s)*-2.25);border-radius:50%;background:#FF2A10;
+  box-shadow:0 0 calc(var(--s)*3) calc(var(--s)*1.5) #FF4A2E;
+  animation:flash .4s ease-out 2.8s 1 both}
+
+@keyframes rise{0%{opacity:0;transform:translateY(calc(var(--s)*5))}100%{opacity:1;transform:none}}
+@keyframes fadeApple{0%{opacity:1;transform:none}100%{opacity:.12;transform:scale(.85)}}
+@keyframes roll{
+0%{transform:translateY(0)}12%{transform:translateY(-1em)}22%{transform:translateY(-2em)}
+30%{transform:translateY(-3em)}36.5%{transform:translateY(-4em)}42%{transform:translateY(-5em)}
+46.5%{transform:translateY(-6em)}50.5%{transform:translateY(-7em)}55%{transform:translateY(-8em)}
+60.5%{transform:translateY(-9em)}67%{transform:translateY(-10em)}75%{transform:translateY(-11em)}
+85%{transform:translateY(-12em)}100%{transform:translateY(-13em)}}
+@keyframes bar{
+0%{width:100%}12%{width:95%}22%{width:90%}30%{width:85%}36.5%{width:80%}42%{width:75%}
+46.5%{width:70%}50.5%{width:65%}55%{width:60%}60.5%{width:55%}67%{width:50%}75%{width:45%}
+85%{width:40%}100%{width:35%}}
+@keyframes tint{0%{background-color:#3BB54A}50%{background-color:#F2B01E}100%{background-color:#E8442E}}
+@keyframes flash{0%{opacity:0;transform:scale(.4)}35%{opacity:1;transform:scale(1.5)}100%{opacity:.85;transform:scale(1)}}
+@keyframes thump{0%{transform:none}30%{transform:translateY(calc(var(--s)*1.8)) scaleY(.9)}
+60%{transform:translateY(calc(var(--s)*-.8)) scaleY(1.03)}100%{transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(0) rotate(-14deg)}60%{opacity:1;transform:scale(1.3) rotate(-4deg)}
+100%{opacity:1;transform:scale(1) rotate(-6deg)}}
+@keyframes beat{0%{transform:scale(1)}50%{transform:scale(1.07)}100%{transform:scale(1)}}
+</style>
+<div class="stage">
+  <div class="product">
+    <div class="apple"></div><div class="apple"></div><div class="apple"></div><div class="apple"></div><div class="apple"></div>
+    <div class="crate">햇사과</div>
+  </div>
+  <div class="info">
+    <div class="pill">오늘 한정</div>
+    <div class="title">햇사과 3kg 상자</div>
+    <div class="label">오늘 남은 수량</div>
+    <div class="numrow">
+      <div class="num"><div class="win"><div class="strip">
+        <div>20</div><div>19</div><div>18</div><div>17</div><div>16</div><div>15</div><div>14</div>
+        <div>13</div><div>12</div><div>11</div><div>10</div><div>9</div><div>8</div><div>7</div>
+      </div></div></div>
+      <div class="unit"><b>개</b><span>/ 전체 20개</span></div>
+      <div class="tagw"><div class="tag">품절 임박!</div></div>
+    </div>
+    <div class="track"><div class="fill"></div></div>
+  </div>
+</div>
+</html>

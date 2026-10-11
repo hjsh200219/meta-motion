@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B18 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;display:flex;justify-content:center;align-items:flex-end;
+  background:linear-gradient(180deg,#5b7fa6 0%,#8fa7b8 38%,#c9a77f 62%,#4a4036 100%);overflow:hidden}
+/* 촬영 화면 예시: 하늘·산·지면 */
+.sun{position:absolute;left:68%;top:14%;width:12vmin;height:12vmin;border-radius:50%;background:radial-gradient(circle,#fff3d0,#f5c97a 60%,rgba(245,201,122,0) 72%)}
+.hill{position:absolute;bottom:0;border-radius:50% 50% 0 0}
+.h1{left:-10%;width:75%;height:42%;background:#3f4a46}
+.h2{left:35%;width:80%;height:34%;background:#2d3532}
+.pill{position:relative;margin-bottom:7vmin;width:max(34vw,70vmin);box-sizing:border-box;padding:2vmin 3.5vmin;
+  display:flex;align-items:center;justify-content:space-between;border-radius:99vmin;
+  background:rgba(22,19,14,.78);box-shadow:0 1vmin 3vmin rgba(0,0,0,.35);
+  animation:pillIn .3s ease-out .1s 1 both}
+@keyframes pillIn{from{opacity:0;transform:translateY(3vmin) scale(.94)}to{opacity:1;transform:none}}
+.ic{width:7vmin;height:7vmin;display:block}
+.ic svg{width:100%;height:100%;fill:#fff;display:block}
+.hand{animation:pop .4s ease-in-out 2.4s 1 both}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.6)}100%{transform:scale(1)}}
+.bell{transform-origin:50% 12%;animation:ring .8s ease-out 1.8s 1 both}
+@keyframes ring{0%{transform:rotate(0)}15%{transform:rotate(-32deg)}32%{transform:rotate(28deg)}48%{transform:rotate(-20deg)}64%{transform:rotate(13deg)}80%{transform:rotate(-6deg)}100%{transform:rotate(0)}}
+.btnwrap{position:relative;display:grid}
+.btn{grid-area:1/1;display:flex;align-items:center;justify-content:center;min-width:22vmin;padding:1.8vmin 4vmin;
+  border-radius:99vmin;color:#fff;font-weight:900;font-size:4.8vmin;white-space:nowrap}
+.sub{background:#E8442E;animation:offA .55s linear 1.35s 1 both}
+.done{background:#6B6457;animation:onA .55s linear 1.35s 1 both}
+@keyframes offA{0%,20%{opacity:1}21%,100%{opacity:0}}
+@keyframes onA{0%,20%{opacity:0;transform:scale(1)}21%{opacity:1;transform:scale(1.08)}45%,100%{opacity:1;transform:scale(1)}}
+.ring{position:absolute;left:50%;top:50%;width:12vmin;height:12vmin;margin:-6vmin 0 0 -6vmin;box-sizing:border-box;
+  border:.7vmin solid #fff;border-radius:50%;opacity:0;pointer-events:none;animation:wave .4s ease-out 1.4s 1 both}
+.r2{animation-delay:1.5s;border-width:.5vmin}
+@keyframes wave{0%{opacity:.95;transform:scale(.3)}100%{opacity:0;transform:scale(5)}}
+/* 커서: 바깥(사라짐) > 가운데(이동) > 안쪽(누름) */
+.cfade{position:absolute;left:50%;top:50%;width:0;height:0;z-index:5;pointer-events:none;animation:cOut .6s ease-in 3.4s 1 both}
+@keyframes cOut{from{opacity:1}to{opacity:0}}
+.cmove{position:absolute;left:0;top:0;animation:cMove .9s cubic-bezier(.4,0,.3,1) .4s 1 both}
+@keyframes cMove{
+ 0%{opacity:0;transform:translate(30vmin,12vmin)}
+ 12%{opacity:1}
+ 35%{transform:translate(19vmin,2vmin)}
+ 70%{opacity:1;transform:translate(8vmin,-1.5vmin)}
+ 100%{opacity:1;transform:translate(1vmin,1vmin)}}
+.cpress{transform-origin:0 0;animation:press .55s ease-in-out 1.35s 1 both}
+@keyframes press{0%{transform:scale(1)}25%{transform:scale(.8)}50%{transform:scale(1)}100%{transform:scale(1)}}
+.cpress svg{width:6.5vmin;height:6.5vmin;display:block;filter:drop-shadow(0 .4vmin .6vmin rgba(0,0,0,.4))}
+</style>
+<div class="stage">
+  <div class="sun"></div>
+  <div class="hill h1"></div>
+  <div class="hill h2"></div>
+  <div class="pill">
+    <span class="ic hand"><svg viewBox="0 0 24 24"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg></span>
+    <div class="btnwrap">
+      <div class="btn sub">구독</div>
+      <div class="btn done">구독중</div>
+      <i class="ring"></i><i class="ring r2"></i>
+      <div class="cfade"><div class="cmove"><div class="cpress">
+        <svg viewBox="0 0 24 24"><path d="M3 2 L3 19 L7.6 14.8 L10.6 21.5 L13.4 20.2 L10.4 13.6 L16.5 13.4 Z" fill="#fff" stroke="#000" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </div></div></div>
+    </div>
+    <span class="ic bell"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></span>
+  </div>
+</div>
+</html>

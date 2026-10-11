@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B15 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#16130E;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100vw;height:100vh;background:#16130E;overflow:hidden}
+.pane{position:absolute;overflow:hidden;background:#16130E}
+.sc{position:absolute;left:50%;top:50%;width:120vmax;height:120vmax;margin:-60vmax 0 0 -60vmax}
+.sh{position:absolute;inset:0;
+  background:
+    radial-gradient(circle 4vmax at 58% 44%,var(--c) 0 98%,transparent 100%),
+    linear-gradient(to bottom,transparent 0 55%,rgba(0,0,0,.35) 55% 100%),
+    linear-gradient(to bottom,var(--a),var(--b) 55%);
+  animation:drift 4.2s linear 0s 1 both}
+.sh::after{content:"";position:absolute;left:38%;top:52.5%;width:6%;height:2.5%;background:rgba(255,255,255,.85);box-shadow:0 0 2vmax rgba(255,255,255,.4);animation:car 4.2s linear 0s 1 both}
+@keyframes drift{from{transform:translate(-2%,-1.5%) scale(1)}to{transform:translate(2%,1.5%) scale(1.08)}}
+@keyframes car{from{left:38%}to{left:62%}}
+
+.p1{--a:#6fb7ff;--b:#cfe9ff;--c:#fff4c2;left:0;top:0;width:100%;height:100%;
+  animation:aw .6s cubic-bezier(.6,0,.3,1) .6s 1 both,ah .6s cubic-bezier(.6,0,.3,1) 1.8s 1 both,snap .4s ease-in-out 2.4s 1 both}
+.p2{--a:#ff9a5a;--b:#ffd9a0;--c:#fff;left:50%;top:0;width:50%;height:50%;
+  animation:bl .6s cubic-bezier(.6,0,.3,1) .6s 1 both,bw .6s cubic-bezier(.6,0,.3,1) .6s 1 both,ah .6s cubic-bezier(.6,0,.3,1) 1.8s 1 both,snap .4s ease-in-out 2.4s 1 both}
+.p3{--a:#2f8f5b;--b:#b8e6a8;--c:#f6ffd0;left:0;top:50%;width:50%;height:50%;
+  animation:ct .6s cubic-bezier(.6,0,.3,1) 1.8s 1 both,ch .6s cubic-bezier(.6,0,.3,1) 1.8s 1 both,snap .4s ease-in-out 2.4s 1 both}
+.p4{--a:#6b4bd1;--b:#e0b8ff;--c:#ffe3f3;left:50%;top:50%;width:50%;height:50%;
+  animation:ct .6s cubic-bezier(.6,0,.3,1) 1.8s 1 both,ch .6s cubic-bezier(.6,0,.3,1) 1.8s 1 both,snap .4s ease-in-out 2.4s 1 both}
+.p2 .sh,.p4 .sh{animation-delay:0s}
+@keyframes aw{from{width:100%}to{width:50%}}
+@keyframes ah{from{height:50%}to{height:50%}}
+.p1{--h:1}
+@keyframes bl{from{left:100%}to{left:50%}}
+@keyframes bw{from{width:0%}to{width:50%}}
+@keyframes ct{from{top:100%}to{top:50%}}
+@keyframes ch{from{height:0%}to{height:50%}}
+@keyframes snap{0%{transform:scale(1)}40%{transform:scale(.965)}100%{transform:scale(1)}}
+
+.tag{position:absolute;left:0;top:0;z-index:3;background:#E8442E;color:#fff;font-weight:900;font-size:4.6vmin;line-height:1;padding:1.2vmin 2vmin;white-space:nowrap}
+
+.v,.h{position:absolute;z-index:5;background:#16130E}
+.v{top:0;height:100%;width:.7vmin;margin-left:-.35vmin;left:50%;
+  animation:vx .6s cubic-bezier(.6,0,.3,1) .6s 1 both,glow .6s ease-out 2.4s 1 both}
+.h{left:0;width:100%;height:.7vmin;margin-top:-.35vmin;top:50%;
+  animation:hy .6s cubic-bezier(.6,0,.3,1) 1.8s 1 both,glow .6s ease-out 2.4s 1 both}
+@keyframes vx{from{left:101%}to{left:50%}}
+@keyframes hy{from{top:101%}to{top:50%}}
+@keyframes glow{0%{background:#16130E;box-shadow:0 0 0 rgba(255,255,255,0)}35%{background:#fff;box-shadow:0 0 3vmin 1vmin rgba(255,255,255,.9)}100%{background:#16130E;box-shadow:0 0 0 rgba(255,255,255,0)}}
+
+.flash{position:absolute;left:50%;top:50%;z-index:6;width:22vmin;height:22vmin;margin:-11vmin 0 0 -11vmin;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,255,255,.95) 0,rgba(255,255,255,.4) 25%,transparent 65%);
+  opacity:0;animation:fl .6s ease-out 2.4s 1 both}
+@keyframes fl{0%{opacity:0;transform:scale(.3)}35%{opacity:1;transform:scale(1.2)}100%{opacity:0;transform:scale(1.8)}}
+</style>
+
+<div class="stage">
+  <div class="pane p1"><div class="sc"><div class="sh"></div></div><div class="tag">캠 1</div></div>
+  <div class="pane p2"><div class="sc"><div class="sh"></div></div><div class="tag">캠 2</div></div>
+  <div class="pane p3"><div class="sc"><div class="sh"></div></div><div class="tag">캠 3</div></div>
+  <div class="pane p4"><div class="sc"><div class="sh"></div></div><div class="tag">캠 4</div></div>
+  <div class="v"></div>
+  <div class="h"></div>
+  <div class="flash"></div>
+</div>
+</html>

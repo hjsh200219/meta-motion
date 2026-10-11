@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F12 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 40%,#1c2540 0%,#0d1222 70%,#070a14 100%)}
+.frame{position:relative;width:min(68vh,92vw);height:92vh;animation:appear .4s ease-out 0s 1 both}
+.paper{position:absolute;inset:0;background:#fff;color:#111;box-sizing:border-box;padding:5vmin 5.5vmin;overflow:hidden;box-shadow:0 2vmin 6vmin rgba(0,0,0,.55);transform-origin:50% 55%;animation:zoom 1.6s cubic-bezier(.45,0,.35,1) .6s 1 both;display:flex;flex-direction:column}
+.name{font-size:3vmin;font-weight:700;letter-spacing:.6em;text-align:center;padding-bottom:1.4vmin;border-bottom:.5vmin solid #111}
+.title{font-size:6.2vmin;font-weight:900;line-height:1.25;margin:3vmin 0 2.4vmin;word-break:keep-all}
+.bar{height:1.5vmin;background:#c9cdd3;border-radius:.4vmin;margin-bottom:1.5vmin}
+.bar.s{width:62%}.bar.m{width:84%}.bar.l{width:100%}
+.gap{height:1.4vmin}
+.hl{display:block;width:fit-content;margin:1.4vmin 0 2.2vmin;font-size:4.1vmin;font-weight:800;line-height:1.5;color:#111;transform-origin:0 50%;word-break:keep-all;animation:pop .4s ease-in-out 2.4s 1 both}
+.hl span{position:relative;display:block;width:fit-content;isolation:isolate}
+.hl span::before{content:"";position:absolute;z-index:-1;left:-1%;right:-1%;bottom:6%;height:48%;background:#ffd43b;transform:scaleX(0);transform-origin:0 50%;animation:paint .3s linear 1.9s 1 both}
+.hl span:nth-child(2)::before{animation-delay:2.2s}
+.src{position:absolute;left:-2vmin;bottom:3vmin;background:#0d1222;color:#e8ecf7;font-size:2.6vmin;font-weight:600;padding:1.2vmin 2.2vmin;box-shadow:0 1vmin 3vmin rgba(0,0,0,.5);animation:src .3s ease-out .5s 1 both}
+@keyframes appear{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@keyframes zoom{from{transform:translateY(0) scale(1)}to{transform:translateY(-7%) scale(1.2)}}
+@keyframes paint{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes src{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:translateY(0)}}
+</style>
+<div class="stage">
+  <div class="frame">
+    <div class="paper">
+      <div class="name">○○신문</div>
+      <div class="title">중소기관, 반복 업무부터 AI에 맡긴다</div>
+      <div class="bar l"></div><div class="bar l"></div><div class="bar m"></div>
+      <div class="gap"></div>
+      <div class="hl"><span>“가장 먼저 바뀐 것은</span><span>문서와 행정 업무였다”</span></div>
+      <div class="bar l"></div><div class="bar l"></div><div class="bar s"></div>
+      <div class="gap"></div>
+      <div class="bar l"></div><div class="bar m"></div><div class="bar l"></div><div class="bar s"></div>
+    </div>
+    <div class="src">○○신문 2026.10.1</div>
+  </div>
+</div>
+</html>

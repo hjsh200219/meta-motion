@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 E07 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#E7E1D3;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.floor{position:relative;width:92vmin;height:60vmin;border-radius:2vmin;background-color:#F4F0E4;
+background-image:linear-gradient(rgba(150,138,110,.18) .25vmin,transparent .25vmin),linear-gradient(90deg,rgba(150,138,110,.18) .25vmin,transparent .25vmin);
+background-size:4vmin 4vmin;box-shadow:0 1vmin 3vmin rgba(70,55,30,.25);
+animation:fl .35s ease-out 0s 1 both}
+@keyframes fl{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.stage{position:absolute;left:4%;top:4%;width:30%;height:14%;background:#1c1c1c;color:#fff;border-radius:1.4vmin;
+display:flex;align-items:center;justify-content:center;font-weight:800;font-size:4.2vmin;letter-spacing:.8vmin;
+animation:up .45s ease-out .1s 1 both}
+@keyframes up{from{opacity:0;transform:translateY(-2vmin)}to{opacity:1;transform:translateY(0)}}
+.ent{position:absolute;left:40%;top:86%;width:20%;height:10%;animation:up2 .45s ease-out .1s 1 both}
+@keyframes up2{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:translateY(0)}}
+.entin{width:100%;height:100%;background:#E8442E;color:#fff;border-radius:1.4vmin;display:flex;align-items:center;justify-content:center;
+font-weight:800;font-size:4vmin;animation:bl 1s ease-in-out .55s 4 both}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.6}}
+.slot{position:absolute;left:var(--x);top:var(--y);width:16%;height:16%;box-sizing:border-box;border:.5vmin dashed #b9b09a;border-radius:1.8vmin}
+.b{position:absolute;left:-.5vmin;top:-.5vmin;right:-.5vmin;bottom:-.5vmin;border-radius:1.8vmin;background:var(--c);
+display:flex;align-items:center;justify-content:center;animation:pop .32s ease-out var(--d) 1 both}
+@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:1}}
+.nm{color:#fff;font-weight:800;font-size:3.6vmin}
+.hot{animation:big .45s ease-out 3.1s 1 both}
+@keyframes big{0%{transform:scale(1)}60%{transform:scale(1.16)}100%{transform:scale(1.1)}}
+.hot .nm{animation:yel .2s linear 3.1s 1 both}
+@keyframes yel{from{color:#fff}to{color:#FFD83A}}
+.ring2{position:absolute;left:-1.2vmin;top:-1.2vmin;right:-1.2vmin;bottom:-1.2vmin;border:.8vmin solid #FFD83A;border-radius:2.4vmin;
+animation:blk .15s linear 3.1s 3 both}
+@keyframes blk{0%{opacity:0}50%{opacity:1}100%{opacity:.3}}
+.ln{position:absolute;border:0 dashed #E8442E}
+.v{width:0;border-left-width:.7vmin;margin-left:-.35vmin}
+.h{height:0;border-top-width:.7vmin;margin-top:-.35vmin}
+.s1{left:50%;top:80%;height:6%;clip-path:inset(100% 0 0 0);animation:dv .117s linear 2.2s 1 both}
+.s2{left:31%;top:80%;width:19%;clip-path:inset(0 0 0 100%);animation:dh .567s linear 2.317s 1 both}
+.s3{left:31%;top:74%;height:6%;clip-path:inset(100% 0 0 0);animation:dv .117s linear 2.883s 1 both}
+@keyframes dv{to{clip-path:inset(0 0 0 0)}}
+@keyframes dh{to{clip-path:inset(0 0 0 0)}}
+.dot{position:absolute;left:50%;top:86%;width:2.4vmin;height:2.4vmin;margin:-1.2vmin 0 0 -1.2vmin;border-radius:50%;background:#E8442E;border:.5vmin solid #fff;box-sizing:border-box;
+animation:walk .8s linear 2.2s 1 both}
+@keyframes walk{0%{left:50%;top:86%;opacity:0}1%{opacity:1}14.6%{left:50%;top:80%}85.4%{left:31%;top:80%}100%{left:31%;top:74%;opacity:1}}
+.pt{position:absolute;left:31%;top:65%;width:0;height:0}
+.pinw{position:absolute;left:0;top:0;width:0;height:0;transform-origin:0 0;animation:drop .35s ease-in 2.95s 1 both}
+@keyframes drop{0%{transform:translateY(-18vmin);opacity:0}55%{transform:translateY(0);opacity:1}70%{transform:translateY(0) scaleY(.82)}85%{transform:translateY(0) scaleY(1.08)}100%{transform:translateY(0) scaleY(1);opacity:1}}
+.pin{position:absolute;left:-2.5vmin;top:-6.04vmin;width:5vmin;height:5vmin;background:#E8442E;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 .4vmin .8vmin rgba(0,0,0,.25)}
+.pin::after{content:"";position:absolute;left:1.5vmin;top:1.5vmin;width:2vmin;height:2vmin;border-radius:50%;background:#fff}
+.rg{position:absolute;left:-3vmin;top:-3vmin;width:6vmin;height:6vmin;box-sizing:border-box;border:.6vmin solid #E8442E;border-radius:50%;opacity:0}
+.r0{animation:rw .8s ease-out 3.2s 1 both}
+.r1{animation:rp .97s ease-out 3.55s 2 both}
+@keyframes rw{0%{transform:scale(.2);opacity:.9}100%{transform:scale(7);opacity:0}}
+@keyframes rp{0%{transform:scale(.2);opacity:.8}100%{transform:scale(3.4);opacity:0}}
+.bub{position:absolute;left:0;top:-8.5vmin;width:0;height:0;display:flex;justify-content:center;align-items:flex-end}
+.bi{flex:none;white-space:nowrap;background:#2B2622;color:#fff;font-weight:800;font-size:3.4vmin;padding:1.4vmin 2.4vmin;border-radius:1.6vmin;position:relative;
+transform-origin:50% 100%;animation:bp .45s ease-out 3.1s 1 both}
+.bi::after{content:"";position:absolute;left:50%;bottom:-1.2vmin;margin-left:-1.2vmin;border:1.2vmin solid transparent;border-top-color:#2B2622;border-bottom:0}
+.bi em{font-style:normal;color:#FFD83A}
+@keyframes bp{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15);opacity:1}100%{transform:scale(1);opacity:1}}
+</style>
+<div class="wrap"><div class="floor">
+<div class="stage">무대</div>
+<div class="ent"><div class="entin">▲ 입구</div></div>
+
+<div class="slot" style="--x:4%;--y:24%;--d:.4s"><div class="b" style="--c:#F08A24;--d:.4s"><span class="nm">먹거리</span></div></div>
+<div class="slot" style="--x:23%;--y:24%;--d:.57s"><div class="b" style="--c:#F08A24;--d:.57s"><span class="nm">먹거리</span></div></div>
+<div class="slot" style="--x:42%;--y:24%;--d:.74s"><div class="b" style="--c:#3FA05A;--d:.74s"><span class="nm">체험</span></div></div>
+<div class="slot" style="--x:61%;--y:24%;--d:.91s"><div class="b" style="--c:#3FA05A;--d:.91s"><span class="nm">체험</span></div></div>
+<div class="slot" style="--x:80%;--y:24%;--d:1.08s"><div class="b" style="--c:#3B7DD8;--d:1.08s"><span class="nm">판매</span></div></div>
+
+<div class="slot" style="--x:80%;--y:56%;--d:1.25s"><div class="b" style="--c:#3B7DD8;--d:1.25s"><span class="nm">판매</span></div></div>
+<div class="slot" style="--x:61%;--y:56%;--d:1.42s"><div class="b" style="--c:#3B7DD8;--d:1.42s"><span class="nm">판매</span></div></div>
+<div class="slot" style="--x:42%;--y:56%;--d:1.59s"><div class="b" style="--c:#8A5CC8;--d:1.59s"><span class="nm">홍보</span></div></div>
+<div class="slot hot" style="--x:23%;--y:56%;--d:1.76s"><div class="b" style="--c:#1F8F8B;--d:1.76s"><span class="nm">상담</span></div><div class="ring2"></div></div>
+<div class="slot" style="--x:4%;--y:56%;--d:1.93s"><div class="b" style="--c:#8C7A63;--d:1.93s"><span class="nm">쉼터</span></div></div>
+
+<div class="ln v s1"></div><div class="ln h s2"></div><div class="ln v s3"></div>
+<div class="dot"></div>
+
+<div class="pt">
+<div class="rg r0"></div><div class="rg r1"></div>
+<div class="pinw"><div class="pin"></div></div>
+<div class="bub"><div class="bi">여기가 <em>상담 부스</em></div></div>
+</div>
+</div></div>
+</html>

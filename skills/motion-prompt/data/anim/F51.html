@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F51 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#2b3440;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{display:flex;align-items:center;justify-content:center;position:relative}
+.bg{position:absolute;inset:0;background:
+radial-gradient(ellipse at 25% 20%,rgba(255,255,255,.35),transparent 55%),
+repeating-linear-gradient(98deg,rgba(0,0,0,.05) 0 1.2vmin,rgba(255,255,255,.04) 1.2vmin 2.6vmin),
+linear-gradient(160deg,#8fa3b5,#5d7186 60%,#46586b)}
+.ov{position:absolute;inset:0;background:rgba(0,0,0,.38);animation:fade .3s 0s 1 both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.st{position:relative;width:100vmin;height:100vmin;flex:none}
+
+/* 대체 사진: 봉투 더미 + 종이 접는 손 */
+.env{position:absolute;left:13vmin;width:29vmin;height:17vmin;background:#f3ead6;border-radius:.8vmin;box-shadow:0 .8vmin 1.6vmin rgba(0,0,0,.35)}
+.env::before{content:"";position:absolute;inset:0;background:#e6dbc0;clip-path:polygon(0 0,100% 0,50% 58%);border-radius:.8vmin}
+.env:nth-child(1){top:57vmin;transform:rotate(-3deg)}
+.env:nth-child(2){top:54vmin;transform:rotate(2deg);background:#f7f0df}
+.env:nth-child(3){top:51vmin;transform:rotate(-1.5deg);background:#efe4cb}
+.env:nth-child(4){top:48.5vmin;transform:rotate(3.5deg);background:#f8f2e3}
+.paper{position:absolute;left:60vmin;top:55vmin;width:24vmin;height:15vmin;background:#fbf7ec;border-radius:.6vmin;transform:rotate(-6deg);box-shadow:0 .8vmin 1.6vmin rgba(0,0,0,.35)}
+.paper::after{content:"";position:absolute;left:0;right:0;top:50%;height:.4vmin;background:rgba(0,0,0,.12)}
+.hand{position:absolute;background:#dba583;border-radius:5vmin;box-shadow:0 .6vmin 1.2vmin rgba(0,0,0,.3)}
+.h1{left:56vmin;top:62vmin;width:16vmin;height:8vmin;transform:rotate(-12deg)}
+.h2{left:76vmin;top:56vmin;width:9vmin;height:16vmin;transform:rotate(14deg)}
+
+svg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 .6vmin 0 rgba(0,0,0,.55))}
+svg path{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.3;stroke-dasharray:1 2;stroke-dashoffset:1;animation-timing-function:ease-in-out;animation-iteration-count:1;animation-fill-mode:both}
+.y{stroke:#ffd23f}.w{stroke:#fff}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.c1{animation-name:draw;animation-delay:.4s;animation-duration:.28s}
+.a2{animation-name:draw;animation-delay:.98s;animation-duration:.27s}
+.a2h{animation-name:draw;animation-delay:1.25s;animation-duration:.06s}
+.u3{animation-name:draw;animation-delay:1.6s;animation-duration:.25s}
+
+.bd{position:absolute;width:7vmin;height:7vmin;margin:-3.5vmin 0 0 -3.5vmin;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:4.8vmin;font-weight:900;color:#1d1d1d;background:#ffd23f;box-shadow:0 .6vmin 0 rgba(0,0,0,.55);animation:pop .12s 1 both}
+.bd.w3{background:#fff}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.b1{left:9vmin;top:46vmin;animation-delay:.3s}
+.b2{left:52vmin;top:40vmin;animation-delay:.9s;animation-duration:.1s}
+.b3{left:10vmin;top:14vmin;animation-delay:1.5s;animation-duration:.1s}
+
+.m{position:absolute;font-size:5.5vmin;font-weight:900;font-style:italic;color:#ffd23f;white-space:nowrap}
+.m span{display:inline-block;overflow:hidden;vertical-align:top;padding:.8vmin 1vmin;margin:-.8vmin -1vmin;-webkit-text-stroke:1.1vmin #1a1a1a;paint-order:stroke fill;text-shadow:0 .5vmin 0 rgba(0,0,0,.5);width:0;animation:type 1s steps(6) 1 both}
+@keyframes type{from{width:0}to{width:var(--w)}}
+.m1{left:13vmin;top:78vmin;transform:rotate(-2deg)}
+.m1 span{--w:6.3em;animation-delay:.68s;animation-duration:.12s;animation-timing-function:steps(6)}
+.m2{left:55vmin;top:78vmin;transform:rotate(1.5deg)}
+.m2 span{--w:7.2em;animation-delay:1.31s;animation-duration:.14s;animation-timing-function:steps(7)}
+.m3{left:17vmin;top:8vmin;color:#fff;transform:rotate(-1deg)}
+.m3 span{--w:8.2em;animation-delay:1.85s;animation-duration:.25s;animation-timing-function:steps(8)}
+
+.src{position:absolute;right:2vmin;bottom:2vmin;font-size:2.8vmin;color:#fff;background:rgba(0,0,0,.55);padding:.7vmin 1.6vmin;border-radius:1vmin;animation:fade .3s 0s 1 both}
+</style>
+<div class="bg"></div>
+<div class="st">
+  <div class="env"></div><div class="env"></div><div class="env"></div><div class="env"></div>
+  <div class="paper"></div><div class="hand h1"></div><div class="hand h2"></div>
+</div>
+<div class="ov"></div>
+<div class="st">
+  <svg viewBox="0 0 100 100">
+    <path class="y c1" pathLength="1" d="M11 60 A18 11 -4 0 1 45 62 A19 12 -4 0 1 11 64 A20 12 -4 0 1 30 50"/>
+    <path class="y a2" pathLength="1" d="M58 40 C66 30 80 34 74 50"/>
+    <path class="y a2h" pathLength="1" d="M70.5 44.5 L74 51 L79.5 45"/>
+    <path class="w u3" pathLength="1" d="M17 20 q3 -2.5 6 0 t6 0 t6 0 t6 0 t6 0 t6 0 t6 0 t6 0 t6 0"/>
+  </svg>
+  <div class="bd b1">1</div>
+  <div class="bd b2">2</div>
+  <div class="bd w3 b3">3</div>
+  <div class="m m1"><span>봉투가 쌓임</span></div>
+  <div class="m m2"><span>한 장씩 손으로</span></div>
+  <div class="m m3"><span>순서만 바꾸면 끝</span></div>
+</div>
+<div class="src">사진: AI 생성</div>
+</html>

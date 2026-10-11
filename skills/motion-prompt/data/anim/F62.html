@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F62 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;background:linear-gradient(135deg,#27406b 0%,#4b6e8f 55%,#c99a74 100%);overflow:hidden}
+.desk{position:absolute;left:0;right:0;bottom:0;height:28%;background:linear-gradient(#3a2f2c,#241c1a)}
+.body{position:absolute;left:50%;bottom:24%;width:38vmin;height:30vmin;margin-left:-32vmin;border-radius:50% 50% 0 0;background:#1d2a3d}
+.head{position:absolute;left:50%;bottom:48%;width:20vmin;height:24vmin;margin-left:-23vmin;border-radius:50%;background:#e2b48f}
+.sign{position:absolute;top:4vmin;right:4vmin;width:64vmin;box-sizing:border-box;padding:3vmin 3.2vmin;border-radius:3vmin;background:rgba(255,255,255,.96);box-shadow:0 1.2vmin 3vmin rgba(0,0,0,.3);color:#222;animation:drop .7s 0s 1 both}
+.q{margin:0 0 2.4vmin;font-size:4.6vmin;font-weight:800;line-height:1.2;animation:qin .4s .3s 1 both}
+.row{display:flex;align-items:stretch;gap:1.2vmin}
+.arrow{width:9vmin;height:20vmin;flex:none;overflow:visible}
+.arrow path{fill:none;stroke:#444;stroke-width:.55;stroke-linecap:round;stroke-linejoin:round}
+.stem{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .3s .7s 1 both}
+.br{stroke-dasharray:1;stroke-dashoffset:1;animation:draw .3s 1s 1 both}
+.hd{opacity:0;animation:show .1s 1.3s 1 both}
+.chips{display:flex;flex-direction:column;justify-content:space-between;flex:1}
+.chip{display:flex;align-items:center;height:8vmin;box-sizing:border-box;padding:0 2vmin;border-radius:1.6vmin;font-size:3.5vmin;font-weight:700;white-space:nowrap}
+.a{background:#ffb020;color:#1a1a1a;animation:wipe .5s .8s 1 both}
+.b{background:#1f2a44;color:#fff;animation:wipe .4s 1s 1 both}
+.t{display:inline-block;margin:0 1vmin;font-family:ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;font-weight:900;font-size:4vmin;animation:pop .5s 1.3s 1 both}
+.sm{margin:2vmin 0 0;text-align:right;font-size:2.8vmin;color:#777;animation:qin .3s 1.5s 1 both}
+@keyframes drop{from{opacity:0;transform:translateY(-8vmin)}to{opacity:1;transform:none}}
+@keyframes qin{from{opacity:0;transform:translateY(-1.5vmin)}to{opacity:1;transform:none}}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes show{from{opacity:0}to{opacity:1}}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.7)}100%{transform:scale(1)}}
+</style>
+<div class="stage">
+  <div class="desk"></div><div class="body"></div><div class="head"></div>
+  <div class="sign">
+    <p class="q">설치는 이미 하셨나요?</p>
+    <div class="row">
+      <svg class="arrow" viewBox="0 0 9 20">
+        <path class="stem" pathLength="1" d="M1.5 0V16"/>
+        <path class="br" pathLength="1" d="M1.5 4H7.5"/>
+        <path class="br" pathLength="1" d="M1.5 16H7.5"/>
+        <path class="hd" d="M6.3 3L7.8 4L6.3 5"/>
+        <path class="hd" d="M6.3 15L7.8 16L6.3 17"/>
+      </svg>
+      <div class="chips">
+        <div class="chip a">예 → <span class="t">05:20</span> 실습으로 ▶▶</div>
+        <div class="chip b">처음이면 → 기초 1편 먼저</div>
+      </div>
+    </div>
+    <p class="sm">챕터 목록에도 있어요</p>
+  </div>
+</div>
+</html>

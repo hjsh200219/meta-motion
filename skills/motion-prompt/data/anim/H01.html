@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 H01 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.shot{position:relative;width:100%;height:100%;background:linear-gradient(160deg,#3b4a63 0%,#6c5b7b 50%,#c9826b 100%)}
+.shot::before{content:"";position:absolute;left:18%;bottom:0;width:30%;height:62%;border-radius:50% 50% 0 0/30% 30% 0 0;background:linear-gradient(#2a2f3d,#1a1d27);opacity:.55}
+.shot::after{content:"";position:absolute;left:26%;top:16%;width:14%;aspect-ratio:1;border-radius:50%;background:#2a2f3d;opacity:.55}
+.timer{position:absolute;top:3vmin;right:3vmin;width:min(33vw,44vmin);display:flex;flex-direction:column;align-items:center;gap:1.6vmin;opacity:0;animation:appear .3s ease-out 0s 1 both}
+@keyframes appear{0%{opacity:0;transform:scale(.8)}100%{opacity:1;transform:scale(1)}}
+.bars{display:flex;gap:1vmin;width:80%}
+.bars i{flex:1;height:1.6vmin;border-radius:1vmin;background:rgba(255,255,255,.25);opacity:0;animation:pop .15s ease-out 1 both}
+.bars i:nth-child(1){background:#FF8A1F;box-shadow:0 0 2vmin #FF8A1F;animation-delay:0s}
+.bars i:nth-child(2){animation-delay:.03s}.bars i:nth-child(3){animation-delay:.06s}
+.bars i:nth-child(4){animation-delay:.09s}.bars i:nth-child(5){animation-delay:.12s}
+@keyframes pop{0%{opacity:0;transform:scaleY(.2)}100%{opacity:1;transform:scaleY(1)}}
+.disc{position:relative;width:100%;aspect-ratio:1;border-radius:50%;background:rgba(15,23,60,.72);display:grid;place-items:center}
+svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.track{fill:none;stroke:rgba(255,255,255,.16);stroke-width:9}
+.arc{fill:none;stroke:#FF8A1F;stroke-width:9;stroke-linecap:round;stroke-dasharray:289;stroke-dashoffset:0}
+.txt{position:relative;display:flex;flex-direction:column;align-items:center;color:#fff;line-height:1.15}
+.lab{font-size:3.4vmin;font-weight:700;color:#FF8A1F}
+.num{font-size:9vmin;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:0;min-width:5ch;text-align:center}
+.rd{font-size:3vmin;font-weight:600;opacity:.9}
+.pill{background:rgba(15,23,60,.85);color:#fff;font-size:3.6vmin;font-weight:700;padding:1vmin 4vmin;border-radius:5vmin}
+</style>
+<div class="shot">
+  <div class="timer">
+    <div class="bars"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="disc">
+      <svg viewBox="0 0 100 100"><circle class="track" cx="50" cy="50" r="46"/><circle class="arc" cx="50" cy="50" r="46"/></svg>
+      <div class="txt"><span class="lab">운동</span><span class="num">0:20</span><span class="rd">라운드 1/5</span></div>
+    </div>
+    <div class="pill">스쿼트</div>
+  </div>
+</div>
+</html>

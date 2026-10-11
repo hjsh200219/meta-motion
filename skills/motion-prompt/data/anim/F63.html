@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F63 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+.stage{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f6f1e7;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#1f2937}
+.tbl{position:relative;box-sizing:border-box;width:80vmin;height:62vmin;margin-top:5vmin;background:linear-gradient(#d5d9de .2vmin,transparent .2vmin) 0 0/100% 9.0909%,#fff;border:.25vmin solid #cfd4da;box-shadow:0 1.2vmin 3vmin rgba(60,50,30,.12);animation:fadeUp .3s ease-out 0s 1 both}
+.tbl>*{position:absolute}
+.hd{left:0;top:0;width:100%;height:9.0909%;background:#eef0f3}
+.rn{left:0;top:0;width:10%;height:100%;background:#eef0f3}
+.vl{top:0;height:100%;width:.2vmin;background:#d5d9de}
+.vl:nth-of-type(1){left:10%}.vl:nth-of-type(2){left:30%}.vl:nth-of-type(3){left:50%}.vl:nth-of-type(4){left:80%}
+.ltr{left:10%;top:0;width:90%;height:9.0909%;display:grid;grid-template-columns:2fr 2fr 3fr 2fr;text-align:center;align-items:center;font-size:3vmin;font-weight:700;color:#6b7280}
+.rns{left:0;top:9.0909%;width:10%;height:90.909%;display:grid;grid-template-rows:repeat(10,1fr);text-align:center;align-items:center;font-size:2.8vmin;color:#6b7280}
+.cells{left:10%;top:9.0909%;width:90%;height:90.909%;display:grid;grid-template-columns:2fr 2fr 3fr 2fr;grid-template-rows:repeat(10,1fr)}
+.cells span{display:flex;align-items:center;padding:0 1.6vmin;font-size:3vmin}
+.cells .h{font-weight:700;color:#374151}
+.cells .b{background:linear-gradient(#e3e6ea,#e3e6ea) no-repeat left center/60% 1.4vmin}
+.cells .b:nth-child(3n){background-size:40% 1.4vmin}
+.cells .b:nth-child(4n+3){background-position:right center;background-size:55% 1.4vmin}
+.cells .b:nth-child(5n){background-size:75% 1.4vmin}
+.cells .t{font-weight:700}
+.cells .r{justify-content:flex-end}
+.file{right:0;bottom:100%;margin-bottom:1.4vmin;font-size:2.8vmin;color:#8a8f98;animation:fadeUp .3s ease-out 0s 1 both}
+.cw{left:50%;width:30%;bottom:100%;margin-bottom:1.2vmin;display:flex;justify-content:center}
+.chip{white-space:nowrap;background:#ff5a36;color:#fff;font-weight:700;font-size:3.6vmin;padding:.9vmin 2.4vmin;border-radius:5vmin;animation:pop .25s ease-out .3s 1 both}
+.colfill{left:50%;top:0;width:30%;height:100%;background:rgba(255,90,54,.16);transform-origin:top;animation:fillY .5s ease-out .3s 1 both}
+.rowband{left:0;top:90.909%;width:100%;height:9.0909%;background:rgba(255,90,54,.10);transform-origin:left;animation:fillX .5s ease-out .8s 1 both}
+.cellbox{left:50%;top:90.909%;width:30%;height:9.0909%;box-sizing:border-box;border:.7vmin solid #ff5a36;border-radius:.6vmin;animation:boxpop .35s ease-out 1.3s 1 both}
+.line{left:65%;top:100%;width:.5vmin;height:5vmin;margin-left:-.25vmin;background:#ff5a36;transform-origin:top;animation:fillY .25s ease-out 1.4s 1 both}
+.bw{left:65%;top:calc(100% + 5vmin);width:0;display:flex;justify-content:center}
+.bubble{white-space:nowrap;background:#fff;border:.4vmin solid #ff5a36;border-radius:1.6vmin;padding:1.4vmin 3vmin;font-size:4.2vmin;font-weight:800;box-shadow:0 1vmin 2.4vmin rgba(60,40,20,.2);transform-origin:top center;animation:bub .4s ease-out 1.5s 1 both}
+.fx{left:0;bottom:100%;margin-bottom:1.2vmin;white-space:nowrap;background:#1f2937;color:#fff;font-family:ui-monospace,Menlo,monospace;font-size:3.4vmin;padding:.9vmin 2.2vmin;border-radius:1vmin;animation:slideIn .4s ease-out 1.6s 1 both}
+.fx b{color:#ff8a6b;font-style:italic;margin-right:1.2vmin}
+@keyframes fadeUp{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:none}}
+@keyframes pop{0%{opacity:0;transform:scale(.5)}60%{opacity:1;transform:scale(1.12)}100%{opacity:1;transform:scale(1)}}
+@keyframes fillY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes fillX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes boxpop{0%{opacity:0;transform:scale(.6)}50%{opacity:1;transform:scale(1.2)}100%{opacity:1;transform:scale(1)}}
+@keyframes bub{0%{opacity:0;transform:scale(.5)}55%{opacity:1;transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-120%)}to{opacity:1;transform:none}}
+</style>
+<div class="stage">
+  <div class="tbl">
+    <div class="hd"></div><div class="rn"></div>
+    <span class="vl"></span><span class="vl"></span><span class="vl"></span><span class="vl"></span>
+    <div class="ltr"><span>A</span><span>B</span><span>C</span><span>D</span></div>
+    <div class="rns"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+    <div class="cells">
+      <span class="h">품목</span><span class="h">수량</span><span class="h r">금액</span><span class="h">비고</span>
+      <span class="b"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+      <span class="b"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+      <span class="b"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+      <span class="b"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+      <span class="b"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+      <span class="b"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+      <span class="b"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+      <span class="b"></span><span class="b"></span><span class="b"></span><span class="b"></span>
+      <span class="t">합계</span><span></span><span class="t r">1,240,000</span><span></span>
+    </div>
+    <div class="file">sales.xlsx</div>
+    <div class="colfill"></div>
+    <div class="cw"><div class="chip">C열 · 금액</div></div>
+    <div class="rowband"></div>
+    <div class="cellbox"></div>
+    <div class="line"></div>
+    <div class="bw"><div class="bubble">합계 1,240,000</div></div>
+    <div class="fx"><b>fx</b>=SUM(C2:C9)</div>
+  </div>
+</div>
+</html>

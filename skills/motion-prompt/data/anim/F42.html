@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F42 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0d111a}
+body{display:flex;align-items:center;justify-content:center;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.st{position:relative;width:92vmin;height:62vmin;border-radius:2vmin;background:linear-gradient(160deg,#1d2640,#141a2b 70%);box-shadow:0 2vmin 6vmin rgba(0,0,0,.5);overflow:hidden}
+.bar{position:absolute;left:0;top:0;width:100%;height:9vmin;background:#232b44;border-bottom:.3vmin solid #2f3a5a}
+.fn{position:absolute;top:1.6vmin;left:0;font-size:4vmin;line-height:6vmin;color:#e8ecf5;font-weight:400;letter-spacing:.1vmin;white-space:nowrap}
+.f1{left:4vmin}.f2{left:28vmin}.f3{left:52vmin}
+.file{position:absolute;right:3vmin;top:2.6vmin;font-size:2.6vmin;color:#7d89a8}
+.pane{position:absolute;left:4vmin;top:29vmin;width:46vmin;height:17vmin;border-radius:1.4vmin;background:linear-gradient(120deg,#35507d,#6a4f8f 60%,#c27a6b)}
+.ln{position:absolute;left:54vmin;height:2.2vmin;border-radius:1.1vmin;background:#2c3654}
+.l1{top:30vmin;width:30vmin}.l2{top:35vmin;width:24vmin}.l3{top:40vmin;width:28vmin}
+.btn{position:absolute;right:4vmin;bottom:5vmin;width:34vmin;height:8vmin;border-radius:1.4vmin;background:#3d7bff;color:#fff;font-size:4vmin;line-height:8vmin;text-align:center;font-weight:600;white-space:nowrap}
+.prog{position:absolute;left:0;bottom:0;width:100%;height:1vmin;background:#5a6a99;transform-origin:left;animation:pg 5s linear 0s 1 both}
+@keyframes pg{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.tg{position:absolute}
+.dot{position:absolute;width:1.4vmin;height:1.4vmin;border-radius:50%;background:#8a93a6;animation:dt .08s linear var(--d) 1 both}
+.ln2{position:absolute;background:#8a93a6}
+.lab{position:absolute;display:flex;flex-direction:column;background:#fbf6ea;border-left:1vmin solid #ffb020;border-radius:1.2vmin;padding:1vmin 2vmin 1vmin 1.6vmin;white-space:nowrap;font-family:"Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-weight:900;font-size:4vmin;line-height:5vmin;color:#111;box-shadow:0 .6vmin 1.6vmin rgba(0,0,0,.35)}
+.lab small{font-weight:500;font-size:2.6vmin;line-height:3.4vmin;color:#8a8a8a}
+.v .dot{left:.5vmin;top:8.4vmin}
+.v .ln2{left:1.1vmin;top:9.8vmin;width:.25vmin;height:3vmin;transform-origin:top;animation:ly .1s linear calc(var(--d) + .04s) 1 both}
+.v .lab{left:0;top:12.8vmin;animation:lv .14s ease-out calc(var(--d) + .06s) 1 both}
+.h{right:38vmin;bottom:5vmin;height:8vmin;width:0}
+.h .dot{right:-1.4vmin;top:3.3vmin}
+.h .ln2{right:.2vmin;top:3.95vmin;width:3vmin;height:.25vmin;transform-origin:right;animation:lx .1s linear calc(var(--d) + .04s) 1 both}
+.h .lab{right:3.4vmin;top:1.3vmin;animation:lh .14s ease-out calc(var(--d) + .06s) 1 both}
+@keyframes dt{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+@keyframes ly{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes lx{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes lv{from{opacity:0;transform:translateY(-2vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes lh{from{opacity:0;transform:translateX(2.4vmin)}to{opacity:1;transform:translateX(0)}}
+</style>
+<div class="st">
+  <div class="bar"></div>
+  <div class="fn f1">Upload</div>
+  <div class="fn f2">Export</div>
+  <div class="fn f3">Settings</div>
+  <div class="file">screen.mp4</div>
+  <div class="pane"></div>
+  <div class="ln l1"></div><div class="ln l2"></div><div class="ln l3"></div>
+  <div class="btn">Save changes</div>
+
+  <div class="tg v" style="left:4vmin;--d:.2s"><div class="dot"></div><div class="ln2"></div><div class="lab">올리기</div></div>
+  <div class="tg v" style="left:28vmin;--d:.32s"><div class="dot"></div><div class="ln2"></div><div class="lab">내보내기</div></div>
+  <div class="tg v" style="left:52vmin;--d:.44s"><div class="dot"></div><div class="ln2"></div><div class="lab">설정<small>설정 — 계정·언어를 바꾸는 곳</small></div></div>
+  <div class="tg h" style="--d:.56s"><div class="dot"></div><div class="ln2"></div><div class="lab">변경 저장</div></div>
+
+  <div class="prog"></div>
+</div>
+</html>

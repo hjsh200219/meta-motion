@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F61 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#f3e6d2 0%,#e8d3b5 55%,#d9bf9c 100%)}
+.scene{position:relative;width:100vmin;height:100vmin;flex:none}
+.wall{position:absolute;left:-60vmax;top:-60vmax;right:-60vmax;bottom:-60vmax;background:radial-gradient(circle at 60% 30%,rgba(255,255,255,.45),rgba(255,255,255,0) 55%)}
+.title{position:absolute;left:0;top:9%;width:100%;text-align:center;font-size:27vmin;line-height:1.05;font-weight:900;letter-spacing:-.02em;color:#1f2a44;text-shadow:0 1.2vmin 2.4vmin rgba(0,0,0,.18);transform-origin:50% 50%;animation:titleIn .5s cubic-bezier(.2,.8,.25,1) 0s 1 both}
+@keyframes titleIn{0%{opacity:0;transform:scale(1.12);filter:blur(1.2vmin)}60%{opacity:1;filter:blur(0)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+.person{position:absolute;left:0;top:0;width:100%;height:100%;filter:blur(.15vmin)}
+.shoulders{position:absolute;left:9%;top:60%;width:50%;height:60%;border-radius:50% 50% 8% 8%/36% 36% 0 0;background:linear-gradient(180deg,#3f7f7c,#2d5f5d)}
+.neck{position:absolute;left:30.5%;top:50%;width:7%;height:14%;background:#c98f6b;border-radius:1vmin}
+.head{position:absolute;left:25%;top:27%;width:20%;height:26%;border-radius:48% 48% 46% 46%/45% 45% 55% 55%;background:radial-gradient(circle at 40% 40%,#e2a982,#c98f6b)}
+.hair{position:absolute;left:24%;top:25.5%;width:22%;height:13%;border-radius:50% 50% 30% 30%/80% 80% 30% 30%;background:#2a2018}
+.eye{position:absolute;top:41%;width:1.4%;height:1.8%;border-radius:50%;background:#2a2018}
+.eye.l{left:29.5%}.eye.r{left:38.5%}
+.mouth{position:absolute;left:32%;top:48%;width:4%;height:1%;border-radius:0 0 2vmin 2vmin;background:#9a5a45}
+.chip{position:absolute;left:61%;top:44%;padding:1.6vmin 3.4vmin;border-radius:5vmin;background:#1f2a44;color:#fff;font-size:5vmin;font-weight:700;white-space:nowrap;box-shadow:0 1vmin 2vmin rgba(0,0,0,.25);transform-origin:0 50%;animation:chipIn .3s cubic-bezier(.3,1.5,.5,1) .5s 1 both}
+@keyframes chipIn{0%{opacity:0;transform:scale(.6) translateY(1vmin)}100%{opacity:1;transform:scale(1) translateY(0)}}
+</style>
+<div class="wall"></div>
+<div class="scene">
+  <div class="title">자동화</div>
+  <div class="person">
+    <div class="shoulders"></div>
+    <div class="neck"></div>
+    <div class="head"></div>
+    <div class="hair"></div>
+    <div class="eye l"></div>
+    <div class="eye r"></div>
+    <div class="mouth"></div>
+  </div>
+  <div class="chip">첫 번째 이야기</div>
+</div>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 E05 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0A1633;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{width:100%;height:100%;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6vmin;padding:4vmin;box-sizing:border-box;background:radial-gradient(120vmax 90vmax at 25% 40%,#14275A 0%,#0A1633 60%,#070F25 100%)}
+.qrw{position:relative;flex:none;width:min(33vw,66vh);aspect-ratio:1}
+.panel{position:absolute;inset:0;background:#fff;border-radius:9%;display:flex;align-items:center;justify-content:center;animation:pop .4s 0.05s 1 both cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+.qr{position:relative;width:84%;height:84%;overflow:hidden;background:
+repeating-conic-gradient(#fff 0 25%,transparent 0 50%) 0 0/13% 13%,
+repeating-conic-gradient(#0B1B3A 0 25%,#fff 0 50%) 0 0/8% 8%}
+.f{position:absolute;width:26%;aspect-ratio:1;background:#0B1B3A;box-shadow:0 0 0 1.2vmin #fff}
+.f::before{content:"";position:absolute;inset:15%;background:#fff}
+.f::after{content:"";position:absolute;inset:32%;background:#0B1B3A}
+.f.a{left:0;top:0}.f.b{right:0;top:0}.f.c{left:0;bottom:0}
+.core{position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1;transform:translate(-50%,-50%);background:#E8442E;border-radius:18%;box-shadow:0 0 0 1.2vmin #fff}
+.core::after{content:"";position:absolute;left:34%;top:18%;width:20%;height:40%;border:solid #fff;border-width:0 1vmin 1vmin 0;transform:rotate(40deg)}
+.band{position:absolute;left:0;right:0;top:4%;height:5%;background:linear-gradient(180deg,transparent,rgba(139,233,255,.28),transparent);animation:scan 1.025s .5s 4 both ease-in-out,fadein .3s .5s 1 both}
+@keyframes scan{0%,100%{top:4%}50%{top:90%}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+.ring{position:absolute;inset:-1.4vmin;border-radius:11%;overflow:hidden;background:rgba(139,233,255,.35);box-shadow:0 0 3vmin rgba(139,233,255,.7),0 0 7vmin rgba(139,233,255,.35);animation:fadein .3s .4s 1 both}
+.spin{position:absolute;inset:-50%;background:conic-gradient(from 0deg,transparent 0 70%,rgba(139,233,255,.2) 80%,#8BE9FF 98%,#fff 100%);animation:rot 1.25s .7s 3.12 both linear}
+@keyframes rot{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.br{position:absolute;inset:-9%;animation:tight .8s .25s 1 both cubic-bezier(.2,.9,.3,1)}
+@keyframes tight{from{transform:scale(2.3);opacity:0}25%{opacity:1}to{transform:scale(1);opacity:1}}
+.bb{position:absolute;inset:0;animation:breathe .7s 1.05s 5 both ease-in-out}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.bb i{position:absolute;width:18%;height:18%;border:solid #FFD400;border-width:0;animation:flash .8s .25s 1 both}
+@keyframes flash{0%,80%{filter:none}90%{filter:drop-shadow(0 0 2.5vmin #FFF27A) brightness(1.7)}100%{filter:none}}
+.bb i:nth-child(1){left:0;top:0;border-width:1.3vmin 0 0 1.3vmin;border-top-left-radius:1.5vmin}
+.bb i:nth-child(2){right:0;top:0;border-width:1.3vmin 1.3vmin 0 0;border-top-right-radius:1.5vmin}
+.bb i:nth-child(3){left:0;bottom:0;border-width:0 0 1.3vmin 1.3vmin;border-bottom-left-radius:1.5vmin}
+.bb i:nth-child(4){right:0;bottom:0;border-width:0 1.3vmin 1.3vmin 0;border-bottom-right-radius:1.5vmin}
+.txt{display:flex;flex-direction:column;align-items:flex-start;gap:2.6vmin;min-width:0}
+.title{font-size:12vmin;font-weight:900;color:#fff;line-height:1.05;white-space:nowrap;animation:slide .4s .5s 1 both cubic-bezier(.2,.9,.3,1)}
+.sub{font-size:4.4vmin;color:#A9B3C7;animation:slide .3s .8s 1 both ease-out}
+.row{display:flex;align-items:center;gap:2.4vmin}
+.phone{position:relative;width:5vmin;height:8.6vmin;border-radius:1.2vmin;background:#8BE9FF;box-shadow:0 0 2vmin rgba(139,233,255,.6);animation:slide .3s 1.0s 1 both ease-out}
+.phone::before{content:"";position:absolute;inset:.9vmin .7vmin 1.5vmin;background:#0A1633;border-radius:.5vmin}
+.phone::after{content:"";position:absolute;left:50%;bottom:.5vmin;width:1.2vmin;height:.5vmin;margin-left:-.6vmin;border-radius:.3vmin;background:#0A1633}
+.go{font-size:4.6vmin;font-weight:700;color:#8BE9FF;animation:slide .3s 1.2s 1 both ease-out}
+@keyframes slide{from{transform:translateX(8vmin);opacity:0}to{transform:none;opacity:1}}
+.chipw{animation:chip .3s 1.5s 1 both cubic-bezier(.3,1.7,.5,1)}
+@keyframes chip{from{transform:scale(.2);opacity:0}to{transform:scale(1);opacity:1}}
+.chip{display:inline-block;background:#E8442E;color:#fff;font-size:5.2vmin;font-weight:800;padding:1.6vmin 3.6vmin;border-radius:5vmin;box-shadow:0 1vmin 3vmin rgba(232,68,46,.45);animation:pulse .8s 1.8s 3.5 both ease-in-out}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+@media (orientation:portrait){
+.stage{flex-direction:column;gap:9vmin}
+.qrw{width:min(56vw,38vh)}
+.txt{align-items:center;text-align:center}
+.title{font-size:13vmin}
+.sub{font-size:4.8vmin}
+}
+</style>
+<div class="stage">
+  <div class="qrw">
+    <div class="ring"><div class="spin"></div></div>
+    <div class="panel">
+      <div class="qr">
+        <span class="f a"></span><span class="f b"></span><span class="f c"></span>
+        <span class="core"></span>
+        <div class="band"></div>
+      </div>
+    </div>
+    <div class="br"><div class="bb"><i></i><i></i><i></i><i></i></div></div>
+  </div>
+  <div class="txt">
+    <div class="title">참가 신청</div>
+    <div class="sub">휴대폰 카메라로 찍으세요</div>
+    <div class="row"><div class="phone"></div><div class="go">찍으면 신청 화면으로</div></div>
+    <div class="chipw"><span class="chip">마감 10월 10일</span></div>
+  </div>
+</div>
+</html>

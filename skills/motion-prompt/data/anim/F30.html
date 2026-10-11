@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F30 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;background:linear-gradient(160deg,#c9ccd1,#9ea3ab);overflow:hidden}
+.app{position:absolute;inset:4vmin;border-radius:2vmin;background:#e6e8eb;box-shadow:0 1.5vmin 4vmin rgba(0,0,0,.25);overflow:hidden}
+.bar{height:6vmin;background:#d3d6db;display:flex;align-items:center;gap:1.2vmin;padding-left:2.5vmin}
+.bar i{width:1.8vmin;height:1.8vmin;border-radius:50%;background:#aeb3ba}
+.bar b{margin-left:3vmin;width:22vmin;height:2vmin;border-radius:1vmin;background:#bcc0c7}
+.cards{position:absolute;left:3vmin;right:3vmin;bottom:3vmin;height:42%;display:grid;grid-template-columns:1fr 1fr;gap:2.5vmin}
+.cards div{border-radius:1.6vmin;background:#f3f4f6;box-shadow:0 .4vmin 1vmin rgba(0,0,0,.1);position:relative}
+.cards div::before,.cards div::after{content:"";position:absolute;left:2vmin;height:1.6vmin;border-radius:.8vmin;background:#c9cdd3}
+.cards div::before{top:3vmin;width:55%}
+.cards div::after{top:7vmin;width:35%}
+.row{position:absolute;left:7vmin;top:14vmin;display:flex;align-items:center;gap:2.4vmin}
+.badge{display:flex;border-radius:1.8vmin;overflow:hidden;box-shadow:0 1vmin 2.6vmin rgba(0,0,0,.55);font-size:4.6vmin;line-height:1;white-space:nowrap;
+  animation:slide .45s linear .2s 1 both}
+.badge .s{background:#ffd23f;color:#2a2200;font-weight:800;padding:2.6vmin 2.8vmin;letter-spacing:.1vmin}
+.badge .t{background:#1f2430;color:#fff;font-weight:800;padding:2.6vmin 3.2vmin}
+@keyframes slide{
+  0%{transform:translateX(-80vmin);opacity:0}
+  10%{opacity:1}
+  72%{transform:translateX(2.2vmin);animation-timing-function:ease-in-out}
+  100%{transform:translateX(0)}}
+.keys{display:flex;align-items:center;gap:1.4vmin}
+.key{min-width:9vmin;height:9vmin;box-sizing:border-box;border-radius:1.6vmin;background:#fff;color:#222;font-size:5vmin;font-weight:700;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 .9vmin 0 #8d929a,0 1.4vmin 2vmin rgba(0,0,0,.3);opacity:0}
+.k1{animation:pop .2s ease-out .7s 1 both}
+.k2{animation:pop2 .3s ease-out .9s 1 both}
+.plus{font-size:4.4vmin;font-weight:800;color:#2b303a;opacity:0;animation:fade .2s ease-out .9s 1 both}
+@keyframes pop{
+  0%{transform:scale(.2);opacity:0}
+  70%{transform:scale(1.15);opacity:1}
+  100%{transform:scale(1);opacity:1}}
+@keyframes pop2{
+  0%{transform:scale(.2) translateY(0);opacity:0;box-shadow:0 .9vmin 0 #8d929a,0 1.4vmin 2vmin rgba(0,0,0,.3)}
+  35%{transform:scale(1.15) translateY(0);opacity:1;box-shadow:0 .9vmin 0 #8d929a,0 1.4vmin 2vmin rgba(0,0,0,.3)}
+  60%{transform:scale(1) translateY(.7vmin);opacity:1;box-shadow:0 .2vmin 0 #8d929a,0 .4vmin .8vmin rgba(0,0,0,.3)}
+  100%{transform:scale(1) translateY(0);opacity:1;box-shadow:0 .9vmin 0 #8d929a,0 1.4vmin 2vmin rgba(0,0,0,.3)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+<div class="stage">
+  <div class="app">
+    <div class="bar"><i></i><i></i><i></i><b></b></div>
+    <div class="cards"><div></div><div></div><div></div><div></div></div>
+  </div>
+  <div class="row">
+    <div class="badge"><span class="s">STEP 2</span><span class="t">설정 열기</span></div>
+    <div class="keys"><span class="key k1">⌘</span><span class="plus">+</span><span class="key k2">,</span></div>
+  </div>
+</div>
+</html>

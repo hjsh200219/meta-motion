@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T05 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:radial-gradient(circle at 50% 45%,#1C2B52 0%,#14203f 38%,#060a16 78%,#020306 100%)}
+.stage{display:flex;flex-direction:column;align-items:center;gap:4vmin}
+.title{font-size:5vmin;font-weight:600;color:#9FB0D0;letter-spacing:.3vmin;opacity:0;animation:fadeUp .5s ease-out 0s 1 both}
+.num{display:flex;align-items:center;white-space:nowrap;font-size:11.5vmin;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.2vmin;line-height:1.1}
+.num span{opacity:0;animation:pop .05s linear 1 both}
+.num span:nth-child(1){animation-delay:.5s}
+.num span:nth-child(2){animation-delay:.618s}
+.num span:nth-child(3){animation-delay:.736s}
+.num span:nth-child(4){animation-delay:.854s}
+.num span:nth-child(5){animation-delay:.972s}
+.num span:nth-child(6){animation-delay:1.09s}
+.num span:nth-child(7){animation-delay:1.208s}
+.num span:nth-child(8){animation-delay:1.326s}
+.num span:nth-child(9){animation-delay:1.444s}
+.num span:nth-child(10){animation-delay:1.562s}
+.num span:nth-child(11){animation-delay:1.68s}
+.num i{display:block;width:.8vmin;height:10vmin;margin-left:1vmin;background:#fff;opacity:0;animation:caret 2s linear .5s 1 both}
+.btn{position:relative;margin-top:3vmin;padding:2.6vmin 7vmin;border-radius:99vmin;background:#FFB45A;color:#2a1a05;font-size:5.2vmin;font-weight:900;white-space:nowrap;opacity:0;animation:bounce .5s ease-out 2s 1 both}
+.btn::after{content:"";position:absolute;inset:0;border-radius:99vmin;border:.7vmin solid #FFB45A;opacity:0;animation:ring .87s ease-out 2.4s 3 both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0}to{opacity:1}}
+@keyframes caret{0%,10%{opacity:1}11%,20%{opacity:0}21%,30%{opacity:1}31%,40%{opacity:0}41%,50%{opacity:1}51%,60%{opacity:0}61%,75%{opacity:1}100%{opacity:0}}
+@keyframes bounce{0%{opacity:0;transform:scale(.6)}15%{opacity:1}50%{opacity:1;transform:scale(1.3)}75%{transform:scale(.94)}100%{opacity:1;transform:scale(1)}}
+@keyframes ring{0%{opacity:0;transform:scale(1)}8%{opacity:.85}100%{opacity:0;transform:scale(1.5)}}
+</style>
+<div class="stage">
+  <div class="title">예약 문의</div>
+  <div class="num"><span>0</span><span>2</span><span>-</span><span>0</span><span>0</span><span>0</span><span>-</span><span>0</span><span>0</span><span>0</span><span>0</span><i></i></div>
+  <div class="btn">지금 전화하기</div>
+</div>
+</html>

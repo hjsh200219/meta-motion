@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 S04 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#FDEBD9;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-weight:900}
+.stage{--u:1.25vmin;font-size:var(--u);width:100%;height:100%;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6em}
+@media (max-aspect-ratio:3/2){.stage{flex-direction:column;gap:5em;--u:1.1vmin}}
+@media (max-aspect-ratio:4/5){.stage{--u:1.5vmin}}
+
+/* 등장 */
+.cw{position:relative;width:44em;height:26em;filter:drop-shadow(0 .8em 1em rgba(150,60,20,.22));animation:inL .4s ease-out 0s 1 both}
+.kw{width:58em;animation:inR .4s ease-out 0s 1 both}
+@keyframes inL{from{opacity:0;transform:translateX(-8em)}to{opacity:1;transform:none}}
+@keyframes inR{from{opacity:0;transform:translateX(8em)}to{opacity:1;transform:none}}
+
+/* 쿠폰 */
+.body{position:absolute;left:0;top:0;width:32em;height:100%;box-sizing:border-box;background:#E8442E;border-radius:2.5em 0 0 2.5em;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4em;z-index:2;transform-origin:30% 100%;animation:tear .43s cubic-bezier(.2,.8,.3,1) .62s 1 both}
+.body::before,.body::after{content:"";position:absolute;right:-2em;width:4em;height:4em;border-radius:50%;background:#FDEBD9}
+.body::before{top:-2em}
+.body::after{bottom:-2em}
+.ben{font-size:6em;line-height:1.15;text-align:center}
+.until{font-size:3.4em;font-weight:700;opacity:.92}
+.stub{position:absolute;right:0;top:0;width:12em;height:100%;box-sizing:border-box;background:#A8281A;border-radius:0 2.5em 2.5em 0;border-left:.7em dashed #fff;display:grid;place-items:center;color:rgba(255,255,255,.5);z-index:1}
+.stub span{font-size:5em;line-height:1}
+.stub::before,.stub::after{content:"";position:absolute;left:-2.35em;width:4em;height:4em;border-radius:50%;background:#FDEBD9}
+.stub::before{top:-2em}
+.stub::after{bottom:-2em}
+.sc{position:absolute;left:32em;top:0;z-index:5;animation:snip .47s linear .15s 1 both}
+.sc span{display:block;font-size:7em;line-height:1;color:#3b2a22;transform:translate(-50%,-50%) rotate(90deg)}
+@keyframes snip{0%{opacity:0;transform:translateY(-1em)}10%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateY(27em)}}
+@keyframes tear{0%{transform:none}55%{transform:translate(-7em,2.5em) rotate(-11deg)}100%{transform:translate(-5.5em,4.5em) rotate(-8deg)}}
+
+/* 적립 카드 */
+.card{box-sizing:border-box;width:100%;background:#fff;border-radius:4em;padding:3em 3em 3.4em;display:flex;flex-direction:column;align-items:center;gap:2em;box-shadow:0 1em 2.4em rgba(150,60,20,.18);animation:shake 2.6s linear 1.2s 1 both}
+.cnt{display:flex;align-items:center;font-size:9em;line-height:1;color:#E8442E}
+.num{display:block;height:1em;width:.62em;overflow:hidden;text-align:center}
+.col{display:block;animation:cnt 2.4s steps(1,end) 1.2s 1 both}
+.col b{display:block;height:1em;line-height:1em;font-weight:900}
+.tot{font-size:.5em;margin-left:.4em;color:#B7A89D}
+.grid{display:grid;grid-template-columns:repeat(5,9em);gap:1.8em}
+.cell{box-sizing:border-box;width:9em;height:9em;border:.5em dashed #E3B7A4;border-radius:50%;display:grid;place-items:center}
+.stamp{font-size:6.6em;line-height:1;color:#E8442E;animation:stamp .16s ease-in 1 both}
+.cell:nth-child(1) .stamp{animation-delay:1.2s;--r:-10deg}
+.cell:nth-child(2) .stamp{animation-delay:1.48s;--r:6deg}
+.cell:nth-child(3) .stamp{animation-delay:1.76s;--r:-4deg}
+.cell:nth-child(4) .stamp{animation-delay:2.04s;--r:12deg}
+.cell:nth-child(5) .stamp{animation-delay:2.32s;--r:-14deg}
+.cell:nth-child(6) .stamp{animation-delay:2.6s;--r:3deg}
+.cell:nth-child(7) .stamp{animation-delay:2.88s;--r:9deg}
+.cell:nth-child(8) .stamp{animation-delay:3.16s;--r:-7deg}
+.cell:nth-child(9) .stamp{animation-delay:3.44s;--r:5deg}
+.gift{border:.5em solid #F5B93A;background:#FFF3D6;animation:pop .17s ease-out 3.58s 1 both}
+.gift span{display:block;font-size:5.4em;line-height:1;animation:bounce .4s ease-in-out 3.75s 2 both}
+.note{font-size:4.6em;line-height:1.3;color:#5B3A2C;text-align:center;text-wrap:balance}
+.note em{font-style:normal;color:#E8442E}
+
+@keyframes stamp{0%{opacity:0;transform:scale(3.6) rotate(calc(var(--r)*3));animation-timing-function:ease-in}30%{opacity:1}87%{transform:scale(.86) rotate(var(--r))}100%{opacity:1;transform:scale(1) rotate(var(--r))}}
+@keyframes cnt{0%{transform:translateY(0)}5.83%{transform:translateY(-10%)}17.5%{transform:translateY(-20%)}29.17%{transform:translateY(-30%)}40.83%{transform:translateY(-40%)}52.5%{transform:translateY(-50%)}64.17%{transform:translateY(-60%)}75.83%{transform:translateY(-70%)}87.5%{transform:translateY(-80%)}99.17%{transform:translateY(-90%)}100%{transform:translateY(-90%)}}
+@keyframes shake{
+0%,5%,13.08%,15.75%,23.85%,26.52%,34.62%,37.29%,45.39%,48.06%,56.16%,58.83%,66.93%,69.6%,77.7%,80.37%,88.47%,91.14%,99.24%,100%{transform:none}
+5.38%,16.15%,26.92%,37.69%,48.46%,59.23%,70%,80.77%{transform:translate(-.9em,.5em) rotate(-1.2deg)}
+7.28%,18.05%,28.82%,39.59%,50.36%,61.13%,71.9%,82.67%{transform:translate(.8em,-.4em) rotate(1deg)}
+9.18%,19.95%,30.72%,41.49%,52.26%,63.03%,73.8%,84.57%{transform:translate(-.5em,.3em) rotate(-.6deg)}
+11.08%,21.85%,32.62%,43.39%,54.16%,64.93%,75.7%,86.47%{transform:translate(.2em,-.1em) rotate(.3deg)}
+91.54%{transform:translate(-2.6em,1.6em) rotate(-2.4deg)}
+93.44%{transform:translate(2.4em,-1.3em) rotate(2deg)}
+95.34%{transform:translate(-1.4em,.9em) rotate(-1.1deg)}
+97.24%{transform:translate(.7em,-.4em) rotate(.5deg)}
+}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+</style>
+
+<div class="stage">
+  <div class="cw">
+    <div class="body">
+      <div class="ben">음료 1잔<br>무료</div>
+      <div class="until">10월 31일까지</div>
+    </div>
+    <div class="stub"><span>★</span></div>
+    <div class="sc"><span>&#9986;&#65038;</span></div>
+  </div>
+  <div class="kw">
+    <div class="card">
+      <div class="cnt">
+        <div class="num"><div class="col"><b>0</b><b>1</b><b>2</b><b>3</b><b>4</b><b>5</b><b>6</b><b>7</b><b>8</b><b>9</b></div></div>
+        <span class="tot">/ 10</span>
+      </div>
+      <div class="grid">
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell"><span class="stamp">★</span></div>
+        <div class="cell gift"><span>🎁</span></div>
+      </div>
+      <div class="note">10개 모으면 <em>음료 1잔 무료</em></div>
+    </div>
+  </div>
+</div>
+</html>

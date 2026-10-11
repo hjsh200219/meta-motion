@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F59 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{display:flex;align-items:center;justify-content:center;background:#e9e1cf}
+.board{position:relative;box-sizing:border-box;width:94vmin;height:94vmin;border:1.6vmin solid #24304a;border-radius:2vmin;
+  background-color:#f3ead8;background-image:radial-gradient(circle,#cdbf9f 0.28vmin,transparent 0.34vmin);background-size:3vmin 3vmin;
+  box-shadow:0 1.5vmin 4vmin rgba(36,48,74,.25)}
+.title{position:absolute;left:4vmin;top:3.2vmin;margin:0;font-size:5vmin;line-height:1.2;font-weight:900;color:#24304a;white-space:nowrap;
+  animation:tin .3s ease-out 0s 1 both}
+@keyframes tin{from{opacity:0;transform:translateY(-2vmin)}to{opacity:1;transform:none}}
+
+.g{position:absolute;box-sizing:border-box;border:.5vmin dashed #24304a;border-radius:2vmin;background:rgba(36,48,74,.05);
+  animation:gin .3s ease-out 1.8s 1 both}
+@keyframes gin{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.g.a{left:3vmin;top:15vmin;width:51vmin;height:38vmin}
+.g.b{left:58vmin;top:15vmin;width:30vmin;height:38vmin}
+.g.c{left:3vmin;top:60vmin;width:30vmin;height:24vmin}
+.tag{position:absolute;left:2vmin;top:-2.6vmin;z-index:2;padding:.6vmin 2vmin;border-radius:1vmin;background:#24304a;color:#fff;
+  font-size:3.4vmin;font-weight:800;white-space:nowrap;transform-origin:left bottom;animation:tag .22s cubic-bezier(.3,1.6,.5,1) 2.35s 1 both}
+.g.b .tag{animation-delay:2.4s}
+.g.c .tag{animation-delay:2.43s}
+@keyframes tag{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+.g.a::after{content:"";position:absolute;inset:-1.2vmin;border:1.3vmin solid #ff5a36;border-radius:2.6vmin;pointer-events:none;
+  animation:hl .35s cubic-bezier(.3,1.5,.5,1) 2.65s 1 both}
+@keyframes hl{from{opacity:0;transform:scale(1.07)}to{opacity:1;transform:scale(1)}}
+
+.n{position:absolute;width:22vmin;height:12vmin;
+  animation:mv .7s cubic-bezier(.3,1.25,.5,1) calc(1.8s + var(--d)) 1 both}
+@keyframes mv{from{transform:translate(var(--sx),var(--sy)) rotate(var(--sr))}to{transform:translate(0,0) rotate(var(--fr))}}
+.p{position:relative;box-sizing:border-box;width:100%;height:100%;display:flex;align-items:center;justify-content:center;text-align:center;
+  border-radius:.8vmin;font-size:3.3vmin;font-weight:700;color:#2b2b2b;box-shadow:0 .6vmin 1.4vmin rgba(36,48,74,.3);
+  animation:land .3s ease-out calc(.3s + var(--i)*.15s) 1 both}
+.p::before{content:"";position:absolute;left:50%;top:-1.4vmin;width:8vmin;height:3vmin;margin-left:-4vmin;transform:rotate(-4deg);
+  background:rgba(255,255,255,.55);border:.2vmin solid rgba(255,255,255,.8);box-shadow:0 .2vmin .5vmin rgba(0,0,0,.12)}
+@keyframes land{0%{opacity:0;transform:scale(1.6)}70%{opacity:1;transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+
+.n:nth-of-type(1){--i:0;--d:0s;left:6vmin;top:22vmin;--sx:34vmin;--sy:36vmin;--sr:9deg;--fr:-.6deg}
+.n:nth-of-type(2){--i:1;--d:.06s;left:29vmin;top:22vmin;--sx:39vmin;--sy:44vmin;--sr:-7deg;--fr:.5deg}
+.n:nth-of-type(3){--i:2;--d:.12s;left:62vmin;top:22vmin;--sx:-48vmin;--sy:40vmin;--sr:6deg;--fr:.4deg}
+.n:nth-of-type(4){--i:3;--d:.04s;left:6vmin;top:36vmin;--sx:39vmin;--sy:-10vmin;--sr:-10deg;--fr:.6deg}
+.n:nth-of-type(5){--i:4;--d:.1s;left:6vmin;top:67vmin;--sx:56vmin;--sy:7vmin;--sr:8deg;--fr:-.5deg}
+.n:nth-of-type(6){--i:5;--d:.08s;left:62vmin;top:36vmin;--sx:-50vmin;--sy:4vmin;--sr:-6deg;--fr:-.4deg}
+.n:nth-of-type(1) .p{background:#fde3d6}
+.n:nth-of-type(2) .p{background:#fff}
+.n:nth-of-type(3) .p{background:#fbd5c4}
+.n:nth-of-type(4) .p{background:#fff}
+.n:nth-of-type(5) .p{background:#fde3d6}
+.n:nth-of-type(6) .p{background:#fff}
+</style>
+<div class="board">
+  <h1 class="title">AI에게 맡길 일 (수강생 의견)</h1>
+  <div class="g a"><span class="tag">글쓰기</span></div>
+  <div class="g b"><span class="tag">연락</span></div>
+  <div class="g c"><span class="tag">찾기</span></div>
+  <div class="n"><div class="p">회의록 정리</div></div>
+  <div class="n"><div class="p">메일 답장</div></div>
+  <div class="n"><div class="p">일정 맞추기</div></div>
+  <div class="n"><div class="p">보고서 초안</div></div>
+  <div class="n"><div class="p">자료 찾기</div></div>
+  <div class="n"><div class="p">문자 공지</div></div>
+</div>
+</html>

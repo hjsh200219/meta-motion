@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F37 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(160deg,#27405e 0%,#4a6f8f 45%,#c58f6b 100%)}
+.shot{position:absolute;inset:0}
+.shot i{position:absolute;display:block}
+.shot .sun{left:12vmin;top:10vmin;width:16vmin;height:16vmin;border-radius:50%;background:radial-gradient(circle,#ffe7b0,#f3b27a 70%,transparent 72%)}
+.shot .m1{left:-10vmin;bottom:0;width:70vmin;height:38vmin;background:#1d2d44;clip-path:polygon(0 100%,45% 0,100% 100%)}
+.shot .m2{left:30vmin;bottom:0;width:80vmin;height:30vmin;background:#162235;clip-path:polygon(0 100%,55% 0,100% 100%)}
+.shot .desk{left:0;right:0;bottom:0;height:14vmin;background:linear-gradient(#101a29,#0a111c)}
+.panel{position:absolute;right:3vmin;bottom:3vmin;width:max(26vw,42vmin);max-width:92vw;box-sizing:border-box;padding:2.4vmin;border-radius:2.2vmin;background:rgba(14,22,36,.78);box-shadow:0 1vmin 4vmin rgba(0,0,0,.4);animation:slide .35s 0s 1 both ease-out}
+.row{display:flex;justify-content:space-between;align-items:center}
+.chip{background:#ff6b3d;color:#fff;font-size:3vmin;font-weight:800;padding:.6vmin 1.8vmin;border-radius:5vmin}
+.tag{font-size:2.8vmin;color:#9fb3c8;animation:fade .25s .75s 1 both}
+.txt{margin:1.8vmin 0 2vmin;color:#fff;font-weight:800;font-size:4vmin;line-height:1.3;word-break:keep-all;animation:rise .3s .6s 1 both ease-out}
+.prev{position:relative;height:16vmin;border:.5vmin solid #fff;border-radius:1.2vmin;overflow:hidden;animation:pop .25s .35s 1 both ease-out}
+.prev .blur{position:absolute;inset:-2vmin;filter:blur(.8vmin);background:linear-gradient(135deg,#3b5878,#e0a37a)}
+.prev .blur b{position:absolute;display:block;background:#fff;opacity:.85}
+.prev .blur b:nth-child(1){left:12%;top:25%;width:30%;height:14%}
+.prev .blur b:nth-child(2){left:12%;top:48%;width:50%;height:14%;opacity:.6}
+.prev .blur b:nth-child(3){left:12%;top:70%;width:40%;height:14%;opacity:.4}
+.time{position:absolute;right:1vmin;bottom:.8vmin;color:#fff;font-size:2.8vmin;font-weight:800;background:rgba(0,0,0,.6);padding:.2vmin 1vmin;border-radius:.8vmin}
+@keyframes slide{0%{transform:translateX(70vw);opacity:0}15%{opacity:1}65%{transform:translateX(-1.6vmin)}82%{transform:translateX(.6vmin)}100%{transform:translateX(0);opacity:1}}
+@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+</style>
+<div class="stage">
+  <div class="shot"><i class="sun"></i><i class="m1"></i><i class="m2"></i><i class="desk"></i></div>
+  <div class="panel">
+    <div class="row"><span class="chip">잠시 후</span><span class="tag">약 3분 뒤</span></div>
+    <div class="txt">흩어진 표가 한 번에 정리됩니다</div>
+    <div class="prev"><div class="blur"><b></b><b></b><b></b></div><span class="time">08:42</span></div>
+  </div>
+</div>
+</html>

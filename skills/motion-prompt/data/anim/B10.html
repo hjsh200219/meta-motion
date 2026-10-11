@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B10 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+@property --n{syntax:"<integer>";inherits:false;initial-value:0}
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;background:#F4F1EA;color:#16130E;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.poll{width:min(88vw,130vmin);display:flex;flex-direction:column;align-items:flex-start}
+.live{font-size:4vmin;font-weight:800;letter-spacing:.35vmin;color:#E8442E;margin-bottom:1.5vmin}
+h1{margin:0 0 6vmin;font-size:10vmin;font-weight:900;line-height:1.1}
+.row{width:100%;display:grid;grid-template-columns:1fr auto;column-gap:3vmin;align-items:center;margin-bottom:4.5vmin}
+.name{grid-column:1/3;font-size:5vmin;font-weight:800;margin-bottom:1.4vmin}
+.track{height:5.5vmin;border-radius:3vmin;background:#E2DDD1;overflow:hidden}
+.fill{height:100%;width:0;border-radius:3vmin;background:#16130E;
+animation:grow 1.4s cubic-bezier(.2,.7,.2,1) 1 both}
+.pct{font-size:6vmin;font-weight:900;text-align:right;min-width:4.4ch;font-variant-numeric:tabular-nums;transform-origin:right center;
+counter-reset:n var(--n);--n:0;animation:count 1.4s cubic-bezier(.2,.7,.2,1) 1 both}
+.pct::after{content:counter(n) "%"}
+.r1{--v:62}.r2{--v:27}.r3{--v:11}
+.r1 .fill{background:#E8442E;animation:grow 1.4s cubic-bezier(.2,.7,.2,1) .5s 1 both,shine .6s ease-out 2.5s 1 both}
+.r1 .pct{animation:count 1.4s cubic-bezier(.2,.7,.2,1) .5s 1 both,pop .6s ease-out 2.5s 1 both}
+.r2 .fill{animation-delay:.8s}.r2 .pct{animation-delay:.8s}
+.r3 .fill{animation-delay:1.1s}.r3 .pct{animation-delay:1.1s}
+@keyframes grow{from{width:0}to{width:calc(var(--v) * 1%)}}
+@keyframes count{from{--n:0}to{--n:var(--v)}}
+@keyframes shine{0%{filter:brightness(1);box-shadow:0 0 0 0 rgba(232,68,46,0)}40%{filter:brightness(1.35);box-shadow:0 0 3vmin 1vmin rgba(232,68,46,.6)}100%{filter:brightness(1);box-shadow:0 0 0 0 rgba(232,68,46,0)}}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.25)}100%{transform:scale(1)}}
+</style>
+<div class="poll">
+  <div class="live">LIVE POLL</div>
+  <h1>여러분의 선택은?</h1>
+  <div class="row r1"><div class="name">A 바로 써본다</div><div class="track"><div class="fill"></div></div><div class="pct"></div></div>
+  <div class="row r2"><div class="name">B 좀 더 배운다</div><div class="track"><div class="fill"></div></div><div class="pct"></div></div>
+  <div class="row r3"><div class="name">C 아직 모르겠다</div><div class="track"><div class="fill"></div></div><div class="pct"></div></div>
+</div>
+</html>

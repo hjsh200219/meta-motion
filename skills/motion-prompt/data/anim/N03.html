@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 N03 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(60vmin 50vmin at 85% 15%,rgba(255,255,255,.55),rgba(255,255,255,0)),linear-gradient(160deg,#FFF7E6 0%,#FFE3CC 100%)}
+.box{position:relative;width:92vmin;height:92vmin}
+
+.tag{position:absolute;left:4%;top:4%;background:#0F766E;color:#fff;font-weight:800;font-size:3.6vmin;padding:1.2vmin 3vmin;border-radius:99vmin;white-space:nowrap;animation:drop .3s ease-out .15s 1 both}
+@keyframes drop{from{opacity:0;transform:translateY(-4vmin)}to{opacity:1;transform:translateY(0)}}
+
+.title{position:absolute;left:4%;top:15%;font-weight:900;font-size:9.5vmin;line-height:1.2;color:#1F2937;white-space:nowrap;letter-spacing:-.02em}
+.title .ln{display:block;width:fit-content}
+.title .l1{animation:rise .4s cubic-bezier(.2,.8,.3,1) .3s 1 both}
+.title .l2{animation:rise .4s cubic-bezier(.2,.8,.3,1) .6s 1 both}
+.title .l2 span{position:relative;display:inline-block}
+.title .l2 span::after{content:"";position:absolute;left:0;right:0;bottom:.04em;height:.36em;background:#FCD34D;z-index:-1;transform-origin:left center;animation:mark .4s ease-out .9s 1 both}
+@keyframes rise{from{opacity:0;transform:translateY(5vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes mark{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+.orb{position:absolute;right:4%;top:12%;width:30%;aspect-ratio:1;animation:bob 3.1s ease-in-out 2.4s 1 both}
+@keyframes bob{0%,100%{transform:translateY(0)}17%{transform:translateY(-2.2vmin)}33%{transform:translateY(0)}50%{transform:translateY(-2.2vmin)}67%{transform:translateY(0)}83%{transform:translateY(-2.2vmin)}}
+.disc{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#CCFBF1,#99F6E4 60%,#5EEAD4);animation:pop .45s ease-out .5s 1 both,glow .6s ease-out 2.05s 1 both}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.15)}80%{transform:scale(.95)}100%{transform:scale(1)}}
+@keyframes glow{0%{box-shadow:0 0 0 0 rgba(45,212,191,0)}40%{box-shadow:0 0 7vmin 2.4vmin rgba(45,212,191,.85)}100%{box-shadow:0 0 3vmin .8vmin rgba(45,212,191,.4)}}
+.disc svg{position:absolute;inset:0;width:100%;height:100%}
+.dash{fill:none;stroke:#0F766E;stroke-width:2;stroke-dasharray:4 3;stroke-linecap:round;animation:flow 5s linear .5s 1 both}
+@keyframes flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-35}}
+.fill{clip-path:inset(100% 0 0 0);animation:fillup .4s ease-out 1.7s 1 both}
+.fill *{fill:#0F766E}
+@keyframes fillup{from{clip-path:inset(100% 0 0 0)}to{clip-path:inset(0 0 0 0)}}
+.badge{position:absolute;right:-3%;top:-3%;width:36%;aspect-ratio:1;border-radius:50%;background:#F97316;color:#fff;display:flex;align-items:center;justify-content:center;font-size:8vmin;font-weight:900;line-height:1;box-shadow:0 1vmin 2vmin rgba(249,115,22,.4);animation:badge .35s ease-out 2.05s 1 both}
+@keyframes badge{0%{transform:scale(0)}55%{transform:scale(1.6)}78%{transform:scale(.9)}100%{transform:scale(1)}}
+.me{position:absolute;left:-10%;right:-10%;top:106%;text-align:center;font-weight:800;font-size:4.4vmin;color:#0F766E;white-space:nowrap;animation:label .45s ease-out 1.95s 1 both}
+@keyframes label{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:translateY(0)}}
+
+.chips{position:absolute;left:4%;top:53%;display:flex;flex-direction:column;gap:2vmin}
+.chip{display:flex;align-items:center;width:fit-content;background:#fff;border-radius:99vmin;padding:1.2vmin 3vmin;font-size:3.8vmin;font-weight:700;color:#1F2937;box-shadow:0 .8vmin 2vmin rgba(15,118,110,.12);white-space:nowrap;animation:chip .39s ease-out 1 both}
+.chip b{color:#0F766E;font-weight:900;padding-right:1.8vmin;margin-right:1.8vmin;border-right:.35vmin solid #CBD5E1}
+.chip:nth-child(1){animation-delay:1.25s}
+.chip:nth-child(2){animation-delay:1.53s}
+.chip:nth-child(3){animation-delay:1.81s}
+@keyframes chip{0%{opacity:0;transform:translateX(-14vmin)}70%{opacity:1;transform:translateX(1.2vmin)}100%{opacity:1;transform:translateX(0)}}
+
+.band{position:absolute;left:0;right:0;bottom:1%;height:15%;background:#0B4F4A;border-radius:2.5vmin;display:flex;flex-direction:column;justify-content:center;gap:1vmin;padding:0 4%;animation:wipe .65s cubic-bezier(.3,.7,.2,1) 2.35s 1 both}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.band i{font-style:normal;width:fit-content;background:#FCD34D;color:#1F2937;font-weight:900;font-size:3.2vmin;padding:.6vmin 2.4vmin;border-radius:99vmin}
+.band p{margin:0;color:#fff;font-weight:700;font-size:3.8vmin;white-space:nowrap}
+</style>
+<div class="stage">
+  <div class="box">
+    <div class="tag">○○복지관 · 채용 공고</div>
+    <div class="title">
+      <span class="ln l1">함께할 분을</span>
+      <span class="ln l2"><span>찾습니다</span></span>
+    </div>
+    <div class="orb">
+      <div class="disc">
+        <svg viewBox="0 0 100 100">
+          <circle class="dash" cx="50" cy="36" r="13"/>
+          <path class="dash" d="M24 84 Q24 58 50 58 Q76 58 76 84 Z"/>
+        </svg>
+        <svg class="fill" viewBox="0 0 100 100">
+          <circle cx="50" cy="36" r="13"/>
+          <path d="M24 84 Q24 58 50 58 Q76 58 76 84 Z"/>
+        </svg>
+      </div>
+      <div class="badge">＋</div>
+      <div class="me">당신의 자리</div>
+    </div>
+    <div class="chips">
+      <div class="chip"><b>모집 분야</b>사회복지사 1명</div>
+      <div class="chip"><b>근무 조건</b>주 5일 · 9시~18시</div>
+      <div class="chip"><b>마감일</b>10월 31일</div>
+    </div>
+    <div class="band">
+      <i>지원 방법</i>
+      <p>이메일·방문 접수 · 문의 02-000-0000</p>
+    </div>
+  </div>
+</div>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B04 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden}
+.shake{position:absolute;inset:0;animation:shake 0.5s linear 0s 1 both}
+.zoom{position:absolute;inset:-6%;transform-origin:50% 48%;animation:zoom 1.8s ease-out 0s 1 both}
+.scene{position:absolute;inset:0;background:linear-gradient(160deg,#7fa6c9 0%,#c9b99a 55%,#8a7a68 100%)}
+.win{position:absolute;left:6%;top:12%;width:26%;height:36%;background:linear-gradient(#bfe0f5,#f3e7c8);border:1.2vmin solid #5b4b3d;border-radius:1vmin;opacity:.8}
+.shelf{position:absolute;right:5%;bottom:20%;width:22%;height:30%;background:linear-gradient(90deg,#6b543f,#8a6d52);border-radius:1vmin;opacity:.7}
+.body{position:absolute;left:50%;top:78%;width:60vmin;height:46vmin;transform:translate(-50%,0);border-radius:50% 50% 0 0;background:linear-gradient(#3b5a86,#27405f)}
+.neck{position:absolute;left:50%;top:64%;width:11vmin;height:12vmin;transform:translateX(-50%);background:#d9a47f}
+.head{position:absolute;left:50%;top:48%;width:27vmin;height:33vmin;transform:translate(-50%,-50%);border-radius:48% 48% 46% 46%;background:radial-gradient(circle at 50% 40%,#f6cba6,#dfa883)}
+.hair{position:absolute;left:-3%;top:-6%;width:106%;height:46%;border-radius:50% 50% 30% 30%;background:#2a1f1a}
+.eye{position:absolute;top:42%;width:5vmin;height:6vmin;border-radius:50%;background:#fff;border:.4vmin solid #4a3328}
+.eye::after{content:"";position:absolute;left:30%;top:30%;width:40%;height:40%;border-radius:50%;background:#1d1411}
+.eye.l{left:17%}.eye.r{right:17%}
+.mouth{position:absolute;left:50%;top:72%;width:5vmin;height:7vmin;transform:translateX(-50%);border-radius:50%;background:#7a2a2a}
+.brow{position:absolute;top:34%;width:6vmin;height:1vmin;background:#2a1f1a;border-radius:1vmin}
+.brow.l{left:15%;transform:rotate(-10deg)}.brow.r{right:15%;transform:rotate(10deg)}
+.fx{position:absolute;inset:0;animation:fxout 0.1s linear 1.7s 1 both;pointer-events:none}
+.lay{position:absolute;inset:-30%;transform-origin:50% 46.9%;
+ -webkit-mask-image:radial-gradient(circle at 50% 46.9%,transparent 0,transparent 25vmin,#000 38vmin);
+ mask-image:radial-gradient(circle at 50% 46.9%,transparent 0,transparent 25vmin,#000 38vmin)}
+.burst{background:repeating-conic-gradient(from 0deg at 50% 46.9%,#fff 0 2.8deg,transparent 2.8deg 5.143deg);animation:burst 0.4s ease-out 0s 1 both}
+.main{animation:appear 0.2s ease-out 0s 1 both}
+.main i{position:absolute;inset:0;display:block;
+ background:repeating-conic-gradient(from 0deg at 50% 46.9%,#fff 0 1.3deg,transparent 1.3deg 5.143deg),
+ repeating-conic-gradient(from 1.7deg at 50% 46.9%,rgba(255,255,255,.8) 0 .5deg,transparent .5deg 7.3deg);
+ animation:flick 0.24s linear 0.5s 5 both}
+.bang{position:absolute;right:8%;top:7%;font-size:15vmin;font-weight:900;color:#fff;letter-spacing:-.02em;
+ -webkit-text-stroke:1.6vmin #000;paint-order:stroke fill;text-shadow:0 .8vmin 0 #000;
+ transform:rotate(8deg);animation:pop 0.5s ease-out 0s 1 both}
+.flash{position:absolute;inset:0;background:#fff;animation:flash 0.2s ease-out 0s 1 both;pointer-events:none}
+@keyframes zoom{0%{transform:scale(1)}8.333%{transform:scale(1.2)}94.444%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes shake{0%{transform:translateX(0)}10%{transform:translateX(-3vmin)}20%{transform:translateX(3vmin)}30%{transform:translateX(-2.2vmin)}40%{transform:translateX(2vmin)}50%{transform:translateX(-1.4vmin)}60%{transform:translateX(1.2vmin)}70%{transform:translateX(-.8vmin)}80%{transform:translateX(.5vmin)}90%{transform:translateX(-.2vmin)}100%{transform:translateX(0)}}
+@keyframes flash{0%{opacity:.95}100%{opacity:0}}
+@keyframes burst{0%{opacity:1;transform:scale(1.35)}100%{opacity:0;transform:scale(1)}}
+@keyframes appear{0%{opacity:0;transform:scale(1.4)}100%{opacity:1;transform:scale(1)}}
+@keyframes flick{0%{transform:rotate(0) scale(1)}33%{transform:rotate(1.8deg) scale(1.05)}66%{transform:rotate(-1.2deg) scale(.97)}100%{transform:rotate(0) scale(1)}}
+@keyframes pop{0%{opacity:0;transform:translateY(4vmin) rotate(-8deg) scale(0)}40%{opacity:1;transform:translateY(-3vmin) rotate(14deg) scale(1.5)}70%{opacity:1;transform:translateY(0) rotate(5deg) scale(.92)}100%{opacity:1;transform:translateY(0) rotate(8deg) scale(1)}}
+@keyframes fxout{0%{opacity:1}100%{opacity:0}}
+</style>
+<div class="stage">
+ <div class="shake">
+  <div class="zoom">
+   <div class="scene">
+    <div class="win"></div><div class="shelf"></div>
+    <div class="body"></div><div class="neck"></div>
+    <div class="head"><div class="hair"></div>
+     <div class="brow l"></div><div class="brow r"></div>
+     <div class="eye l"></div><div class="eye r"></div>
+     <div class="mouth"></div></div>
+   </div>
+  </div>
+  <div class="fx">
+   <div class="lay burst"></div>
+   <div class="lay main"><i></i></div>
+   <div class="bang">!!</div>
+  </div>
+ </div>
+ <div class="flash"></div>
+</div>
+</html>

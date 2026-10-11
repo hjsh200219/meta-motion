@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 M06 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.bg{position:fixed;inset:0;background:radial-gradient(ellipse at 40% 48%,#253A63 0%,#0B1224 75%)}
+.wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+.stage{position:relative;width:100vmin;height:100vmin;perspective:300vmin;perspective-origin:25% 55%}
+.bld{position:absolute;left:8vmin;top:50vmin;width:30vmin;height:30vmin;transform-style:preserve-3d;transform:rotateX(60deg) rotateZ(-34deg);animation:sway 5s ease-in-out 0s 1 both}
+@keyframes sway{0%{transform:rotateX(60deg) rotateZ(-34deg)}50%{transform:rotateX(60deg) rotateZ(-26deg)}100%{transform:rotateX(60deg) rotateZ(-34deg)}}
+.shd{position:absolute;left:-5vmin;top:-4vmin;width:40vmin;height:40vmin;background:radial-gradient(closest-side,rgba(0,0,0,.55),rgba(0,0,0,0));transform:translateZ(-1vmin)}
+.plate{position:absolute;left:0;top:0;width:30vmin;height:30vmin;box-sizing:border-box;border:.5vmin solid #d3e3ff;border-radius:.8vmin;background-color:rgba(134,169,234,.38);
+background-image:repeating-linear-gradient(90deg,transparent 0 7vmin,rgba(225,238,255,.6) 7vmin 7.5vmin),linear-gradient(0deg,transparent 48%,rgba(225,238,255,.6) 48% 51%,transparent 51%);
+transform:translate3d(calc(var(--s)*2vmin),0,calc(var(--i)*11.2vmin));
+animation:rise calc(1.6s - var(--i)*.1s) ease-in-out calc(.3s + var(--i)*.1s) 1 both}
+.plate:not(.hl){animation:rise calc(1.6s - var(--i)*.1s) ease-in-out calc(.3s + var(--i)*.1s) 1 both,dim .4s ease-in-out 2.3s 1 both}
+.plate.hl{animation:rise calc(1.6s - var(--i)*.1s) ease-in-out calc(.3s + var(--i)*.1s) 1 both,lit .4s ease-out 2.3s 1 both,glow 2.7s ease-in-out 2.3s 1 both}
+@keyframes rise{from{transform:translate3d(0,0,calc(var(--i)*1.2vmin))}to{transform:translate3d(calc(var(--s)*2vmin),0,calc(var(--i)*11.2vmin))}}
+@keyframes dim{to{opacity:.4}}
+@keyframes lit{to{background-color:rgba(255,180,90,.72);border-color:#FFB45A}}
+@keyframes glow{
+0%{box-shadow:0 0 0 0 rgba(255,180,90,0)}
+7.4%{box-shadow:0 0 8vmin 3vmin rgba(255,180,90,.95)}
+14.8%{box-shadow:0 0 2vmin .3vmin rgba(255,180,90,.35)}
+36%{box-shadow:0 0 4.5vmin 1.2vmin rgba(255,180,90,.7)}
+57.4%{box-shadow:0 0 2vmin .3vmin rgba(255,180,90,.35)}
+78.7%{box-shadow:0 0 4.5vmin 1.2vmin rgba(255,180,90,.7)}
+100%{box-shadow:0 0 2vmin .3vmin rgba(255,180,90,.35)}}
+.pil{position:absolute;left:-4vmin;top:8vmin;width:4vmin;height:38vmin;transform-origin:50% 0;transform:rotateX(90deg);box-sizing:border-box;border:.4vmin solid rgba(220,235,255,.65);background:linear-gradient(0deg,rgba(134,169,234,.45),rgba(134,169,234,.12));animation:grow 1.6s ease-out .3s 1 both}
+@keyframes grow{from{height:0}to{height:38vmin}}
+.row{position:absolute;left:41vmin;height:7.2vmin;margin-top:-3.6vmin;display:flex;align-items:center;animation:slidein .5s ease-out calc(1.15s + var(--i)*.1s) 1 both}
+@keyframes slidein{from{opacity:0;transform:translateX(14vmin)}to{opacity:1;transform:translateX(0)}}
+.ln{width:11vmin;height:.5vmin;background:rgba(200,222,255,.85);border-radius:.3vmin}
+.row:not(.hl) .ln,.row:not(.hl) .pill{animation:dim .4s ease-in-out 2.3s 1 both}
+.pill{display:flex;align-items:center;gap:1.6vmin;padding:1.2vmin 3vmin 1.2vmin 2.4vmin;border-radius:9vmin;background:#fff;color:#1a2a4d;font-size:4.4vmin;white-space:nowrap;transform-origin:left center;box-shadow:0 1vmin 2vmin rgba(0,0,0,.35)}
+.pill b{color:#14234a;font-weight:800}
+.pill span{font-weight:600}
+.row.hl .pill{animation:litp .4s ease-out 2.3s 1 both,glowp 2.7s ease-in-out 2.3s 1 both}
+.row.hl .pill b{animation:litn .4s ease-out 2.3s 1 both}
+@keyframes litp{to{background:#FFB45A;transform:scale(1.1)}}
+@keyframes litn{to{color:#D6281E}}
+@keyframes glowp{
+0%{box-shadow:0 1vmin 2vmin rgba(0,0,0,.35),0 0 0 0 rgba(255,180,90,0)}
+7.4%{box-shadow:0 1vmin 2vmin rgba(0,0,0,.35),0 0 8vmin 3vmin rgba(255,180,90,.95)}
+14.8%{box-shadow:0 1vmin 2vmin rgba(0,0,0,.35),0 0 2vmin .3vmin rgba(255,180,90,.35)}
+36%{box-shadow:0 1vmin 2vmin rgba(0,0,0,.35),0 0 4.5vmin 1.2vmin rgba(255,180,90,.7)}
+57.4%{box-shadow:0 1vmin 2vmin rgba(0,0,0,.35),0 0 2vmin .3vmin rgba(255,180,90,.35)}
+78.7%{box-shadow:0 1vmin 2vmin rgba(0,0,0,.35),0 0 4.5vmin 1.2vmin rgba(255,180,90,.7)}
+100%{box-shadow:0 1vmin 2vmin rgba(0,0,0,.35),0 0 2vmin .3vmin rgba(255,180,90,.35)}}
+</style>
+<div class="bg"></div>
+<div class="wrap">
+  <div class="stage">
+    <div class="bld">
+      <div class="shd"></div>
+      <div class="pil"></div>
+      <div class="plate" style="--i:0;--s:0"></div>
+      <div class="plate" style="--i:1;--s:1"></div>
+      <div class="plate hl" style="--i:2;--s:-1"></div>
+      <div class="plate" style="--i:3;--s:1"></div>
+    </div>
+    <div class="row" style="--i:0;top:65vmin"><div class="ln"></div><div class="pill"><b>1층</b><span>접수·약국</span></div></div>
+    <div class="row" style="--i:1;top:55vmin"><div class="ln"></div><div class="pill"><b>2층</b><span>내과</span></div></div>
+    <div class="row hl" style="--i:2;top:45vmin"><div class="ln"></div><div class="pill"><b>3층</b><span>검진센터</span></div></div>
+    <div class="row" style="--i:3;top:34.5vmin"><div class="ln"></div><div class="pill"><b>4층</b><span>교육실</span></div></div>
+  </div>
+</div>
+</html>

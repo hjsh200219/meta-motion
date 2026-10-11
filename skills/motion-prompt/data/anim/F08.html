@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F08 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#f4efe4;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;display:flex;align-items:center;justify-content:center}
+.stage{width:92vw;max-width:160vmin;display:flex;flex-direction:column;gap:5vmin}
+.head{display:flex;flex-direction:column;align-items:flex-start;gap:1.6vmin}
+h1{margin:0;font-size:8vmin;font-weight:900;color:#1f2a44;letter-spacing:-0.03em;word-break:keep-all;
+  animation:titleIn 0.5s cubic-bezier(.2,.8,.2,1) 0.05s 1 both}
+.ul{height:1.2vmin;width:18vmin;background:#ff5a3c;border-radius:1vmin;transform-origin:left center;
+  animation:grow 0.4s ease-out 0.3s 1 both}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:3vmin;align-items:stretch}
+.card{position:relative;background:#fff;border-radius:2vmin;overflow:hidden;min-height:34vmin;
+  padding:5vmin 3vmin 3vmin;display:flex;flex-direction:column;justify-content:flex-end;gap:1vmin;
+  box-shadow:0 1.2vmin 3vmin rgba(31,42,68,.12);animation:rise 0.55s cubic-bezier(.2,.8,.2,1) 1 both}
+.card:nth-child(1){animation-delay:0.5s}
+.card:nth-child(2){animation-delay:0.85s}
+.card:nth-child(3){animation-name:rise3;animation-delay:1.2s}
+.band{position:absolute;left:0;top:0;width:100%;height:2.4vmin;transform-origin:top center}
+.card:nth-child(1) .band{background:#5f7fd6}
+.card:nth-child(2) .band{background:#1f2a44}
+.card:nth-child(3) .band{background:#ff5a3c;animation:pop 0.55s ease-out 1.2s 1 both}
+.num{position:absolute;top:4.2vmin;left:3vmin;font-size:11vmin;font-weight:900;color:#e6e9f0;line-height:1}
+.card:nth-child(3) .num{color:#fbe3dc}
+.small{font-size:4vmin;color:#7b8190;word-break:keep-all}
+.big{font-size:7vmin;font-weight:900;color:#1f2a44;line-height:1.15;word-break:keep-all;letter-spacing:-0.03em}
+@media (max-aspect-ratio:1/1){
+  .big{font-size:5.2vmin}.small{font-size:3.4vmin}.num{font-size:9vmin}
+  h1{font-size:9vmin}.card{padding:4vmin 2.2vmin 3vmin;min-height:46vmin}.row{gap:2vmin}
+}
+@keyframes titleIn{0%{opacity:0;transform:translateX(-14vmin)}100%{opacity:1;transform:translateX(0)}}
+@keyframes grow{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+@keyframes rise{0%{opacity:0;transform:translateY(16vmin)}60%{opacity:1;transform:translateY(-1.2vmin)}100%{opacity:1;transform:translateY(0)}}
+@keyframes rise3{0%{opacity:0;transform:translateY(16vmin)}55%{opacity:1;transform:translateY(-3vmin)}78%{transform:translateY(0.8vmin)}100%{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%,55%{transform:scaleY(1)}75%{transform:scaleY(2)}100%{transform:scaleY(1)}}
+</style>
+<div class="stage">
+  <div class="head">
+    <h1>오늘의 핵심 세 가지</h1>
+    <div class="ul"></div>
+  </div>
+  <div class="row">
+    <div class="card"><div class="band"></div><div class="num">01</div><div class="small">묻지 말고</div><div class="big">맡긴다</div></div>
+    <div class="card"><div class="band"></div><div class="num">02</div><div class="small">작게</div><div class="big">시작한다</div></div>
+    <div class="card"><div class="band"></div><div class="num">03</div><div class="small">마지막은</div><div class="big">사람이 확인</div></div>
+  </div>
+</div>
+</html>

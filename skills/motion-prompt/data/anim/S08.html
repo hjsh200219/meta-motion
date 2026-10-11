@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 S08 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0E1726;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:absolute;inset:0;perspective:130vmin;perspective-origin:50% 50%;background:radial-gradient(circle at 50% 45%,#16243D,#0E1726 70%)}
+.tilt,.spin{position:absolute;inset:0;transform-style:preserve-3d}
+.tilt{animation:tilt 1.4s ease-in-out 1.6s 1 both}
+.spin{animation:spin 2.4s linear 3.1s 1 both}
+@keyframes tilt{from{transform:rotateX(0deg)}to{transform:rotateX(55deg)}}
+@keyframes spin{from{transform:rotateZ(0deg)}to{transform:rotateZ(-60deg)}}
+.house{position:absolute;left:50%;top:50%;width:56vmin;height:40vmin;margin:-20vmin 0 0 -28vmin;transform-style:preserve-3d}
+.grid{position:absolute;left:-42vmin;top:-45vmin;width:140vmin;height:130vmin;transform:translateZ(-.1vmin);
+ background:linear-gradient(#4FA3FF30 .25vmin,transparent .25vmin) 0 0/5vmin 5vmin,linear-gradient(90deg,#4FA3FF30 .25vmin,transparent .25vmin) 0 0/5vmin 5vmin;
+ -webkit-mask-image:radial-gradient(closest-side,#000 50%,transparent);mask-image:radial-gradient(closest-side,#000 50%,transparent)}
+/* 바닥 색 */
+.fl{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--h);background:var(--c);transform:translateZ(.05vmin);animation:fl .2s ease-out calc(1.1s + var(--i)*.15s) 1 both}
+@keyframes fl{from{opacity:0}to{opacity:1}}
+/* 벽 */
+.wl{position:absolute;left:var(--x);top:var(--y);transform-style:preserve-3d;transform:translateZ(.15vmin)}
+.ln{position:absolute;background:#4FA3FF;box-shadow:0 0 1.2vmin #4FA3FF99}
+.up{position:absolute;overflow:hidden;background-color:#4FA3FF}
+.sw{position:absolute;display:block}
+.h .ln{left:0;top:-.4vmin;width:var(--l);height:.8vmin;transform-origin:0 50%;animation:drawH .4s ease-out calc(var(--i)*.14s) 1 both,lnc .85s linear 1.75s 1 both}
+.v .ln{left:-.4vmin;top:0;width:.8vmin;height:var(--l);transform-origin:50% 0;animation:drawV .4s ease-out calc(var(--i)*.14s) 1 both,lnc .85s linear 1.75s 1 both}
+.h .up{left:0;top:-5vmin;width:var(--l);height:5vmin;transform-origin:50% 100%;background-image:linear-gradient(0deg,#0003,transparent 60%);
+ animation:riseH .6s cubic-bezier(.2,.9,.3,1) calc(1.75s + var(--i)*.03s) 1 both,paint .85s linear 1.75s 1 both}
+.v .up{left:0;top:0;width:5vmin;height:var(--l);transform-origin:0 50%;background-image:linear-gradient(90deg,#0003,transparent 60%);
+ animation:riseV .6s cubic-bezier(.2,.9,.3,1) calc(1.75s + var(--i)*.03s) 1 both,paint .85s linear 1.75s 1 both}
+.h .sw{left:0;top:0;width:25%;height:24%;background:linear-gradient(90deg,transparent,#fff,transparent);animation:swH .6s ease-in-out 1.95s 1 both}
+.v .sw{right:0;top:0;width:24%;height:25%;background:linear-gradient(180deg,transparent,#fff,transparent);animation:swV .6s ease-in-out 1.95s 1 both}
+@keyframes drawH{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes drawV{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes lnc{from{background:#4FA3FF}to{background:#CDBF9E;box-shadow:none}}
+@keyframes paint{from{background-color:#4FA3FF}to{background-color:#F3E6C8}}
+@keyframes riseH{from{transform:rotateX(-90deg) scaleY(0)}to{transform:rotateX(-90deg) scaleY(1)}}
+@keyframes riseV{from{transform:rotateY(-90deg) scaleX(0)}to{transform:rotateY(-90deg) scaleX(1)}}
+@keyframes swH{from{transform:translateX(-100%)}to{transform:translateX(400%)}}
+@keyframes swV{from{transform:translateY(-100%)}to{transform:translateY(400%)}}
+/* 가구 상자 */
+.fb{position:absolute;left:var(--x);top:var(--y);width:var(--w);height:var(--d);transform-style:preserve-3d;animation:pop3 .4s ease-out calc(2.4s + var(--i)*.1s) 1 both}
+.fb i{position:absolute;background:var(--c)}
+.ft{inset:0;transform:translateZ(var(--h))}
+.fn{left:0;width:100%;top:calc(-1*var(--h));height:var(--h);transform-origin:50% 100%;transform:rotateX(-90deg);background:linear-gradient(#0005,#0005),var(--c)!important}
+.fs{left:0;width:100%;top:100%;height:var(--h);transform-origin:50% 0;transform:rotateX(90deg);background:linear-gradient(#0002,#0002),var(--c)!important}
+.fw{top:0;height:100%;left:calc(-1*var(--h));width:var(--h);transform-origin:100% 50%;transform:rotateY(90deg);background:linear-gradient(#0004,#0004),var(--c)!important}
+.fe{top:0;height:100%;left:100%;width:var(--h);transform-origin:0 50%;transform:rotateY(-90deg);background:linear-gradient(#0003,#0003),var(--c)!important}
+@keyframes pop3{0%{transform:scale3d(1,1,.01);visibility:hidden}.1%{visibility:visible}60%{transform:scale3d(1,1,1.3)}100%{transform:scale3d(1,1,1);visibility:visible}}
+/* 이름표: 카메라 회전을 거꾸로 돌려 늘 정면 */
+.lb{position:absolute;left:var(--x);top:var(--y);width:0;height:0;transform-style:preserve-3d;transform:translateZ(8vmin)}
+.cs,.ct{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.cs{animation:cspin 2.4s linear 3.1s 1 both}
+.ct{animation:ctilt 1.4s ease-in-out 1.6s 1 both}
+@keyframes cspin{from{transform:rotateZ(0deg)}to{transform:rotateZ(60deg)}}
+@keyframes ctilt{from{transform:rotateX(0deg)}to{transform:rotateX(-55deg)}}
+.tag{position:absolute;left:0;top:0;white-space:nowrap;background:#fff;color:#14213A;font-weight:900;font-size:4vmin;line-height:1;padding:1.1vmin 2.6vmin;border-radius:99vmin;box-shadow:0 .8vmin 1.6vmin #0006;
+ animation:tagpop .42s ease-out calc(2.4s + var(--i)*.07s) 1 both}
+@keyframes tagpop{0%{opacity:0;transform:translate(-50%,-10%) scale(.3)}60%{opacity:1;transform:translate(-50%,-60%) scale(1.15)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+/* 단계 표시 */
+.pill{position:absolute;left:3vmin;top:3vmin;display:grid;background:#09101Fdd;border:.3vmin solid #4FA3FF66;border-radius:99vmin;padding:1.6vmin 3.6vmin;color:#fff;font-weight:800;font-size:4.4vmin;line-height:1}
+.pill span{grid-area:1/1;white-space:nowrap}
+.p1{animation:pOut .25s linear 1.75s 1 both}
+.p2{animation:pIn .25s linear 1.75s 1 both,pOut .2s linear 2.4s 1 both}
+.p3{animation:pIn .25s linear 2.4s 1 both}
+.p2{animation-fill-mode:both}
+@keyframes pIn{from{opacity:0}to{opacity:1}}
+@keyframes pOut{from{opacity:1}to{opacity:0}}
+.cap{position:absolute;left:0;right:0;bottom:3vmin;text-align:center;color:#8FB4E8;font-size:3.4vmin;letter-spacing:.2vmin}
+</style>
+<div class="stage">
+ <div class="tilt"><div class="spin"><div class="house">
+  <div class="grid"></div>
+  <div class="fl" style="--x:0vmin;--y:0vmin;--w:31vmin;--h:23vmin;--c:#E8D5B5;--i:0"></div>
+  <div class="fl" style="--x:0vmin;--y:23vmin;--w:23vmin;--h:17vmin;--c:#B98A56;--i:1"></div>
+  <div class="fl" style="--x:31vmin;--y:0vmin;--w:25vmin;--h:23vmin;--c:#C9CED6;--i:2"></div>
+  <div class="fl" style="--x:35vmin;--y:23vmin;--w:21vmin;--h:17vmin;--c:#E2CCA6;--i:3"></div>
+  <div class="fl" style="--x:23vmin;--y:23vmin;--w:12vmin;--h:17vmin;--c:#BFC6CF;--i:4"></div>
+
+  <div class="wl h" style="--x:0vmin;--y:0vmin;--l:56vmin;--i:0"><div class="ln"></div><div class="up"><i class="sw"></i></div></div>
+  <div class="wl v" style="--x:56vmin;--y:0vmin;--l:40vmin;--i:1"><div class="ln"></div><div class="up"><i class="sw"></i></div></div>
+  <div class="wl h" style="--x:0vmin;--y:40vmin;--l:56vmin;--i:2"><div class="ln"></div><div class="up"><i class="sw"></i></div></div>
+  <div class="wl v" style="--x:0vmin;--y:0vmin;--l:40vmin;--i:3"><div class="ln"></div><div class="up"><i class="sw"></i></div></div>
+  <div class="wl h" style="--x:0vmin;--y:23vmin;--l:56vmin;--i:4"><div class="ln"></div><div class="up"><i class="sw"></i></div></div>
+  <div class="wl v" style="--x:31vmin;--y:0vmin;--l:23vmin;--i:5"><div class="ln"></div><div class="up"><i class="sw"></i></div></div>
+  <div class="wl v" style="--x:23vmin;--y:23vmin;--l:17vmin;--i:6"><div class="ln"></div><div class="up"><i class="sw"></i></div></div>
+  <div class="wl v" style="--x:35vmin;--y:23vmin;--l:17vmin;--i:7"><div class="ln"></div><div class="up"><i class="sw"></i></div></div>
+
+  <div class="fb" style="--x:4vmin;--y:12vmin;--w:14vmin;--d:6vmin;--h:2.6vmin;--c:#5B6B8C;--i:0"><i class="ft"></i><i class="fn"></i><i class="fs"></i><i class="fw"></i><i class="fe"></i></div>
+  <div class="fb" style="--x:4vmin;--y:26vmin;--w:11vmin;--d:11vmin;--h:2vmin;--c:#E9EEF7;--i:1"><i class="ft"></i><i class="fn"></i><i class="fs"></i><i class="fw"></i><i class="fe"></i></div>
+  <div class="fb" style="--x:33vmin;--y:1.5vmin;--w:21vmin;--d:4vmin;--h:2.8vmin;--c:#7FA98E;--i:2"><i class="ft"></i><i class="fn"></i><i class="fs"></i><i class="fw"></i><i class="fe"></i></div>
+  <div class="fb" style="--x:47vmin;--y:25.5vmin;--w:8vmin;--d:4.5vmin;--h:2.5vmin;--c:#7A4E2D;--i:3"><i class="ft"></i><i class="fn"></i><i class="fs"></i><i class="fw"></i><i class="fe"></i></div>
+
+  <div class="lb" style="--x:15.5vmin;--y:11.5vmin"><div class="cs"><div class="ct"><div class="tag" style="--i:0">거실</div></div></div></div>
+  <div class="lb" style="--x:43.5vmin;--y:13vmin"><div class="cs"><div class="ct"><div class="tag" style="--i:1">주방</div></div></div></div>
+  <div class="lb" style="--x:11.5vmin;--y:31.5vmin"><div class="cs"><div class="ct"><div class="tag" style="--i:2">방1</div></div></div></div>
+  <div class="lb" style="--x:45.5vmin;--y:31.5vmin"><div class="cs"><div class="ct"><div class="tag" style="--i:3">방2</div></div></div></div>
+  <div class="lb" style="--x:29vmin;--y:31.5vmin"><div class="cs"><div class="ct"><div class="tag" style="--i:4">욕실</div></div></div></div>
+ </div></div></div>
+ <div class="pill"><span class="p1">① 평면도 그리기</span><span class="p2">② 벽 세우기</span><span class="p3">③ 3D로 둘러보기</span></div>
+ <div class="cap">floorplan.png</div>
+</div>
+</html>

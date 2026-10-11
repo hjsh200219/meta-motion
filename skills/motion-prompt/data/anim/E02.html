@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 E02 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{background:#F6F3EC;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#111;display:flex;align-items:center;justify-content:center}
+.stage{width:min(92vw,150vmin);display:flex;flex-direction:column;gap:4vmin}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:2vmin 3vmin;animation:fadein .2s 0s 1 both}
+.kick{font-size:4vmin;font-weight:900;letter-spacing:.5vmin;color:#E8442E}
+.title{font-size:8vmin;font-weight:900;line-height:1.15;margin-top:.6vmin}
+.pill{display:grid;background:#1B1A19;color:#fff;border-radius:6vmin;padding:1.8vmin 4vmin;font-size:5vmin;font-weight:900;font-variant-numeric:tabular-nums;overflow:hidden}
+.pill span{grid-area:1/1;text-align:center;white-space:nowrap}
+.pill small{font-size:3.6vmin;font-weight:700;opacity:.75;margin-right:1.2vmin}
+.pill .a{animation:clockout .25s 2.8s 1 both}
+.pill .b{animation:clockin .3s 2.95s 1 both}
+.list{position:relative;display:grid;gap:2.5vmin;padding-left:9vmin}
+.row{height:13vmin;box-sizing:border-box;display:flex;align-items:center;gap:3.5vmin;padding:0 4vmin;background:#fff;border-radius:3.5vmin;box-shadow:0 .6vmin 2vmin rgba(60,40,20,.10)}
+.row b{font-size:6.2vmin;font-weight:900;font-variant-numeric:tabular-nums;min-width:15vmin}
+.row em{font-style:normal;font-size:6vmin;font-weight:900}
+.row:nth-child(1){animation:slidein .4s .2s 1 both,dim .35s 1.6s 1 both}
+.row:nth-child(2){animation:slidein .4s .45s 1 both,dim .5s 2.8s 1 both}
+.row:nth-child(3){animation:slidein .4s .7s 1 both}
+.row:nth-child(4){animation:slidein .4s .95s 1 both}
+.row:nth-child(3) em{animation:red .5s 2.8s 1 both}
+.bar{position:absolute;left:9vmin;right:0;top:15.5vmin;height:13vmin;pointer-events:none;animation:move .5s 2.8s 1 both}
+.bar i{position:absolute;inset:0;box-sizing:border-box;border:.8vmin solid #E8442E;border-radius:3.8vmin;background:rgba(232,68,46,.10);animation:pop .35s 1.6s 1 both}
+.bar i::after{content:"";position:absolute;inset:-.8vmin;border-radius:3.8vmin;box-shadow:0 0 4vmin 1.6vmin rgba(232,68,46,.65);animation:glow .6s 3.15s 1 both}
+.bar u{position:absolute;left:-8.6vmin;top:50%;transform:translateY(-50%);text-decoration:none;background:#E8442E;color:#fff;font-size:3.6vmin;font-weight:900;padding:1vmin 1.4vmin;border-radius:2vmin;white-space:nowrap}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes slidein{from{opacity:0;transform:translateX(30vmin)}to{opacity:1;transform:translateX(0)}}
+@keyframes dim{from{filter:none}to{filter:grayscale(1) opacity(.45)}}
+@keyframes red{from{color:#111}to{color:#E8442E}}
+@keyframes pop{0%{opacity:0;transform:scale(.85)}60%{opacity:1;transform:scale(1.04)}100%{opacity:1;transform:scale(1)}}
+@keyframes move{0%{transform:translateY(0)}75%{transform:translateY(16.6vmin)}100%{transform:translateY(15.5vmin)}}
+@keyframes glow{0%{opacity:0}30%{opacity:1}100%{opacity:0}}
+@keyframes clockout{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-100%)}}
+@keyframes clockin{from{opacity:0;transform:translateY(100%)}to{opacity:1;transform:translateY(0)}}
+</style>
+<div class="stage">
+  <div class="head">
+    <div>
+      <div class="kick">TIMETABLE</div>
+      <div class="title">○○센터 가을 행사</div>
+    </div>
+    <div class="pill">
+      <span class="a"><small>지금</small>10:40</span>
+      <span class="b" style="opacity:0"><small>지금</small>11:00</span>
+    </div>
+  </div>
+  <div class="list">
+    <div class="row"><b>10:00</b><em>등록</em></div>
+    <div class="row"><b>10:30</b><em>개회식</em></div>
+    <div class="row"><b>11:00</b><em>특강</em></div>
+    <div class="row"><b>12:00</b><em>점심</em></div>
+    <div class="bar"><i><u>지금</u></i></div>
+  </div>
+</div>
+</html>

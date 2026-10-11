@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 N08 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+*{box-sizing:border-box}
+body{display:flex;align-items:center;justify-content:center;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:linear-gradient(135deg,#EDE9FE 0%,#DDD6FE 55%,#C4B5FD 100%);--w:min(46vw,80vmin)}
+.scene{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:5vmin;width:100%;height:100%;padding:0 5vw}
+.txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2vmin}
+.faq{font-size:13vmin;font-weight:900;color:#4338CA;line-height:1;letter-spacing:.3vmin}
+.ttl{font-size:7vmin;font-weight:800;color:#1E1B4B;line-height:1.15}
+.sub{font-size:4vmin;color:#4338CA;font-weight:600;line-height:1.4}
+.dots{display:flex;gap:2vmin;margin-top:2vmin}
+.dot{width:2.6vmin;height:2.6vmin;border-radius:50%;background:#C4B5FD}
+.dot.d1{background:#4338CA;animation:d1off .4s ease 3.1s 1 both}
+.dot.d2{animation:d2on .4s ease 3.1s 1 both}
+@keyframes d1off{from{background:#4338CA;transform:scale(1.2)}to{background:#C4B5FD;transform:scale(1)}}
+@keyframes d2on{from{background:#C4B5FD;transform:scale(1)}to{background:#4338CA;transform:scale(1.2)}}
+.stage{position:relative;width:var(--w);height:calc(var(--w)*.72);flex:none}
+.back,.fly,.lift,.flip,.face{position:absolute;inset:0}
+.back{border-radius:4vmin;background:linear-gradient(135deg,#F5F3FF,#DDD6FE);box-shadow:0 1.5vmin 4vmin rgba(67,56,202,.18)}
+.b1{transform:rotate(-4deg) translate(-2vmin,2.5vmin)}
+.b2{transform:rotate(5deg) translate(2.5vmin,3vmin);background:linear-gradient(135deg,#EDE9FE,#C4B5FD)}
+.lift{perspective:150vmin}
+.flip{transform-style:preserve-3d}
+.face{border-radius:4vmin;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 2vmin 5vmin rgba(67,56,202,.3);display:flex;align-items:center;justify-content:center;padding:5vmin}
+.front{background:linear-gradient(135deg,#4338CA,#3730A3);color:#fff;flex-direction:row;gap:3.5vmin;justify-content:flex-start}
+.q{flex:none;width:11vmin;height:11vmin;border-radius:50%;background:#fff;color:#4338CA;font-size:6.5vmin;font-weight:900;display:flex;align-items:center;justify-content:center}
+.qt{font-size:5.4vmin;font-weight:800;line-height:1.3}
+.rear{background:#fff;transform:rotateY(180deg);flex-direction:column;align-items:flex-start;justify-content:center;gap:3vmin}
+.qs{font-size:3.4vmin;font-weight:700;color:#6D5BD0}
+.ans{display:flex;align-items:center;gap:3.5vmin}
+.a{flex:none;width:11vmin;height:11vmin;border-radius:50%;background:#F97316;color:#fff;font-size:6.5vmin;font-weight:900;display:flex;align-items:center;justify-content:center}
+.at{font-size:5vmin;font-weight:900;color:#1E1B4B;line-height:1.3}
+/* 카드 1 */
+.c1 .flip{animation:flip .45s ease-in-out .8s 1 both}
+.c1 .lift{animation:lift .45s ease-in-out .8s 1 both}
+.c1 .a{animation:pop .45s ease-out 1.05s 1 both}
+.c1 .fly{animation:fly .4s ease-in 3.1s 1 both}
+/* 카드 2 */
+.c2 .fly{transform:rotate(-4deg) translate(-2vmin,2.5vmin);animation:up .4s ease-out 3.1s 1 both}
+.c2 .front{animation:fr .4s ease-out 3.1s 1 both}
+.c2 .front>*{animation:fc .4s ease-out 3.1s 1 both}
+.c2 .flip{animation:flip .45s ease-in-out 4s 1 both}
+.c2 .a{animation:pop .4s ease-out 4.25s 1 both}
+.c2 .lift{animation:settle 1s ease-in-out 5.6s 1 both}
+@keyframes flip{from{transform:rotateY(0)}to{transform:rotateY(180deg)}}
+@keyframes lift{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-3vmin) scale(1.05)}100%{transform:translateY(0) scale(1)}}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+@keyframes fly{from{transform:translate(0,0) rotate(0);opacity:1}to{transform:translate(14vmin,-16vmin) rotate(16deg);opacity:0}}
+@keyframes up{from{transform:rotate(-4deg) translate(-2vmin,2.5vmin)}to{transform:rotate(0) translate(0,0)}}
+@keyframes fr{from{background:linear-gradient(135deg,#DDD6FE,#C4B5FD)}to{background:linear-gradient(135deg,#4338CA,#3730A3)}}
+@keyframes fc{from{opacity:0}to{opacity:1}}
+@keyframes settle{from{transform:scale(1)}to{transform:scale(1.015)}}
+@media (orientation:portrait){
+ body{--w:min(84vw,76vmin)}
+ .scene{flex-direction:column;gap:6vmin;padding:4vmin 6vw}
+ .txt{flex:none;align-items:center;text-align:center}
+ .dots{justify-content:center}
+ .faq{font-size:12vmin}
+}
+</style>
+<div class="scene">
+ <div class="txt">
+  <div class="faq">FAQ</div>
+  <div class="ttl">자주 묻는 질문</div>
+  <div class="sub">궁금한 점을 한 장씩 풀어 드려요</div>
+  <div class="dots"><span class="dot d1"></span><span class="dot d2"></span></div>
+ </div>
+ <div class="stage">
+  <div class="back b2"></div>
+  <div class="back b1"></div>
+  <div class="card c2">
+   <div class="fly"><div class="lift"><div class="flip">
+    <div class="face front"><div class="q">Q</div><div class="qt">준비 서류는 뭔가요?</div></div>
+    <div class="face rear"><div class="qs">Q2. 준비 서류는 뭔가요?</div><div class="ans"><div class="a">A</div><div class="at">신분증과 신청서<br>한 장이면 돼요.</div></div></div>
+   </div></div></div>
+  </div>
+  <div class="card c1">
+   <div class="fly"><div class="lift"><div class="flip">
+    <div class="face front"><div class="q">Q</div><div class="qt">신청은 어디서 하나요?</div></div>
+    <div class="face rear"><div class="qs">Q1. 신청은 어디서 하나요?</div><div class="ans"><div class="a">A</div><div class="at">가까운 주민센터나<br>온라인으로 신청해요.</div></div></div>
+   </div></div></div>
+  </div>
+ </div>
+</div>
+</html>

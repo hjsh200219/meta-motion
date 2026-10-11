@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B02 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#111}
+.stage{position:relative;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+/* 촬영 화면 예시: 색이 절반 빠졌다가 돌아옴 (0.2s~3.8s) */
+.bg{position:absolute;inset:0;
+  background:
+    radial-gradient(60vmin 30vmin at 20% 78%,#2f6b5a 0 60%,transparent 61%),
+    radial-gradient(80vmin 36vmin at 75% 84%,#1f5a6e 0 60%,transparent 61%),
+    radial-gradient(14vmin 14vmin at 50% 40%,rgba(255,214,120,.9),transparent 70%),
+    linear-gradient(180deg,#3a7bd5 0%,#e0709a 55%,#ffb36b 100%);
+  animation:desat 3.6s linear 0.2s 1 both}
+@keyframes desat{
+  0%{filter:saturate(1)}
+  16.67%{filter:saturate(.5)}
+  86.11%{filter:saturate(.5)}
+  100%{filter:saturate(1)}}
+/* 인물 실루엣: 화면 아래쪽, 글자와 겹치지 않게 */
+.person{position:absolute;left:50%;bottom:0;width:26vmin;height:44vmin;transform:translateX(-50%)}
+.person i{position:absolute;display:block;background:#1b2238}
+.person .head{left:50%;top:0;width:11vmin;height:11vmin;border-radius:50%;transform:translateX(-50%)}
+.person .body{left:0;right:0;bottom:0;top:12vmin;border-radius:12vmin 12vmin 0 0}
+/* 자막 */
+.cap{position:absolute;top:25%;left:50%;transform:translate(-30%,-50%);white-space:nowrap;
+  animation:out 0.5s ease-in 3.3s 1 both}
+@keyframes out{
+  0%{opacity:1;filter:blur(0)}
+  100%{opacity:0;filter:blur(1.4vmin)}}
+.line{display:flex;transform-origin:50% 50%;animation:breath 0.5s ease-in-out 1.5s 1 both}
+@keyframes breath{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.07)}
+  100%{transform:scale(1)}}
+.c{display:inline-block;min-width:1.2vmin;
+  animation:wave calc(0.9s - var(--i)*0.02s) ease-in-out calc(1.5s + var(--i)*0.04s) 2 both}
+@keyframes wave{
+  0%{transform:translateY(0)}
+  25%{transform:translateY(-.6vmin)}
+  50%{transform:translateY(0)}
+  75%{transform:translateY(.6vmin)}
+  100%{transform:translateY(0)}}
+.d{display:inline-block;font-size:6.5vmin;font-weight:800;color:#ECE8FF;
+  text-shadow:0 0 1.2vmin #000,0 .3vmin 1vmin #000,0 0 2.4vmin rgba(0,0,0,.8);
+  animation:in 0.6s ease-out calc(0.3s + var(--i)*0.075s) 1 both}
+@keyframes in{
+  0%{opacity:0;filter:blur(1.4vmin);transform:translateY(-3vmin)}
+  100%{opacity:1;filter:blur(0);transform:translateY(0)}}
+.sp{width:2vmin}
+</style>
+<div class="stage">
+  <div class="bg"></div>
+  <div class="person"><i class="body"></i><i class="head"></i></div>
+  <div class="cap">
+    <div class="line">
+      <span class="c" style="--i:0"><span class="d" style="--i:0">(</span></span>
+      <span class="c" style="--i:1"><span class="d" style="--i:1">나</span></span>
+      <span class="c" style="--i:2"><span class="d" style="--i:2">만</span></span>
+      <span class="c sp" style="--i:3"><span class="d" style="--i:3">&nbsp;</span></span>
+      <span class="c" style="--i:4"><span class="d" style="--i:4">모</span></span>
+      <span class="c" style="--i:5"><span class="d" style="--i:5">르</span></span>
+      <span class="c" style="--i:6"><span class="d" style="--i:6">나</span></span>
+      <span class="c" style="--i:7"><span class="d" style="--i:7">…</span></span>
+      <span class="c" style="--i:8"><span class="d" style="--i:8">)</span></span>
+    </div>
+  </div>
+</div>
+</html>

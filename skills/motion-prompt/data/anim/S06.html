@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 S06 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:radial-gradient(circle at 50% 50%,#33343c 0,#1a1a1f 38%,#0b0b0e 75%)}
+.st{position:relative;width:100vmin;height:100vmin;flex:none}
+.zoom{position:absolute;inset:0;transform-origin:50% 50%;animation:zoom 4.5s linear 0s 1 both}
+@keyframes zoom{from{transform:scale(1)}to{transform:scale(1.05)}}
+
+.title{position:absolute;left:0;width:100%;top:6vmin;text-align:center;color:#fff;font-weight:800;font-size:9vmin;line-height:12vmin;letter-spacing:.2vmin;text-shadow:0 .6vmin 2vmin rgba(0,0,0,.6);animation:tin .7s ease-out 0s 1 both}
+@keyframes tin{from{opacity:0;transform:translateY(-3vmin)}to{opacity:1;transform:none}}
+
+.photo{position:absolute;left:30vmin;top:22vmin;width:40vmin;height:56vmin;border-radius:3vmin;overflow:hidden;background:linear-gradient(160deg,#dbe6e8,#93acb1 58%,#4f6469);box-shadow:0 3vmin 8vmin rgba(0,0,0,.75),0 .8vmin 2vmin rgba(0,0,0,.5);animation:pin .7s cubic-bezier(.2,.8,.25,1) 0s 1 both}
+@keyframes pin{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.floor{position:absolute;left:8vmin;top:49vmin;width:24vmin;height:4vmin;background:radial-gradient(ellipse at center,rgba(0,0,0,.45),rgba(0,0,0,0) 70%)}
+.body{position:absolute;left:11vmin;top:17vmin;width:18vmin;height:34vmin;clip-path:polygon(0 0,100% 0,90% 100%,10% 100%);background:linear-gradient(90deg,#1b4650,#2b6f7b 18%,#6cc0cc 38%,#2f7581 62%,#173d46)}
+.lid{position:absolute;left:10vmin;top:12.5vmin;width:20vmin;height:4.5vmin;border-radius:1.4vmin;background:linear-gradient(90deg,#b9bcc4,#f4f5f8 40%,#9da1ab)}
+.tab{position:absolute;left:17vmin;top:10.5vmin;width:6vmin;height:2.2vmin;border-radius:1vmin 1vmin 0 0;background:#d0d3da}
+
+svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ln{fill:none;stroke:#FFD400;stroke-width:.35;stroke-dasharray:1 1;stroke-dashoffset:1;animation:draw .3s ease-out 1 both}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.pop,.beat,.ring,.burst{transform-box:fill-box;transform-origin:center}
+.pop{animation:pop .2s ease-out 1 both}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+.core{fill:#FFD400;stroke:rgba(0,0,0,.45);stroke-width:.25}
+.beat{animation:beat 1s ease-in-out 2.45s 2 both}
+@keyframes beat{0%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.55}100%{transform:scale(1);opacity:1}}
+.ring,.burst{fill:none;stroke:#FFD400}
+.ring{stroke-width:.4;animation:ring 1s ease-out 2.45s 2 both}
+@keyframes ring{0%{transform:scale(1);opacity:0}6%{opacity:.85}100%{transform:scale(3.4);opacity:0}}
+.burst{stroke-width:.7;animation:burst .9s ease-out 2.4s 1 both}
+@keyframes burst{0%{transform:scale(1);opacity:0}6%{opacity:1}100%{transform:scale(8);opacity:0}}
+
+.lb{position:absolute;white-space:nowrap;color:#fff;font-weight:900;font-size:4.6vmin;line-height:6vmin;text-shadow:0 .4vmin 1.4vmin rgba(0,0,0,.8)}
+.l{left:6vmin;animation:sl .3s ease-out 1 both}
+.r{left:71vmin;animation:sr .3s ease-out 1 both}
+@keyframes sl{from{opacity:0;transform:translateX(-6vmin)}to{opacity:1;transform:none}}
+@keyframes sr{from{opacity:0;transform:translateX(6vmin)}to{opacity:1;transform:none}}
+</style>
+
+<div class="st">
+  <div class="title">○○ 텀블러</div>
+  <div class="zoom">
+    <div class="photo">
+      <div class="floor"></div>
+      <div class="body"></div>
+      <div class="lid"></div>
+      <div class="tab"></div>
+    </div>
+
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+      <path class="ln" pathLength="1" d="M46 48 L36 38 L6 38" style="animation-delay:.9s"/>
+      <path class="ln" pathLength="1" d="M54 46 L64 36 L94 36" style="animation-delay:1.4s"/>
+      <path class="ln" pathLength="1" d="M54 62 L61 69 L94 69" style="animation-delay:1.9s"/>
+
+      <circle class="burst" cx="46" cy="48" r="1.6"/>
+      <circle class="burst" cx="54" cy="46" r="1.6"/>
+      <circle class="burst" cx="54" cy="62" r="1.6"/>
+      <circle class="ring" cx="46" cy="48" r="1.6"/>
+      <circle class="ring" cx="54" cy="46" r="1.6"/>
+      <circle class="ring" cx="54" cy="62" r="1.6"/>
+
+      <g class="pop" style="animation-delay:.75s"><circle class="core beat" cx="46" cy="48" r="1.4"/></g>
+      <g class="pop" style="animation-delay:1.25s"><circle class="core beat" cx="54" cy="46" r="1.4"/></g>
+      <g class="pop" style="animation-delay:1.75s"><circle class="core beat" cx="54" cy="62" r="1.4"/></g>
+    </svg>
+
+    <div class="lb l" style="top:31.5vmin;animation-delay:1.15s">방수</div>
+    <div class="lb r" style="top:29.5vmin;animation-delay:1.65s">무게 320g</div>
+    <div class="lb r" style="top:62.5vmin;animation-delay:2.15s">용량 500ml</div>
+  </div>
+</div>
+</html>

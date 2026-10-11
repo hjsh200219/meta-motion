@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 B09 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#16130E;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100vw;height:100vh;overflow:hidden}
+
+/* 촬영 화면 예시 */
+.video{position:absolute;inset:0;background:linear-gradient(180deg,#6fa8d6 0%,#c9dff0 48%,#e9d9b8 60%,#7a8f5a 61%,#4f6a3a 100%)}
+.video i{position:absolute;display:block}
+.sun{width:14vmin;height:14vmin;border-radius:50%;background:#fff3c4;left:68%;top:12%;box-shadow:0 0 6vmin #fff3c4}
+.hill{left:-10%;bottom:30%;width:70%;height:22%;background:#5c7a49;border-radius:50% 50% 0 0}
+.hill2{left:40%;bottom:30%;width:80%;height:30%;background:#496a3a;border-radius:50% 50% 0 0}
+.house{left:18%;bottom:18%;width:16vmin;height:11vmin;background:#d9c7a0}
+.roof{left:16%;bottom:29%;width:0;height:0;border-left:10vmin solid transparent;border-right:10vmin solid transparent;border-bottom:7vmin solid #a5432f}
+
+/* 빨간 사선 띠 : 0 ~ 0.5초 */
+.band{position:absolute;top:0;left:0;width:60vw;height:100%;background:#E8442E;
+ clip-path:polygon(25vmin 0,100% 0,calc(100% - 25vmin) 100%,0 100%);
+ transform:translateX(-70vw);
+ animation:band .5s cubic-bezier(.5,0,.3,1) 0s 1 both}
+@keyframes band{from{transform:translateX(-70vw)}to{transform:translateX(115vw)}}
+
+/* 검정 면 : 들어옴 0.15~0.5, 머묾, 나감 2~2.4 (사선 방향은 띠와 같음) */
+.black{position:absolute;top:0;left:-30vw;width:160vw;height:100%;background:#16130E;
+ clip-path:polygon(25vmin 0,100% 0,calc(100% - 25vmin) 100%,0 100%);
+ transform:translateX(-170vw);
+ animation:black 2.25s linear .15s 1 both}
+@keyframes black{
+ 0%{transform:translateX(-170vw);animation-timing-function:cubic-bezier(.2,.8,.25,1)}
+ 15.56%{transform:translateX(0)}
+ 82.22%{transform:translateX(0);animation-timing-function:cubic-bezier(.6,0,.8,.4)}
+ 100%{transform:translateX(135vw)}}
+
+/* 글자 */
+.grp{position:absolute;inset:0;display:flex;align-items:center;justify-content:flex-start;padding-left:9vmin;box-sizing:border-box;
+ animation:out .2s linear 2s 1 both}
+@keyframes out{from{opacity:1}to{opacity:0}}
+.row{display:flex;align-items:center;gap:4vmin}
+.num{font-size:30vmin;line-height:1;font-weight:900;color:#E8442E;letter-spacing:-.5vmin;
+ opacity:0;transform:translateX(-45vmin);
+ animation:num .4s cubic-bezier(.1,.9,.2,1) .3s 1 both}
+@keyframes num{0%{opacity:0;transform:translateX(-45vmin)}25%{opacity:1}100%{opacity:1;transform:translateX(0)}}
+.txt{display:flex;flex-direction:column;align-items:flex-start;gap:1.2vmin;
+ opacity:0;transform:translateX(-30vmin);
+ animation:txt .4s cubic-bezier(.15,.85,.2,1) .3s 1 both}
+@keyframes txt{0%{opacity:0;transform:translateX(-30vmin)}30%{opacity:1}100%{opacity:1;transform:translateX(0)}}
+.lab{font-size:3.8vmin;font-weight:700;color:#BDB6A8;letter-spacing:1.4vmin}
+.tit{font-size:10vmin;font-weight:900;color:#F4F1EA;white-space:nowrap;line-height:1.1}
+</style>
+<div class="stage">
+ <div class="video"><i class="sun"></i><i class="hill"></i><i class="hill2"></i><i class="roof"></i><i class="house"></i></div>
+ <div class="band"></div>
+ <div class="black"></div>
+ <div class="grp">
+  <div class="row">
+   <div class="num">02</div>
+   <div class="txt"><div class="lab">CORNER</div><div class="tit">실습 시간</div></div>
+  </div>
+ </div>
+</div>
+</html>

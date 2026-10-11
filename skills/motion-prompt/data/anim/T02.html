@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T02 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0A0E18;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+.scene{position:relative;width:100vmin;height:100vmin;flex:none;
+  background:
+   radial-gradient(ellipse 38% 34% at 22% 38%,rgba(79,214,255,.16),transparent 70%),
+   radial-gradient(ellipse 40% 30% at 82% 14%,rgba(255,255,255,.08),transparent 70%),
+   #0A0E18}
+.scene::before{content:"";position:absolute;inset:-60vmax;background:#0A0E18;z-index:-1}
+.floor{position:absolute;left:18vmin;top:51vmin;width:64vmin;height:18vmin;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 38%,#303747 0%,#1a202d 55%,#0d111b 100%);
+  box-shadow:0 1.2vmin 0 #070a12,0 0 5vmin rgba(79,214,255,.10);border:.2vmin solid rgba(255,255,255,.06);box-sizing:border-box}
+.shadow{position:absolute;left:34vmin;top:57.5vmin;width:32vmin;height:5vmin;border-radius:50%;
+  background:radial-gradient(ellipse,rgba(0,0,0,.75),transparent 70%);animation:shd 6s ease-in-out 0s 1 both}
+.pw,.rf{position:absolute;left:37vmin;width:26vmin;height:34vmin}
+.pw{top:26vmin;animation:bob 6s ease-in-out 0s 1 both}
+.rf{top:60vmin;animation:bobr 6s ease-in-out 0s 1 both;opacity:.42;
+  -webkit-mask-image:linear-gradient(to bottom,#000,transparent 72%);mask-image:linear-gradient(to bottom,#000,transparent 72%)}
+.pi{position:absolute;inset:0;perspective:120vmin}
+.rf .pi{transform:scaleY(-1)}
+.tilt{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(-14deg)}
+.spin{position:absolute;inset:0;transform-style:preserve-3d;animation:spin 6s linear 0s 1 both}
+.f{position:absolute;overflow:hidden;box-sizing:border-box;backface-visibility:hidden}
+.f::after{content:"";position:absolute;inset:0;background:#050810;opacity:0}
+.f1{left:0;top:0;width:26vmin;height:34vmin;transform:translateZ(3vmin);
+  background:
+   radial-gradient(circle at 68% 30%,#ffd98a 0 9vmin,rgba(255,217,138,0) 9.4vmin),
+   linear-gradient(200deg,transparent 52%,rgba(20,10,60,.55) 52% 70%,transparent 70%),
+   linear-gradient(160deg,#ff7a59,#c2347a 55%,#3a2a8c);
+  box-shadow:inset 0 0 0 .3vmin rgba(79,214,255,.35)}
+.f1 b{position:absolute;left:2.4vmin;bottom:2.4vmin;font-size:4vmin;color:#fff;letter-spacing:.1vmin;text-shadow:0 .3vmin 1vmin rgba(0,0,0,.4)}
+.f1::before{content:"";position:absolute;top:-10%;left:0;width:60%;height:120%;z-index:2;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),transparent);
+  transform:translateX(-170%) skewX(-18deg);animation:sweep .5s ease-in-out 5.5s 1 both}
+.f2{left:10vmin;top:0;width:6vmin;height:34vmin;transform:rotateY(90deg) translateZ(13vmin);
+  background:linear-gradient(180deg,#8a2a78,#3a2a8c);box-shadow:inset 0 0 0 .3vmin rgba(79,214,255,.3)}
+.f3{left:0;top:0;width:26vmin;height:34vmin;transform:rotateY(180deg) translateZ(3vmin);
+  background:linear-gradient(200deg,#2a2f55,#161a33);box-shadow:inset 0 0 0 .3vmin rgba(79,214,255,.3)}
+.f3 i{position:absolute;left:3vmin;right:3vmin;height:1vmin;background:rgba(255,255,255,.22);border-radius:.5vmin}
+.f3 i:nth-child(1){top:5vmin}.f3 i:nth-child(2){top:8vmin;right:9vmin}.f3 i:nth-child(3){top:11vmin;right:6vmin}
+.f3 u{position:absolute;right:3vmin;bottom:3vmin;width:9vmin;height:5vmin;background:repeating-linear-gradient(90deg,#ddd 0 .4vmin,transparent .4vmin .9vmin)}
+.f4{left:10vmin;top:0;width:6vmin;height:34vmin;transform:rotateY(-90deg) translateZ(13vmin);
+  background:linear-gradient(180deg,#8a2a78,#3a2a8c);box-shadow:inset 0 0 0 .3vmin rgba(79,214,255,.3)}
+.f5{left:0;top:14vmin;width:26vmin;height:6vmin;transform:rotateX(90deg) translateZ(17vmin);
+  background:linear-gradient(90deg,#d9a9c8,#fff 60%,#cfe9ff)}
+.f1::after{animation:sh1 6s linear 0s 1 both}
+.f2::after{animation:sh2 6s linear 0s 1 both}
+.f3::after{animation:sh3 6s linear 0s 1 both}
+.f4::after{animation:sh4 6s linear 0s 1 both}
+@keyframes spin{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
+@keyframes bob{0%,50%,100%{transform:translateY(0)}25%,75%{transform:translateY(-1.6vmin)}}
+@keyframes bobr{0%,50%,100%{transform:translateY(0)}25%,75%{transform:translateY(1.6vmin)}}
+@keyframes shd{0%,50%,100%{transform:scale(1);opacity:1}25%,75%{transform:scale(.88);opacity:.7}}
+@keyframes sweep{from{transform:translateX(-170%) skewX(-18deg)}to{transform:translateX(260%) skewX(-18deg)}}
+@keyframes sh1{0%{opacity:.11}12.5%{opacity:.01}25%{opacity:.26}37.5%,50%,62.5%,75%{opacity:.6}87.5%{opacity:.5}100%{opacity:.11}}
+@keyframes sh2{0%{opacity:.26}12.5%,25%,37.5%,50%{opacity:.6}62.5%{opacity:.5}75%{opacity:.11}87.5%{opacity:.01}100%{opacity:.26}}
+@keyframes sh3{0%,12.5%,25%{opacity:.6}37.5%{opacity:.5}50%{opacity:.11}62.5%{opacity:.01}75%{opacity:.26}87.5%,100%{opacity:.6}}
+@keyframes sh4{0%{opacity:.6}12.5%{opacity:.5}25%{opacity:.11}37.5%{opacity:.01}50%{opacity:.26}62.5%,75%,87.5%,100%{opacity:.6}}
+</style>
+<div class="scene">
+  <div class="floor"></div>
+  <div class="rf"><div class="pi"><div class="tilt"><div class="spin">
+    <div class="f f1"><b>cover.png</b></div><div class="f f2"></div>
+    <div class="f f3"><i></i><i></i><i></i><u></u></div><div class="f f4"></div><div class="f f5"></div>
+  </div></div></div></div>
+  <div class="shadow"></div>
+  <div class="pw"><div class="pi"><div class="tilt"><div class="spin">
+    <div class="f f1"><b>cover.png</b></div><div class="f f2"></div>
+    <div class="f f3"><i></i><i></i><i></i><u></u></div><div class="f f4"></div><div class="f f5"></div>
+  </div></div></div></div>
+</div>
+</html>

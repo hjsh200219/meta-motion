@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F40 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.scene{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(135deg,#3b4a63 0%,#6d6a7c 45%,#a58f86 100%)}
+.head{position:absolute;left:14%;top:20%;width:20vmin;height:24vmin;border-radius:50%;background:linear-gradient(#d9b9a0,#b98f78);opacity:.8}
+.body{position:absolute;left:5%;top:50%;width:38vmin;height:60vmin;border-radius:50% 50% 0 0;background:linear-gradient(#2c3447,#1d2230);opacity:.85}
+.tag{position:absolute;left:3vmin;bottom:3vmin;font-size:2.4vmin;color:#fff;opacity:.55}
+.panel{position:absolute;right:0;top:0;height:100%;width:40vw;min-width:58vmin;box-sizing:border-box;padding:4vmin 3.5vmin;background:#161b26;display:flex;flex-direction:column;justify-content:center;gap:3vmin;box-shadow:-1vmin 0 3vmin rgba(0,0,0,.4);animation:slide .4s ease-out 0s 1 both}
+@keyframes slide{from{transform:translateX(105%)}to{transform:translateX(0)}}
+.chip{align-self:flex-start;background:#22d3ee;color:#07222a;font-weight:800;font-size:3.6vmin;padding:.8vmin 2.4vmin;border-radius:1vmin}
+.claim{background:#fff;color:#111;font-weight:900;font-size:5vmin;line-height:1.3;padding:2.4vmin 2.6vmin;border-radius:1.2vmin;animation:rise .5s ease-out .4s 1 both}
+@keyframes rise{from{opacity:0;transform:translateY(2vmin)}to{opacity:1;transform:none}}
+.meter{animation:fade .3s linear 1s 1 both}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.bar{display:flex;gap:.8vmin}
+.cell{flex:1;text-align:center;font-weight:800;font-size:3vmin;padding:1.4vmin .5vmin;border-radius:.8vmin;color:#fff;line-height:1.2}
+.c1{background:#2e9e4f;opacity:.3}
+.c2{background:#e0b01c;color:#222;opacity:.3}
+.c3{background:#d83a34;opacity:1}
+.track{position:relative;height:3.4vmin;margin-top:.6vmin}
+.needle{position:absolute;top:0;left:16.67%;width:0;height:0;margin-left:-2vmin;border-left:2vmin solid transparent;border-right:2vmin solid transparent;border-bottom:3.2vmin solid #fff;animation:move .8s ease-out 1s 1 both}
+@keyframes move{0%{left:16.67%}70%{left:88%}100%{left:83.33%}}
+.row{display:flex;align-items:center;gap:2.6vmin}
+.stamp{flex:none;width:15vmin;height:15vmin;border-radius:50%;box-sizing:border-box;border:.9vmin solid #d83a34;color:#d83a34;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:3.6vmin;line-height:1.15;background:rgba(216,58,52,.12);transform:rotate(-8deg);animation:thud .4s cubic-bezier(.3,0,.6,1) 1.8s 1 both}
+@keyframes thud{0%{opacity:0;transform:scale(2.8) rotate(-40deg)}60%{opacity:1;transform:scale(.88) rotate(-4deg)}80%{transform:scale(1.05) rotate(-9deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
+.why{color:#fff;animation:rise .4s ease-out 2.2s 1 both}
+.why b{display:block;font-size:4.2vmin;line-height:1.3;font-weight:900}
+.why span{display:block;margin-top:1vmin;font-size:2.6vmin;color:#aab2c0}
+</style>
+<div class="scene">
+  <div class="body"></div><div class="head"></div>
+  <div class="tag">촬영 화면 예시</div>
+  <div class="panel">
+    <div class="chip">주장</div>
+    <div class="claim">“○○ 기능은 무료로 무제한이다?”</div>
+    <div class="meter">
+      <div class="bar"><div class="cell c1">✓ 사실</div><div class="cell c2">△ 절반만 사실</div><div class="cell c3">✕ 사실 아님</div></div>
+      <div class="track"><div class="needle"></div></div>
+    </div>
+    <div class="row">
+      <div class="stamp">사실<br>아님</div>
+      <div class="why"><b>무료 사용량에 한도가 있습니다</b><span>○○ 공식 요금 안내 · 2026.10.4</span></div>
+    </div>
+  </div>
+</div>
+</html>

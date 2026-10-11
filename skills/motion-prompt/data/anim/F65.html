@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F65 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101a2e}
+*{box-sizing:border-box}
+.stage{width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vmin;background:#101a2e;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#fff}
+.stage h1{margin:0;padding:0 4vmin;text-align:center;font-size:6.4vmin;line-height:1.25;font-weight:900;color:#fff;max-width:96vw}
+.row{display:flex;align-items:center;justify-content:center;gap:3vmin}
+.frame{position:relative;width:min(56vw,105vmin);aspect-ratio:16/10;border:0.6vmin solid #34415f;border-radius:1.6vmin;overflow:visible;background:#0b1424}
+.shot{position:absolute;inset:0;border-radius:1vmin;overflow:hidden;filter:brightness(.8);background:linear-gradient(160deg,#3a4a70,#26324f)}
+.shot i{position:absolute;display:block;border-radius:0.8vmin}
+.side{left:0;top:0;width:24%;height:100%;background:#1c2640}
+.sl{left:3%;width:17%;height:5%;background:#6c7aa0}
+.sl:nth-child(2){top:8%}.sl:nth-child(3){top:20%}.sl:nth-child(4){top:32%}.sl:nth-child(5){top:44%}
+.gear{left:84%;top:3%;width:11%;height:6%;background:#8794b8;border-radius:50%!important;width:5%}
+.b1{left:28%;top:14%;width:40%;height:12%;background:#5b6b96}
+.b2{left:44%;top:30%;width:50%;height:30%;background:#c9d2ea}
+.b3{left:28%;top:64%;width:30%;height:6%;background:#5b6b96}
+.inp{left:28%;top:80%;width:68%;height:13%;background:#e8edf8}
+.z{position:absolute;left:var(--l);top:var(--t);width:var(--w);height:var(--h);border:0.7vmin dashed #ffc83d;border-radius:1.2vmin;background:rgba(255,200,61,.1);
+ clip-path:inset(0 100% 0 0);
+ animation-name:draw;animation-duration:.4s;animation-delay:calc(.3s + var(--i) * .45s);animation-iteration-count:1;animation-fill-mode:both;animation-timing-function:linear}
+.n{position:absolute;left:var(--l);top:var(--t);width:4.6vmin;height:4.6vmin;margin:-2.3vmin 0 0 -1.2vmin;border-radius:50%;background:#ffc83d;color:#101a2e;font-weight:900;font-size:3.2vmin;display:flex;align-items:center;justify-content:center;transform:scale(0);
+ animation-name:pop;animation-duration:.15s;animation-delay:calc(.55s + var(--i) * .45s);animation-iteration-count:1;animation-fill-mode:both;animation-timing-function:ease-out}
+.list{width:min(36vw,70vmin);background:#101a2e;border:0.5vmin solid #34415f;border-radius:1.6vmin;padding:2.2vmin 2.4vmin;display:flex;flex-direction:column;gap:2.4vmin}
+.item{display:flex;align-items:center;gap:2vmin;
+ animation-name:slide;animation-duration:.35s;animation-delay:calc(.45s + var(--i) * .45s);animation-iteration-count:1;animation-fill-mode:both;animation-timing-function:ease-out}
+.item .c{flex:none;width:4.6vmin;height:4.6vmin;border-radius:50%;background:#ffc83d;color:#101a2e;font-weight:900;font-size:3.2vmin;display:flex;align-items:center;justify-content:center}
+.item b{display:block;font-size:4vmin;font-weight:800;color:#fff;line-height:1.2}
+.item small{display:block;font-size:3vmin;color:#b9c3dc;line-height:1.3;margin-top:.3vmin}
+.fade{animation-name:fin;animation-duration:.3s;animation-delay:0s;animation-iteration-count:1;animation-fill-mode:both}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+@keyframes draw{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes pop{0%{transform:scale(0)}60%{transform:scale(1.4)}100%{transform:scale(1)}}
+@keyframes slide{from{opacity:0;transform:translateX(-6vmin)}to{opacity:1;transform:translateX(0)}}
+@media (max-aspect-ratio:4/5){
+ .row{flex-direction:column;gap:3vmin}
+ .frame{width:90vw}
+ .list{width:90vw}
+}
+</style>
+<div class="stage">
+ <h1 class="fade">처음 보는 화면 — 네 구역만 알면 됩니다</h1>
+ <div class="row">
+  <div class="frame fade">
+   <div class="shot">
+    <i class="side"></i>
+    <i class="sl"></i><i class="sl"></i><i class="sl"></i><i class="sl"></i>
+    <i class="gear"></i>
+    <i class="b1"></i><i class="b2"></i><i class="b3"></i>
+    <i class="inp"></i>
+   </div>
+   <div class="z" style="--l:1.5%;--t:3%;--w:21%;--h:94%;--i:0"></div>
+   <div class="z" style="--l:26%;--t:13%;--w:72%;--h:58%;--i:1"></div>
+   <div class="z" style="--l:26%;--t:76%;--w:72%;--h:20%;--i:2"></div>
+   <div class="z" style="--l:78%;--t:2%;--w:20%;--h:9%;--i:3"></div>
+   <div class="n" style="--l:1.5%;--t:3%;--i:0">1</div>
+   <div class="n" style="--l:26%;--t:13%;--i:1">2</div>
+   <div class="n" style="--l:26%;--t:76%;--i:2">3</div>
+   <div class="n" style="--l:78%;--t:2%;--i:3">4</div>
+  </div>
+  <div class="list fade">
+   <div class="item" style="--i:0"><span class="c">1</span><div><b>대화 목록</b><small>지난 대화를 다시 열기</small></div></div>
+   <div class="item" style="--i:1"><span class="c">2</span><div><b>답 영역</b><small>AI 답이 여기에 나옴</small></div></div>
+   <div class="item" style="--i:2"><span class="c">3</span><div><b>입력창</b><small>여기에 지시를 씀</small></div></div>
+   <div class="item" style="--i:3"><span class="c">4</span><div><b>설정</b><small>말투·언어 바꾸기</small></div></div>
+  </div>
+ </div>
+</div>
+</html>

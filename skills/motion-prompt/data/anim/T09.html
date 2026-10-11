@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T09 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b1020;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.stage{position:relative;width:100%;height:100%;overflow:hidden}
+.sc{position:absolute;inset:0;overflow:hidden}
+.sc .sky{position:absolute;inset:0;background:linear-gradient(180deg,#2a6fd6 0%,#7ec8ff 55%,#ffd9a0 100%)}
+.sc .sun{position:absolute;left:62%;top:22%;width:16vmin;height:16vmin;border-radius:50%;background:radial-gradient(circle,#fff6c8 30%,#ffc94d 70%,rgba(255,201,77,0) 72%)}
+.sc .mt{position:absolute;left:0;right:0;bottom:30%;height:34%;background:linear-gradient(180deg,#3f9f7a,#1f6b52);clip-path:polygon(0 100%,0 60%,18% 20%,34% 58%,52% 8%,72% 56%,86% 30%,100% 62%,100% 100%)}
+.sc .bd{position:absolute;left:0;right:0;bottom:0;height:34%;background:
+linear-gradient(180deg,rgba(255,255,255,.0),rgba(0,0,0,.15)),
+repeating-linear-gradient(90deg,#e8567a 0 9%,#ffb23f 9% 17%,#4fb8a8 17% 27%,#7a6bd8 27% 34%)}
+.sc .bd::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.55) 0 1.2vmin,transparent 1.2vmin 3.6vmin);-webkit-mask:repeating-linear-gradient(90deg,#000 0 2vmin,transparent 2vmin 4.5vmin);mask:repeating-linear-gradient(90deg,#000 0 2vmin,transparent 2vmin 4.5vmin);opacity:.5}
+.before{filter:grayscale(.85) brightness(.62) contrast(.85)}
+.after{clip-path:inset(0 0 0 50%);animation:reveal 4s linear 0s 1 both}
+.tag{position:absolute;top:4vmin;font-size:3.6vmin;font-weight:900;letter-spacing:.7vmin;color:#9FB0D0;text-shadow:0 0 1vmin rgba(0,0,0,.5)}
+.before .tag{left:3vmin}
+.after .tag{right:3vmin}
+.line{position:absolute;top:0;bottom:0;left:50%;width:.45vmin;margin-left:-.225vmin;background:#fff;box-shadow:0 0 1.2vmin .3vmin #4FD6FF,0 0 3vmin .6vmin rgba(79,214,255,.55);animation:move 4s linear 0s 1 both,flash .6s linear 3.4s 1 both}
+@keyframes move{
+0%{left:50%;animation-timing-function:cubic-bezier(.15,.7,.3,1)}
+25%{left:80%;animation-timing-function:cubic-bezier(.6,0,.9,.5)}
+50%{left:50%;animation-timing-function:cubic-bezier(.1,.5,.3,1)}
+75%{left:20%;animation-timing-function:cubic-bezier(.6,0,.9,.5)}
+100%{left:50%}}
+@keyframes reveal{
+0%{clip-path:inset(0 0 0 50%);animation-timing-function:cubic-bezier(.15,.7,.3,1)}
+25%{clip-path:inset(0 0 0 80%);animation-timing-function:cubic-bezier(.6,0,.9,.5)}
+50%{clip-path:inset(0 0 0 50%);animation-timing-function:cubic-bezier(.1,.5,.3,1)}
+75%{clip-path:inset(0 0 0 20%);animation-timing-function:cubic-bezier(.6,0,.9,.5)}
+100%{clip-path:inset(0 0 0 50%)}}
+@keyframes flash{
+0%{box-shadow:0 0 1.2vmin .3vmin #4FD6FF,0 0 3vmin .6vmin rgba(79,214,255,.55)}
+70%{box-shadow:0 0 2.5vmin 1vmin #8fe6ff,0 0 9vmin 3vmin rgba(79,214,255,.9),0 0 18vmin 6vmin rgba(79,214,255,.45)}
+100%{box-shadow:0 0 1.8vmin .5vmin #4FD6FF,0 0 5vmin 1.2vmin rgba(79,214,255,.7)}}
+</style>
+<div class="stage">
+  <div class="sc before">
+    <div class="sky"></div><div class="sun"></div><div class="mt"></div><div class="bd"></div>
+    <div class="tag">BEFORE</div>
+  </div>
+  <div class="sc after">
+    <div class="sky"></div><div class="sun"></div><div class="mt"></div><div class="bd"></div>
+    <div class="tag">AFTER</div>
+  </div>
+  <div class="line"></div>
+</div>
+</html>

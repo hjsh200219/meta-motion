@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T12 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1b1442 0%,#2d1b69 55%,#3b2380 100%);font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.win{width:86vmin;height:54vmin;background:#0b0b10;border-radius:2.4vmin;box-shadow:0 5vmin 9vmin rgba(0,0,0,.55),0 0 0 .2vmin rgba(255,255,255,.08);display:flex;flex-direction:column;overflow:hidden}
+.bar{height:6.5vmin;background:#1a1a22;display:flex;align-items:center;gap:1.6vmin;padding:0 2.4vmin;flex:none}
+.bar i{width:2.2vmin;height:2.2vmin;border-radius:50%;display:block}
+.bar i:nth-child(1){background:#ff5f57}
+.bar i:nth-child(2){background:#febc2e}
+.bar i:nth-child(3){background:#28c840}
+.body{flex:1;padding:3vmin 3.2vmin;font-family:ui-monospace,Menlo,"SF Mono","Courier New","Apple SD Gothic Neo",monospace;font-size:4.4vmin;line-height:1.7;color:#d6d6de}
+.ln{white-space:nowrap}
+.pr{color:#7CD4FF;font-weight:700;margin-right:1.2vmin}
+.typed{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;width:13ch;animation:type .8s steps(13) .2s 1 both}
+.cur{display:inline-block;width:.6ch;height:1.15em;background:#e4e4ec;vertical-align:bottom;margin-left:.2ch;animation:blink 1s steps(1) 1s 5 both}
+.l1{color:#9a9aa8;animation:in 1s ease-out 1.2s 1 both}
+.l2{color:#d6d6de;animation:in .8s ease-out 2.2s 1 both}
+.l3{color:#d6d6de;animation:in .8s ease-out 3s 1 both}
+.ok{color:#3DDC97;font-weight:700;margin-right:1.2vmin}
+.dots{display:inline-block;animation:pulse .5s ease-in-out 1.2s 4 both}
+.l1 .dots{animation-delay:2.2s}
+.l4{display:inline-block;margin-top:1vmin;padding:0 1.2vmin;border-radius:1vmin;color:#ffa43a;font-weight:700;animation:fin 2.2s ease-out 3.8s 1 both,flash 1s ease-out 3.8s 1 both}
+@keyframes type{from{width:0}to{width:13ch}}
+@keyframes blink{0%{opacity:1}50%{opacity:0}100%{opacity:0}}
+@keyframes in{from{opacity:0;transform:translateY(1.5vmin)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes fin{0%{opacity:0;transform:translateY(1.5vmin)}14%,100%{opacity:1;transform:translateY(0)}}
+@keyframes flash{0%{background:rgba(255,164,58,.55);text-shadow:0 0 4vmin #ffa43a,0 0 8vmin #ffa43a}100%{background:rgba(255,164,58,0);text-shadow:0 0 0 rgba(255,164,58,0)}}
+</style>
+<div class="win">
+  <div class="bar"><i></i><i></i><i></i></div>
+  <div class="body">
+    <div class="ln"><span class="pr">$</span><span class="typed">npm run build</span><span class="cur"></span></div>
+    <div class="ln l1">● 파일 읽는 중<span class="dots">…</span></div>
+    <div class="ln l2"><span class="ok">✓</span>정리 완료</div>
+    <div class="ln l3"><span class="ok">✓</span>결과 저장</div>
+    <div class="l4">끝! 3단계를 마쳤어요</div>
+  </div>
+</div>
+</html>

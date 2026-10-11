@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 N01 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+*{box-sizing:border-box}
+.stage{position:relative;width:100%;height:100%;background:linear-gradient(160deg,#e9f1ec,#dbe8e0);color:#1f2a24;display:flex;flex-direction:column;align-items:center;overflow:hidden}
+.stripe{position:absolute;left:0;top:0;width:100%;height:2.4vmin;background:repeating-linear-gradient(-45deg,#facc15 0 2.4vmin,#1b1b1b 2.4vmin 4.8vmin)}
+.head{margin-top:6vmin;width:92%;display:flex;align-items:center;gap:3vmin;animation:drop .4s ease-out 0s 1 both}
+.tri{width:10vmin;height:9vmin;background:#facc15;clip-path:polygon(50% 0,100% 100%,0 100%);display:flex;align-items:flex-end;justify-content:center;font-size:5.4vmin;font-weight:900;color:#1b1b1b;padding-bottom:.6vmin}
+.title{font-size:8vmin;font-weight:900;letter-spacing:-.02em;white-space:nowrap}
+@keyframes drop{0%{opacity:0;transform:translateY(-8vmin)}70%{opacity:1;transform:translateY(1vmin)}100%{opacity:1;transform:none}}
+.row{margin-top:5vmin;width:92%;display:grid;grid-template-columns:repeat(4,1fr);gap:3vmin;animation:wow .3s ease-out 3.2s 1 both}
+@keyframes wow{0%{transform:none}40%{transform:translateY(-2vmin) scale(1.05)}100%{transform:none}}
+.tile{position:relative;animation:pop .45s ease-out calc(.25s + var(--i)*.3s) 1 both}
+@keyframes pop{0%{opacity:0;transform:translateY(9vmin) scale(.6)}60%{opacity:1;transform:translateY(-1.6vmin) scale(1.06)}100%{opacity:1;transform:none}}
+.tile:nth-child(1){--i:0;--r:-9deg;--sd:1.75s;--sh:1.94s}
+.tile:nth-child(2){--i:1;--r:7deg;--sd:2.17s;--sh:2.36s}
+.tile:nth-child(3){--i:2;--r:-5deg;--sd:2.59s;--sh:2.78s}
+.tile:nth-child(4){--i:3;--r:10deg;--sd:3.01s;--sh:3.2s}
+.card{background:#fff;border-radius:2.4vmin;border-top:1.8vmin solid #16A34A;box-shadow:0 .8vmin 2vmin rgba(20,50,35,.18);padding:2vmin 1vmin 2.4vmin;display:flex;flex-direction:column;align-items:center;gap:2vmin;animation:shake .25s linear var(--sh) 1 both}
+.tile.no .card{border-top-color:#DC2626}
+@keyframes shake{0%{transform:none}20%{transform:rotate(-2.5deg)}40%{transform:rotate(2.5deg)}60%{transform:rotate(-1.6deg)}80%{transform:rotate(1.2deg)}100%{transform:none}}
+.label{font-size:4.4vmin;font-weight:900;white-space:nowrap}
+.stamp{position:absolute;top:-3.4vmin;right:-2.4vmin;width:10vmin;height:10vmin;border-radius:50%;background:#fff;border:.6vmin dashed #16A34A;display:flex;align-items:center;justify-content:center;font-size:5.6vmin;box-shadow:0 .5vmin 1.2vmin rgba(0,0,0,.2);animation:stamp .19s ease-in var(--sd) 1 both}
+.tile.no .stamp{border-color:#DC2626}
+@keyframes stamp{0%{opacity:0;transform:scale(3.2) rotate(0deg)}100%{opacity:1;transform:scale(1) rotate(var(--r))}}
+.tile:nth-child(4) .stamp{animation:stamp .19s ease-in 3.01s 1 both,glint .5s ease-out 3.2s 1 both}
+@keyframes glint{0%{box-shadow:0 0 0 0 rgba(250,204,21,.9)}40%{border-color:#facc15;box-shadow:0 0 0 2.4vmin rgba(250,204,21,.45)}100%{box-shadow:0 .5vmin 1.2vmin rgba(0,0,0,.2)}}
+.icon{position:relative;width:14vmin;height:16vmin}
+.icon *{position:absolute;background:#22282a}
+/* 1 안전모 */
+.i1{animation:bob .5s ease-in-out 0s 11 both}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.4vmin)}}
+.i1 .h{left:4.5vmin;top:3.6vmin;width:5vmin;height:5vmin;border-radius:50%}
+.i1 .hm{left:3.6vmin;top:1.6vmin;width:6.8vmin;height:3.6vmin;border-radius:6vmin 6vmin 0 0;border:.4vmin solid #fff;border-bottom:0}
+.i1 .br{left:2.8vmin;top:5vmin;width:8.4vmin;height:.9vmin;border-radius:.5vmin}
+.i1 .b{left:2vmin;top:9.4vmin;width:10vmin;height:6.6vmin;border-radius:5vmin 5vmin 0 0}
+/* 2 달리는 사람 */
+.i2{animation:hop .25s ease-out 0s 22 both}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2vmin)}}
+.i2 .h{left:7.6vmin;top:.4vmin;width:4.2vmin;height:4.2vmin;border-radius:50%}
+.i2 .t{left:5.8vmin;top:4.8vmin;width:3vmin;height:6.2vmin;border-radius:1.5vmin;transform:rotate(16deg)}
+.i2 .l{left:6vmin;top:10vmin;width:2.4vmin;height:6vmin;border-radius:1.2vmin;transform-origin:50% 0;animation:leg .5s ease-in-out 0s 11 both}
+.i2 .l2{animation-direction:reverse}
+.i2 .a{left:5.6vmin;top:5.6vmin;width:2vmin;height:5vmin;border-radius:1vmin;transform-origin:50% 0;animation:leg .5s ease-in-out 0s 11 both reverse}
+@keyframes leg{0%,100%{transform:rotate(38deg)}50%{transform:rotate(-38deg)}}
+/* 3 손 씻기 */
+.i3 .palm{left:2.4vmin;top:10.4vmin;width:9.2vmin;height:5vmin;border-radius:1.5vmin 1.5vmin 3vmin 3vmin}
+.i3 .f{top:6.8vmin;width:1.8vmin;height:5vmin;border-radius:1vmin}
+.i3 .f1{left:2.8vmin}.i3 .f2{left:5vmin;top:6vmin}.i3 .f3{left:7.2vmin;top:6vmin}.i3 .f4{left:9.4vmin}
+.i3 .d{left:6.2vmin;top:-1vmin;width:2.2vmin;height:2.2vmin;border-radius:50% 0 50% 50%;transform:rotate(-45deg);background:#38a3d8;animation:fall .6s ease-in 0s 8 both}
+.i3 .d2{left:2.8vmin;animation-delay:.2s}
+.i3 .d3{left:9.6vmin;animation-delay:.4s}
+@keyframes fall{0%{opacity:0;transform:translateY(0) rotate(-45deg)}20%{opacity:1}80%{opacity:1}100%{opacity:0;transform:translateY(8vmin) rotate(-45deg)}}
+/* 4 비상구 */
+.i4 .door{right:.6vmin;top:1.4vmin;width:7vmin;height:14.6vmin;background:#16A34A;border:.8vmin solid #22282a;border-radius:.6vmin .6vmin 0 0}
+.i4 .door::after{content:"";position:absolute;left:1vmin;top:5vmin;width:1vmin;height:1vmin;border-radius:50%;background:#fff}
+.i4 .w{left:0;top:3vmin;width:5vmin;height:13vmin;background:none;animation:walk .9s ease-in-out 0s 6 alternate both}
+@keyframes walk{0%{transform:translateX(-.4vmin)}100%{transform:translateX(2.6vmin)}}
+.i4 .w .h{left:1.2vmin;top:0;width:3vmin;height:3vmin;border-radius:50%}
+.i4 .w .t{left:1.2vmin;top:3.4vmin;width:3vmin;height:5vmin;border-radius:1.4vmin}
+.i4 .w .l{left:1.4vmin;top:8vmin;width:1.7vmin;height:5vmin;border-radius:1vmin;transform-origin:50% 0;animation:leg2 .3s ease-in-out 0s 18 both}
+.i4 .w .l2{animation-direction:reverse}
+@keyframes leg2{0%,100%{transform:rotate(22deg)}50%{transform:rotate(-22deg)}}
+.note{position:absolute;left:4%;bottom:5vmin;font-size:5vmin;font-weight:900;background:#fff;border-left:1.4vmin solid #facc15;border-radius:1.4vmin;padding:1.6vmin 3vmin;box-shadow:0 .6vmin 1.6vmin rgba(20,50,35,.15);animation:rise .4s ease-out 3.3s 1 both;white-space:nowrap}
+@keyframes rise{0%{opacity:0;transform:translateY(4vmin)}100%{opacity:1;transform:none}}
+@media (orientation:portrait){
+.row{grid-template-columns:repeat(2,1fr);gap:6vmin 4vmin;width:88%}
+.title{font-size:9.5vmin}
+.note{font-size:4.2vmin;white-space:normal;max-width:90%}
+}
+</style>
+<div class="stage">
+  <div class="stripe"></div>
+  <div class="head"><div class="tri">!</div><div class="title">현장 안전 수칙</div></div>
+  <div class="row">
+    <div class="tile"><div class="card"><div class="icon i1"><i class="b"></i><i class="h"></i><i class="hm"></i><i class="br"></i></div><div class="label">안전모 쓰기</div></div><div class="stamp">⭕</div></div>
+    <div class="tile no"><div class="card"><div class="icon i2"><i class="a"></i><i class="t"></i><i class="h"></i><i class="l"></i><i class="l l2"></i></div><div class="label">뛰지 않기</div></div><div class="stamp">❌</div></div>
+    <div class="tile"><div class="card"><div class="icon i3"><i class="f f1"></i><i class="f f2"></i><i class="f f3"></i><i class="f f4"></i><i class="palm"></i><i class="d"></i><i class="d d2"></i><i class="d d3"></i></div><div class="label">손 씻기</div></div><div class="stamp">⭕</div></div>
+    <div class="tile"><div class="card"><div class="icon i4"><i class="door"></i><div class="w"><i class="h"></i><i class="t"></i><i class="l"></i><i class="l l2"></i></div></div><div class="label">비상구 확인</div></div><div class="stamp">⭕</div></div>
+  </div>
+  <div class="note">⭕ 「꼭 지켜요」 · ❌ 「하지 마세요」</div>
+</div>
+</html>

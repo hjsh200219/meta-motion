@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 T13 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0F1424;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.view{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 55%,#1b2340 0,#0F1424 70%)}
+.tag{position:absolute;left:4vmin;top:3.5vmin;font-size:4.6vmin;font-weight:800;color:#cfd6ee;letter-spacing:.3vmin}
+.stage{transform:translateY(5vmin)}
+.cam{position:relative;width:0;height:0;transform-style:preserve-3d;transform:rotateX(58deg) rotateZ(-15deg);animation:cam 6s 0s 1 both}
+@keyframes cam{
+0%{transform:rotateX(58deg) rotateZ(-15deg);animation-timing-function:ease-in-out}
+50%{transform:rotateX(58deg) rotateZ(15deg);animation-timing-function:ease-in-out}
+100%{transform:rotateX(58deg) rotateZ(-15deg)}}
+@keyframes unc{
+0%{transform:rotateZ(15deg) rotateX(-58deg);animation-timing-function:ease-in-out}
+50%{transform:rotateZ(-15deg) rotateX(-58deg);animation-timing-function:ease-in-out}
+100%{transform:rotateZ(15deg) rotateX(-58deg)}}
+
+.box,.at{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;transform:translate3d(var(--x,0vmin),var(--y,0vmin),var(--z,0vmin))}
+.box i{position:absolute;display:block;background:var(--c)}
+.box .t{left:calc(var(--w)/-2);top:calc(var(--d)/-2);width:var(--w);height:var(--d);transform:translateZ(var(--h))}
+.box .f{left:calc(var(--w)/-2);top:calc(var(--d)/2);width:var(--w);height:var(--h);transform-origin:50% 0;transform:rotateX(90deg);filter:brightness(.88)}
+.box .r{left:calc(var(--w)/2);top:calc(var(--d)/-2);width:var(--h);height:var(--d);transform-origin:0 50%;transform:rotateY(-90deg);filter:brightness(.72)}
+.floor .t{background:repeating-linear-gradient(0deg,rgba(120,90,40,.12) 0 .25vmin,transparent .25vmin 7vmin),repeating-linear-gradient(90deg,rgba(120,90,40,.12) 0 .25vmin,transparent .25vmin 7vmin),var(--c)}
+.wall .f{background:repeating-linear-gradient(90deg,rgba(60,30,10,.18) 0 .3vmin,transparent .3vmin 4vmin),var(--c)}
+.wall .r{background:repeating-linear-gradient(0deg,rgba(60,30,10,.18) 0 .3vmin,transparent .3vmin 4vmin),var(--c)}
+
+.pad{position:absolute;left:-4vmin;top:-4vmin;width:8vmin;height:8vmin;border-radius:50%;background:rgba(255,255,255,.5);border:.5vmin solid rgba(255,255,255,.85);box-sizing:border-box}
+.pad.hit{animation:padhit .8s 1.5s 1 both}
+@keyframes padhit{0%{box-shadow:0 0 0 0 rgba(255,90,130,0);background:rgba(255,255,255,.5)}
+30%{box-shadow:0 0 6vmin 3vmin rgba(255,90,130,.95);background:rgba(255,150,180,.95)}
+100%{box-shadow:0 0 2vmin .5vmin rgba(255,90,130,.35);background:rgba(255,190,205,.7)}}
+
+.bb{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;transform:rotateZ(15deg) rotateX(-58deg);animation:unc 6s 0s 1 both}
+.in{position:absolute;left:0;top:0;transform-style:preserve-3d}
+
+.pr{transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center}
+.bd{width:5vmin;height:7vmin;border-radius:2.5vmin 2.5vmin 1vmin 1vmin;background:linear-gradient(90deg,var(--c),#fff3 45%,var(--c) 60%,#0003)}
+.hd{width:3.8vmin;height:3.8vmin;border-radius:50%;margin-bottom:-.4vmin;background:radial-gradient(circle at 35% 30%,#ffe3c9,#e9b48a)}
+.chef .hd::before{content:"";display:block;width:3.4vmin;height:2.2vmin;margin:-1.8vmin auto 0;border-radius:1.2vmin 1.2vmin .3vmin .3vmin;background:#fff}
+
+.lbwrap{transform:translate(-50%,-100%) translate3d(0,-19vmin,5vmin)}
+.lab{transform-origin:50% 100%;background:#fff;color:#0F1424;border-radius:3vmin;padding:.9vmin 2.2vmin 1vmin;text-align:center;white-space:nowrap;box-shadow:0 0 1.5vmin rgba(255,255,255,.25);position:relative}
+.lab b{display:block;font-size:3.8vmin;line-height:1.15}
+.lab span{display:block;font-size:2.6vmin;color:#5a6280;font-weight:600}
+.lab::after{content:"";position:absolute;left:50%;bottom:-1.2vmin;margin-left:-1vmin;border:1vmin solid transparent;border-top-color:#fff;border-bottom:0}
+.lab.pop{animation:pop .7s 1.5s 1 both}
+@keyframes pop{
+0%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,90,130,0);background:#fff}
+30%{transform:translateY(-2.5vmin) scale(1.35);box-shadow:0 0 5vmin 1.5vmin rgba(255,110,150,.95);background:#fff2f5}
+60%{transform:translateY(0) scale(.95);box-shadow:0 0 3vmin 1vmin rgba(255,110,150,.7)}
+100%{transform:scale(1);box-shadow:0 0 2vmin .5vmin rgba(255,110,150,.5);background:#fff}}
+
+.mw{animation:mv 6s 0s 1 both}
+@keyframes mv{
+0%{transform:translate3d(-19vmin,19vmin,0)}
+12.5%{transform:translate3d(0vmin,0vmin,0)}
+25%{transform:translate3d(19vmin,-19vmin,0)}
+37.5%{transform:translate3d(0vmin,0vmin,0)}
+50%{transform:translate3d(-19vmin,19vmin,0)}
+62.5%{transform:translate3d(0vmin,0vmin,0)}
+75%{transform:translate3d(19vmin,-19vmin,0)}
+87.5%{transform:translate3d(0vmin,0vmin,0)}
+100%{transform:translate3d(-19vmin,19vmin,0)}}
+.shadow{position:absolute;left:-2.4vmin;top:-2.4vmin;width:4.8vmin;height:4.8vmin;border-radius:50%;background:radial-gradient(circle,rgba(60,30,20,.4),transparent 70%)}
+.ball{position:absolute;left:-2.5vmin;top:-2.5vmin;width:5vmin;height:5vmin;border-radius:50%;
+background:radial-gradient(circle at 35% 30%,#fff 0,#ffb3c8 22%,#ff4f80 58%,#e0245c 100%);
+box-shadow:0 0 3vmin .8vmin #ff4d7d,0 0 7vmin 2vmin rgba(255,77,125,.55);
+animation:bob .75s 0s 8 both}
+@keyframes bob{0%,100%{transform:translateY(-8vmin)}50%{transform:translateY(-10.5vmin)}}
+</style>
+
+<div class="view">
+  <div class="tag">식당</div>
+  <div class="stage">
+    <div class="cam">
+      <!-- 바닥판·벽 -->
+      <div class="box floor" style="--x:0vmin;--y:0vmin;--z:-2vmin;--w:56vmin;--d:56vmin;--h:2vmin;--c:#E8D8B3"><i class="t"></i><i class="f"></i><i class="r"></i></div>
+      <div class="box wall" style="--x:0vmin;--y:-28.5vmin;--w:56vmin;--d:1vmin;--h:14vmin;--c:#B07A45"><i class="t"></i><i class="f"></i><i class="r"></i></div>
+      <div class="box wall" style="--x:-28.5vmin;--y:0vmin;--w:1vmin;--d:56vmin;--h:14vmin;--c:#9A6838"><i class="t"></i><i class="f"></i><i class="r"></i></div>
+      <!-- 가구 -->
+      <div class="box" style="--x:-8vmin;--y:24vmin;--w:10vmin;--d:8vmin;--h:4vmin;--c:#D9A066"><i class="t"></i><i class="f"></i><i class="r"></i></div>
+      <div class="box" style="--x:14vmin;--y:4vmin;--w:6vmin;--d:18vmin;--h:6vmin;--c:#C98B52"><i class="t"></i><i class="f"></i><i class="r"></i></div>
+      <div class="box" style="--x:4vmin;--y:-24vmin;--w:12vmin;--d:6vmin;--h:8vmin;--c:#6C7A89"><i class="t"></i><i class="f"></i><i class="r"></i></div>
+      <!-- 자리 표시 -->
+      <div class="at" style="--x:-19vmin;--y:19vmin"><div class="pad"></div></div>
+      <div class="at" style="--x:0vmin;--y:0vmin"><div class="pad"></div></div>
+      <div class="at" style="--x:19vmin;--y:-19vmin"><div class="pad hit"></div></div>
+      <!-- 사람 -->
+      <div class="at" style="--x:-26vmin;--y:12vmin"><div class="bb"><div class="in pr"><div class="hd"></div><div class="bd" style="--c:#4F8FD6"></div></div></div></div>
+      <div class="at" style="--x:21vmin;--y:4vmin"><div class="bb"><div class="in pr"><div class="hd"></div><div class="bd" style="--c:#59B37A"></div></div></div></div>
+      <div class="at chef" style="--x:25.5vmin;--y:-10vmin"><div class="bb"><div class="in pr chef"><div class="hd"></div><div class="bd" style="--c:#F2F2F2"></div></div></div></div>
+      <!-- 구슬 -->
+      <div class="at mw" style="--x:0vmin;--y:0vmin"><div class="shadow"></div><div class="bb"><div class="in"><div class="ball"></div></div></div></div>
+      <!-- 이름표 -->
+      <div class="at" style="--x:-19vmin;--y:19vmin"><div class="bb"><div class="in lbwrap"><div class="lab"><b>손님</b><span>사용자</span></div></div></div></div>
+      <div class="at" style="--x:0vmin;--y:0vmin"><div class="bb"><div class="in lbwrap"><div class="lab"><b>주문 창구</b><span>API</span></div></div></div></div>
+      <div class="at" style="--x:19vmin;--y:-19vmin"><div class="bb"><div class="in lbwrap"><div class="lab pop"><b>주방</b><span>백엔드</span></div></div></div></div>
+    </div>
+  </div>
+</div>
+</html>

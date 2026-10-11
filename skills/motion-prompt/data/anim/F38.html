@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; script-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 생성 파일(build_card_anim.py) — 카드 F38 샘플. 부모가 {{t: 초}} 를 보내면 그 시각 장면으로 맞춘다 -->
+<script>
+const all = () => document.getAnimations();
+addEventListener('load', () => { for (const a of all()) { a.pause(); a.effect.updateTiming({ fill: 'both' }); } parent.postMessage({ anim: 'ready' }, '*'); });
+addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (Number.isFinite(t)) for (const a of all()) a.currentTime = t * 1000; });
+</script>
+<style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.scene{position:relative;width:100%;height:100%;overflow:hidden;background:linear-gradient(180deg,#2b4a6b 0%,#6b8fae 45%,#c79a6b 75%,#3d3a3a 100%)}
+.hill{position:absolute;left:-10%;right:-10%;bottom:-8%;height:38%;background:#25332e;border-radius:50% 50% 0 0}
+.sun{position:absolute;right:14%;top:42%;width:14vmin;height:14vmin;border-radius:50%;background:radial-gradient(circle,#ffe2a8,#f2a65a 70%);opacity:.85}
+.person{position:absolute;left:50%;bottom:6%;width:18vmin;height:30vmin;transform:translateX(-50%);background:#161c1a;border-radius:9vmin 9vmin 2vmin 2vmin}
+.person::before{content:"";position:absolute;left:50%;top:-9vmin;width:11vmin;height:11vmin;margin-left:-5.5vmin;border-radius:50%;background:#2a2f2d}
+.wrap{position:absolute;top:5vmin;left:0;right:0;display:flex;justify-content:center}
+.card{display:flex;width:max(57vw,78vmin);background:#fff;border-radius:2vmin;box-shadow:0 1.5vmin 5vmin rgba(0,0,0,.35);overflow:hidden;animation:drop .35s ease-out 0s 1 both}
+@keyframes drop{from{opacity:0;transform:translateY(-4vmin)}to{opacity:1;transform:translateY(0)}}
+.side{flex:0 0 14vmin;background:#ff5a3c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1vmin;padding:2vmin 0}
+.tilt{width:9vmin;height:9vmin;display:flex;align-items:center;justify-content:center;transform-origin:20% 80%;animation:tilt .35s ease-in-out .35s 1 both}
+@keyframes tilt{0%{transform:rotate(0)}50%{transform:rotate(-16deg) scale(1.08)}100%{transform:rotate(0)}}
+.pencil{width:9vmin;height:2.6vmin;transform:rotate(-45deg);background:linear-gradient(90deg,#f4a6a6 0 15%,#c8c8c8 15% 22%,#ffd54a 22% 80%,#f1d3a0 80%);clip-path:polygon(0 0,80% 0,100% 50%,80% 100%,0 100%)}
+.stroke{width:8vmin;height:.7vmin;border-radius:1vmin;background:#fff;transform-origin:left center;animation:draw .35s ease-out .35s 1 both}
+@keyframes draw{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.main{flex:1;padding:2.4vmin 3vmin 1.8vmin;display:flex;flex-direction:column;gap:1.2vmin}
+.head{font-size:2.5vmin;color:#8a8a8a;letter-spacing:.2vmin}
+.body{font-size:4.2vmin;line-height:1.35;font-weight:800;color:#111;animation:fade .3s ease-out .7s 1 both}
+.old{color:#8a8a8a;font-weight:600;text-decoration:line-through;margin-right:1vmin}
+@keyframes fade{from{opacity:0;transform:translateY(1vmin)}to{opacity:1;transform:translateY(0)}}
+.date{align-self:flex-end;font-size:2.3vmin;color:#8a8a8a;animation:fade .3s ease-out .9s 1 both}
+</style>
+<div class="scene">
+  <div class="sun"></div>
+  <div class="hill"></div>
+  <div class="person"></div>
+  <div class="wrap">
+    <div class="card">
+      <div class="side">
+        <div class="tilt"><div class="pencil"></div></div>
+        <div class="stroke"></div>
+      </div>
+      <div class="main">
+        <div class="head">편집자 주 · 업데이트</div>
+        <div class="body"><span class="old">월 ○만 원</span>→ 요금은 바뀔 수 있어요 — 공식 페이지에서 다시 확인해 주세요</div>
+        <div class="date">2026.10.4 확인 · ○○ 공식 요금 안내</div>
+      </div>
+    </div>
+  </div>
+</div>
+</html>
