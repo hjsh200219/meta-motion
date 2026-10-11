@@ -331,6 +331,8 @@ document.addEventListener('click', (e) => {
     }) ?? done('글자를 선택해 복사하세요');
   }
 });
+// 열린 탭에서 주소의 #코드만 바뀌어도(추천 결과 «보기» 링크) 그 카드로 간다
+addEventListener('hashchange', () => { const h = decodeURIComponent(location.hash.slice(1)); const it = ITEMS.find((x) => x.code === h || x.code === h.toUpperCase()); if (it && it !== cur) select(it.code, true); });
 addEventListener('message', (e) => {
   if (e.data?.anim !== 'ready' || !$('#anim') || e.source !== $('#anim').contentWindow) return;
   animOk = true; $('#stage').classList.add('live'); $('#say2').hidden = false; draw();

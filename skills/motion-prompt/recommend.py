@@ -12,6 +12,7 @@ HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(HERE), str(Path.home() / 'workspace' / 'shared')]
 MAX_OPTIONS = 255  # Jev choice 옵션 상한
 CAT_MASS = 0.8     # 분류 확률을 위에서부터 이만큼 모을 때까지(최대 3개) 후보로 넣는다
+KB = 'https://kb.pilldoc.co.kr/motion/#'  # 사내 KB 미리보기 — #코드 로 그 카드가 골라진 채 열린다(로그인 필요)
 LOW = 0.3          # 1순위 확률이 이보다 낮으면 «확신 낮음» — 카드 목록에 딱 맞는 게 없다는 신호
 
 
@@ -80,7 +81,7 @@ def main(args):
         low = ' · 확신 낮음 — 직접 고르거나 search 로 찾기' if not r['picks'] or r['picks'][0]['p'] < LOW else ''
         print(f"\n## 장면 {i}: {r['scene'][:80]}{'…' if len(r['scene']) > 80 else ''}\n   (분류 후보: {', '.join(r['cats'])}{low})")
         for it in r['picks']:
-            print(f"   {it['p']:.2f}  {it['code']}\t{it['name']}\t→ python3 motion.py {it['how']}")
+            print(f"   {it['p']:.2f}  {it['code']}\t{it['name']}\t→ python3 motion.py {it['how']}\n         보기 {KB}{it['code']}")
 
 
 if __name__ == '__main__':
