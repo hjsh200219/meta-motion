@@ -20,6 +20,7 @@ python3 $M show I02 img=a.jpg title=필첵 --ratio 세로 --color "민트와 흰
 python3 $M show I02 --simple           # 간단
 python3 $M order T01 I02 --ratio 세로   # 여러 카드를 한 요청으로(사이트 «주문서»)
 python3 $M examples chart          # prompt-motion.com 실전 예시 찾기(영어 · 태그 product-ui·kinetic-type·charts 등)
+python3 $M recommend script.txt    # 스크립트(빈 줄 = 장면)를 장면별로 나눠 어울리는 카드 3개씩 추천 — Jev, 글이 api.typesafe.ai 로 나감
 python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람·원문·영상 링크
 ```
 
@@ -32,7 +33,7 @@ python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람�
 영상·쇼츠·인트로를 만들거나 장면을 고치는 작업이면 사용자가 카드를 지정하지 않아도 아래를 한다.
 
 1. 영상을 장면 단위로 나눈다(오프닝·본문 설명·데이터·전환·자막·엔딩 등).
-2. 장면마다 `python3 $M list` 전체 목록(152줄)에서 맞는 카드를 1개씩 고른다 — 키워드가 분명하면 `search`. 맞는 카드가 없으면 그 장면은 건너뛴다(억지로 끼우지 않는다).
+2. 장면마다 맞는 카드를 1개씩 고른다 — 스크립트·대본이 있으면 먼저 `recommend`(장면 = 빈 줄로 나눈 문단, stdin 은 `-`)로 후보를 받고, «확신 낮음» 장면이나 Jev 를 못 쓰면(키·클라이언트 없음) `python3 $M list` 전체 목록(152줄)·`search` 로 고른다. 외부로 보내면 안 되는 대본(개인정보·미공개 내용)은 `recommend` 에 넣지 않는다. 맞는 카드가 없으면 그 장면은 건너뛴다(억지로 끼우지 않는다).
 3. 고른 카드마다 `fields` 로 칸을 보고 실제 값(제목·파일·숫자·길이)과 영상 비율(`--ratio`)·색(`--color`)으로 `show`(자세히)를 뽑는다.
 4. 그 문장을 장면 사양으로 삼아 구현한다 — `[장면 순서]` 타이밍·`[볼거리 한 번]`·`[하지 말 것]` 을 지킨다. 대상이 HyperFrames 가 아니면(Remotion·HTML 등) 첫 줄 도구 이름만 무시하고 본문을 따른다.
 5. 사용자에게 장면별로 쓴 카드 코드·이름을 한 줄씩 밝힌다(예: 「오프닝 T01 입자 로고 인트로」).
@@ -58,4 +59,4 @@ python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람�
 - `data/motion.json` — 카드 152개: code·cat·name·en·plain·len·when·inds·fields·tpl·dx(자세히 재료)
 - `data/compose.mjs` — 사이트 원본 조립 코드(참조용 · 수정 금지, build.py 가 덮어씀)
 - `data/prompt_motion.json` — prompt-motion.com 예시: id·title·type(Prompt/Skill)·tags·prompt·creator·source·model·effort·iterations·posted·url·video
-- `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `check_card_anim.mjs` — 샘플 검사·목록 그림(data/anim/thumb) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지
+- `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `check_card_anim.mjs` — 샘플 검사·목록 그림(data/anim/thumb) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `recommend.py` — 스크립트 → 장면별 카드 추천(Jev, `motion.py recommend`) · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지
