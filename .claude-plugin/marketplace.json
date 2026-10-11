@@ -8,7 +8,7 @@
     {
       "name": "motion-prompt",
       "source": "./",
-      "description": "모션그래픽 요청 문장 사전 152종 — 영상 제작 때 장면별 사양 프롬프트"
+      "description": "모션그래픽 요청 문장 사전 152종 + prompt-motion.com 실전 예시 233개 — 영상 제작 때 장면별 사양 프롬프트"
     }
   ]
 }
