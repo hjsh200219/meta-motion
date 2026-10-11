@@ -185,6 +185,8 @@ function detail(pre, c, vals, g) {
 <script>
 // ---- 화면 ----
 const $ = (s) => document.querySelector(s);
+// 수집 자료의 링크는 http(s)만 — javascript: 등은 # 로 막는다
+const url = (u) => /^https?:\/\//i.test(String(u ?? '')) ? esc(u) : '#';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
 const KIND = { scene: '장면', overlay: '영상 위 합성 · 배경 투명', transition: '장면 전환', loop: '반복 재생' };
 const ASPECT = { '가로': '16 / 9', '세로': '9 / 16', '정사각': '1 / 1', '없음': '16 / 9' };
@@ -218,8 +220,8 @@ function renderList() {
   if (mode === 'ex') return renderExList(qs);
   const hit = CARDS.filter((c) => (!cat || c.cat === cat) && qs.every((q) => [c.code, c.name, c.en, c.plain, c.when, c.cat, ...c.inds].join(' ').toLowerCase().includes(q)));
   $('#list').innerHTML = `<p class="count">${hit.length}개 카드${qs.length || cat ? ` · 전체 ${CARDS.length}개 중` : ''}</p>` + (hit.length ? hit.map((c) => `
-    <button type="button" class="card" data-code="${c.code}" aria-current="${cur?.code === c.code}">
-      <span class="top"><span class="code">${c.code}</span><b>${esc(c.name)}</b></span>
+    <button type="button" class="card" data-code="${esc(c.code)}" aria-current="${cur?.code === c.code}">
+      <span class="top"><span class="code">${esc(c.code)}</span><b>${esc(c.name)}</b></span>
       <span class="en">${esc(c.en)}</span>
       <p class="plain">${esc(c.plain)}</p>
       <span class="mini" aria-hidden="true">${miniBar(c)}</span>
@@ -246,9 +248,9 @@ function selectEx(id, scroll) {
   $('#detail').innerHTML = `
     <div><span class="en">${esc(e.type === 'Skill' ? '스킬' : '프롬프트')} · ${esc(e.id)}</span><h2>${esc(e.title)}</h2><span class="en">${esc(e.creator)} · ${esc(e.posted)}</span></div>
     <div class="links">
-      <a class="btn pri" href="${esc(e.url)}" target="_blank" rel="noopener">영상 보기 ↗</a>
-      ${e.source ? `<a class="btn" href="${esc(e.source)}" target="_blank" rel="noopener">원문 글 ↗</a>` : ''}
-      ${e.creator_url ? `<a class="btn" href="${esc(e.creator_url)}" target="_blank" rel="noopener">만든 사람 ↗</a>` : ''}
+      <a class="btn pri" href="${url(e.url)}" target="_blank" rel="noopener">영상 보기 ↗</a>
+      ${e.source ? `<a class="btn" href="${url(e.source)}" target="_blank" rel="noopener">원문 글 ↗</a>` : ''}
+      ${e.creator_url ? `<a class="btn" href="${url(e.creator_url)}" target="_blank" rel="noopener">만든 사람 ↗</a>` : ''}
     </div>
     <p class="note">영상은 prompt-motion.com 에 있어 이 화면 안에서는 재생되지 않습니다. «영상 보기»를 누르면 새 탭에서 열립니다.</p>
     <dl>
@@ -282,8 +284,8 @@ function select(code, scroll) {
   document.querySelectorAll('.card').forEach((el) => el.setAttribute('aria-current', el.dataset.code === code));
   const untimed = play.segs[0]?.untimed, rules = (c.dx.beats || []).filter((b) => b.label && !untimed);
   $('#detail').innerHTML = `
-    <div><span class="code">${c.code}</span> <span class="en">${esc(c.cat)}</span><h2>${esc(c.name)}</h2><span class="en">${esc(c.en)} · ⏱ ${esc(c.len)}</span></div>
-    <div class="stage ${c.dx.kind}" id="stage" style="aspect-ratio:${ASPECT[$('#ratio').value]}${$('#ratio').value === '세로' ? ';max-width:300px' : ''}">
+    <div><span class="code">${esc(c.code)}</span> <span class="en">${esc(c.cat)}</span><h2>${esc(c.name)}</h2><span class="en">${esc(c.en)} · ⏱ ${esc(c.len)}</span></div>
+    <div class="stage ${esc(c.dx.kind)}" id="stage" style="aspect-ratio:${ASPECT[$('#ratio').value]}${$('#ratio').value === '세로' ? ';max-width:300px' : ''}">
       <span class="kind">${esc(KIND[c.dx.kind] || '장면')}</span><span class="tc" id="tc"></span>
       <div class="say" id="say"></div><span class="fill" id="fill"></span>
     </div>
@@ -299,9 +301,9 @@ function select(code, scroll) {
       ${c.dx.wow ? `<dt>볼거리 한 번</dt><dd>${esc(c.dx.wow.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
       ${c.dx.look ? `<dt>모양</dt><dd>${esc(c.dx.look.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
       ${c.dx.avoid ? `<dt>하지 말 것</dt><dd>${esc(c.dx.avoid.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
-      <dt>원본</dt><dd><a href="https://nondev-thinking.web.app/motion/#${c.code}" target="_blank" rel="noopener">원본 미리보기 ↗</a></dd>
+      <dt>원본</dt><dd><a href="https://nondev-thinking.web.app/motion/#${esc(c.code)}" target="_blank" rel="noopener">원본 미리보기 ↗</a></dd>
     </dl>
-    ${c.fields.length ? `<div><h3>칸 채우기 · 비우면 예시나 생략으로 들어갑니다</h3><div class="fields">${c.fields.map((f) => `<label for="f-${f.k}">${esc(f.label)}${f.opt ? ' (선택)' : ''}<input id="f-${f.k}" data-k="${f.k}" type="text" placeholder="${esc(f.ex)}"></label>`).join('')}</div></div>` : ''}
+    ${c.fields.length ? `<div><h3>칸 채우기 · 비우면 예시나 생략으로 들어갑니다</h3><div class="fields">${c.fields.map((f) => `<label for="f-${esc(f.k)}">${esc(f.label)}${f.opt ? ' (선택)' : ''}<input id="f-${esc(f.k)}" data-k="${esc(f.k)}" type="text" placeholder="${esc(f.ex)}"></label>`).join('')}</div></div>` : ''}
     <div class="out">
       <div class="ctl"><span class="seg2" role="group" aria-label="요청 문장 길이"><button type="button" data-lvl="d" aria-pressed="${lvl === 'd'}">자세히</button><button type="button" data-lvl="s" aria-pressed="${lvl === 's'}">간단</button></span>
         <button type="button" class="btn pri" id="copy">요청 문장 복사</button><span id="copied" role="status"></span></div>
