@@ -1,0 +1,368 @@
+<title>모션 카드 고르기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
+<style>
+/* 편집기 레이아웃: 왼쪽 카드 목록, 오른쪽 고정 미리보기(재생 헤드가 장면 순서를 따라감). 좁으면 미리보기가 위로 */
+:root {
+  --bg: #EDF0F4; --surface: #FFFFFF; --ink: #151B26; --muted: #596377; --line: #D2D8E2;
+  --accent: #2A58D3; --accent-ink: #FFFFFF; --hold: #C9D0DC; --stage: #1B2230; --stage-ink: #F2F4F8;
+  --check-a: #D9DEE6; --check-b: #F3F5F8;
+  --sans: 'IBM Plex Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0F131A; --surface: #171C26; --ink: #E5E9F0; --muted: #9AA4B5; --line: #2A3242;
+  --accent: #7FA0FF; --accent-ink: #0F131A; --hold: #364055; --stage: #0A0D13; --stage-ink: #E5E9F0;
+  --check-a: #262D3A; --check-b: #1C222D; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0F131A; --surface: #171C26; --ink: #E5E9F0; --muted: #9AA4B5; --line: #2A3242;
+  --accent: #7FA0FF; --accent-ink: #0F131A; --hold: #364055; --stage: #0A0D13; --stage-ink: #E5E9F0;
+  --check-a: #262D3A; --check-b: #1C222D; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 15px/1.6 var(--sans); }
+.wrap { padding-inline: 16px; padding-block: 20px 40px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+header { display: grid; gap: 12px; }
+h1 { font-size: 1.5rem; margin: 0; letter-spacing: -0.01em; text-wrap: balance; }
+.sub { margin: 0; color: var(--muted); }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.bar label { display: flex; gap: 6px; align-items: center; color: var(--muted); font-size: 13px; }
+input, select { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; min-width: 0; }
+#q { flex: 1 1 260px; }
+input:focus-visible, select:focus-visible, button:focus-visible, .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 999px; padding: 3px 11px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.chip small { font-family: var(--mono); opacity: .7; margin-left: 4px; }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 520px); gap: 20px; align-items: start; }
+.list { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.count { color: var(--muted); font-size: 13px; grid-column: 1 / -1; }
+.card { text-align: left; font: inherit; color: inherit; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; display: grid; gap: 6px; cursor: pointer; align-content: start; min-width: 0; }
+.card:hover { border-color: var(--muted); }
+.card[aria-current="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.top { display: flex; gap: 8px; align-items: baseline; min-width: 0; }
+.code { font-family: var(--mono); font-size: 12px; color: var(--accent); font-weight: 600; }
+.card b { font-size: 15px; overflow-wrap: anywhere; }
+.en { font-size: 12px; color: var(--muted); }
+.plain { font-size: 13px; color: var(--muted); margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.mini { display: flex; height: 6px; gap: 2px; }
+.mini i { display: block; border-radius: 2px; background: var(--accent); }
+.mini i.h { background: var(--hold); }
+.len { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.detail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; gap: 14px; max-height: calc(100vh - 24px); overflow: auto; min-width: 0; }
+.detail > * { flex-shrink: 0; }
+.detail h2 { margin: 0; font-size: 1.25rem; text-wrap: balance; }
+.stage { position: relative; background: var(--stage); color: var(--stage-ink); border-radius: 6px; overflow: hidden; margin-inline: auto; width: 100%; max-width: 100%; display: grid; place-items: center; }
+.stage.overlay { background: repeating-conic-gradient(var(--check-a) 0 25%, var(--check-b) 0 50%) 0 0 / 22px 22px; color: var(--ink); }
+.stage .say { padding: 12% 10%; font-size: clamp(14px, 1.6vw, 18px); line-height: 1.55; text-align: center; text-wrap: balance; }
+.stage .say small { display: block; font-family: var(--mono); font-size: 12px; opacity: .7; margin-bottom: 8px; }
+.stage .kind, .stage .tc { position: absolute; top: 8px; font-size: 12px; font-family: var(--mono); background: color-mix(in srgb, var(--stage) 70%, transparent); color: var(--stage-ink); padding: 2px 8px; border-radius: 4px; }
+.stage .kind { left: 8px; font-family: var(--sans); } .stage .tc { right: 8px; }
+.stage .fill { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--accent); }
+.tl { display: grid; gap: 6px; }
+.track { position: relative; display: flex; gap: 2px; height: 30px; }
+.seg { font: 11px var(--mono); border: 0; border-radius: 3px; background: var(--accent); color: var(--accent-ink); cursor: pointer; padding: 0 4px; overflow: hidden; white-space: nowrap; min-width: 6px; opacity: .55; }
+.seg.h { background: var(--hold); color: var(--ink); }
+.seg.on { opacity: 1; }
+.head { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); pointer-events: none; }
+.ctl { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.btn { font: inherit; font-size: 13px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 5px 12px; cursor: pointer; }
+.btn.pri { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.legend { display: inline-flex; gap: 10px; align-items: center; }
+.legend i { display: inline-block; width: 12px; height: 8px; border-radius: 2px; background: var(--accent); margin-right: 4px; }
+.legend i.h { background: var(--hold); }
+dl { margin: 0; display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 6px 10px; font-size: 14px; }
+dt { color: var(--muted); font-size: 13px; }
+dd { margin: 0; overflow-wrap: anywhere; }
+.rules { margin: 0; padding-left: 1.1em; font-size: 14px; display: grid; gap: 4px; }
+.fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+.fields label { display: grid; gap: 3px; font-size: 13px; color: var(--muted); }
+.out { display: grid; gap: 8px; }
+.out pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.6 var(--sans); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; max-height: 320px; overflow: auto; }
+.seg2 { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg2 button { font: inherit; font-size: 13px; border: 0; background: var(--surface); color: var(--ink); padding: 4px 12px; cursor: pointer; }
+.seg2 button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+a { color: var(--accent); }
+h3 { margin: 0 0 6px; font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
+footer { color: var(--muted); font-size: 12px; }
+.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); }
+.tab { font: inherit; font-weight: 600; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--muted); padding: 6px 14px; cursor: pointer; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tab small { font-family: var(--mono); font-weight: 400; margin-left: 4px; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tags span { font-size: 11px; border: 1px solid var(--line); border-radius: 999px; padding: 0 7px; color: var(--muted); }
+.ext { font-size: 12px; color: var(--muted); border-left: 3px solid var(--hold); padding-left: 8px; margin: 0; }
+.links { display: flex; flex-wrap: wrap; gap: 8px; }
+.links a { text-decoration: none; }
+.out pre.en-txt { font-family: var(--mono); font-size: 12px; max-height: 420px; }
+@media (max-width: 900px) { .main { grid-template-columns: minmax(0, 1fr); } .detail { position: static; max-height: none; order: -1; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>모션 카드 고르기</h1>
+    <p class="sub">«요청 카드»는 누르면 장면이 몇 초에 무엇을 하는지 재생해 보여 주고, 칸을 채워 요청 문장을 복사할 수 있습니다. «실전 예시»는 prompt-motion.com 에서 Claude 로 실제 만든 영상과 그 프롬프트입니다.</p>
+    <div class="tabs" role="tablist"><button type="button" class="tab" role="tab" id="tab-cards" data-mode="cards" aria-selected="true">요청 카드<small id="n-cards"></small></button><button type="button" class="tab" role="tab" id="tab-ex" data-mode="ex" aria-selected="false">실전 예시<small id="n-ex"></small></button></div>
+    <div class="bar">
+      <input id="q" type="search" placeholder="찾기" aria-label="카드 찾기">
+      <label for="ratio">화면 비율 <select id="ratio"><option value="가로">가로 16:9</option><option value="세로">세로 9:16</option><option value="정사각">정사각 1:1</option><option value="없음">정하지 않음</option></select></label>
+      <label for="color">색·분위기 <input id="color" type="text" placeholder="예: 남색과 노랑" size="12"></label>
+      <label for="tool">도구 <select id="tool"><option value="auto">하이퍼프레임</option><option value="claude">Claude /hyperframes</option><option value="codex">Codex $hyperframes</option></select></label>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="분류"></div>
+  </header>
+  <div class="main">
+    <div class="list" id="list"><p class="count">카드를 불러오는 중…</p></div>
+    <section class="detail" id="detail" aria-live="polite"><p class="note">왼쪽에서 카드를 고르세요.</p></section>
+  </div>
+  <footer>실전 예시 출처: <a href="https://prompt-motion.com" target="_blank" rel="noopener">prompt-motion.com</a>, 2026-10-11 수집 · 사내 참고용. 영상과 프롬프트는 만든 사람의 것이며, 참고만 하고 그대로 베끼지 않습니다. 영상은 이 화면 안에서 재생할 수 없어 링크로 엽니다.<br>요청 카드 출처: <a href="https://nondev-thinking.web.app/motion/" target="_blank" rel="noopener">모션그래픽 주문 사전</a>(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 · 사내 참고용. 이 화면의 재생은 카드에 적힌 장면 순서와 초를 그대로 따라가는 진행표이고, 실제 그림 미리보기는 카드마다 있는 «원본 미리보기» 링크에서 볼 수 있습니다. 요청 문장은 motion-prompt 플러그인의 <code>motion.py show</code> 와 같은 규칙으로 만듭니다.</footer>
+</div>
+
+<script>
+// ---- 요청 문장 조립: motion.py(resolver·compose·simple·detail)를 그대로 옮긴 것 ----
+const TOOLS = { auto: '하이퍼프레임(HyperFrames)으로', claude: '/hyperframes 로', codex: '$hyperframes 로' };
+const RATIO = { '가로': '가로 16:9', '세로': '세로 9:16', '정사각': '정사각 1:1', '없음': '' };
+const TAIL = '[[ 화면 비율: {ratio}.]][[ 색·분위기: {color}.]]';
+const RES = { '가로 16:9': '1920x1080', '세로 9:16': '1080x1920', '정사각 1:1': '1080x1080' };
+const MOVE = {
+  scene: '주인공은 크게 · 나머지는 한꺼번에 말고 조금씩 엇갈려 등장(앞 요소가 자리 잡기 전에 다음 시작) · 뒤·가운데·앞 3겹 깊이, 카메라는 내내 아주 천천히 · 튕기는 반동은 모양에만(숫자는 목표값을 넘지 않게) · 끝은 멈춘 화면 말고 숨 쉬듯 은은하게.',
+  overlay: '배경은 비워 아래 영상이 보이게(카메라 이동 없음) · 요소는 조금씩 엇갈려 등장 · 튕기는 반동은 모양에만(숫자는 목표값을 넘지 않게) · 끝은 뚝 끊지 말고 부드럽게.',
+  transition: '전환 한가운데가 가장 강하게 · 시작은 부드럽게 빨라지고 끝은 부드럽게 느려지게 · 앞·뒤 장면 영상 자체는 그대로.',
+  loop: '마지막 장면이 첫 장면과 똑같이 이어져 반복해도 끊긴 자리가 안 보이게 · 모든 움직임은 한 바퀴 길이에 맞춰 돌고 멈추는 순간 없이.',
+};
+const AVOID = '내레이션·음악·효과음 없음 · 「」 안 글자·숫자는 적은 그대로 · 글자가 화면 밖으로 잘리지 않게';
+const trim = (v) => String(v ?? '').trim();
+function resolver(fields, vals, g) {
+  const fm = Object.fromEntries(fields.map((f) => [f.k, f]));
+  return (k) => {
+    if (k in g) return trim(g[k]) || null;
+    const f = fm[k]; if (!f) return null;
+    return trim(vals[k]) || (f.opt ? null : f.ex);
+  };
+}
+function compose(tpl, r) {
+  const s = String(tpl || '').replace(/\[\[([\s\S]*?)\]\]/g, (m, seg) => [...seg.matchAll(/\{(\w+)\}/g)].every((x) => r(x[1]) !== null) ? seg : '');
+  return s.replace(/\{(\w+)\}/g, (m, k) => r(k) || '');
+}
+function secs(txt) {
+  const s = String(txt || ''); let m = s.match(/(\d+)\s*:\s*(\d{1,2})(?!\d)/);
+  if (m) return +m[1] * 60 + +m[2];
+  let t = 0, hit = false;
+  if ((m = s.match(/(\d+(?:\.\d+)?)\s*분/))) { t += +m[1] * 60; hit = true; }
+  if ((m = s.match(/(\d+(?:\.\d+)?)\s*초/))) { t += +m[1]; hit = true; }
+  return hit && t > 0 ? t : null;
+}
+const jsround = Math.round, r1 = (x) => jsround(x * 10) / 10, num = (x) => String(x);
+const mmss = (x) => `${Math.floor(jsround(x) / 60)}:${String(jsround(x) % 60).padStart(2, '0')}`;
+const span = (a, b) => b >= 60 ? `${mmss(a)}~${mmss(b)}` : `${num(r1(a))}~${num(r1(b))}초`;
+const simple = (pre, c, vals, g) => { const r = resolver(c.fields, vals, g); return `${pre} ${compose(c.tpl, r)}${compose(TAIL, r)}`; };
+function detail(pre, c, vals, g) {
+  const dx = c.dx, r = resolver(c.fields, vals, g);
+  const out = [`${pre} ${compose(c.tpl, r)}`, '\n[길이·크기] '];
+  const dF = c.fields.find((f) => f.k === 'dur'); let D = null;
+  if (dF) { const v = trim(vals.dur); if (v) { out.push('전체 ' + v); D = secs(v); } else { out.push(`전체 약 ${dF.ex}`); D = secs(dF.ex); } }
+  else out.push('전체 ' + compose(dx.lenText || c.len || '', r));
+  const ratio = trim(g.ratio);
+  if (ratio) out.push(ratio in RES ? ` · ${RES[ratio]}(${ratio})` : ` · ${ratio}`);
+  if (dx.kind === 'overlay') out.push(' · 배경 투명 — 넣을 영상 위에 합성(영상이 없으면 투명 배경 webm으로)');
+  out.push('.\n[장면 순서]');
+  let tf = (t) => t; const base = dx.base || 0;
+  if (base > 0 && D) {
+    const H = (dx.beats || []).find((b) => b.hold && !b.label);
+    if (H && D > base) { const ex = D - base, h1 = H.t1; tf = (t) => t >= h1 - 1e-9 ? t + ex : t; }
+    else { const f = D / base; tf = (t) => t * f; }
+  }
+  if (base > 0 && !D) out.push(`(미리보기 ${num(base)}초 기준 — 전체 길이에 맞춰 비율대로)`);
+  for (const b of dx.beats || []) out.push('\n· ' + (b.label ? compose(b.label, r) : span(tf(b.t0), tf(b.t1))) + ': ' + compose(b.s, r));
+  if (dx.wow) out.push('\n[볼거리 한 번] ' + compose(dx.wow, r));
+  if (dx.look) { const lk = trim(dx.look); out.push('\n[모양] ' + compose(/[.!?]$/.test(lk) ? lk : lk + '.', r) + compose('[[ 색·분위기는 「{color}」 우선.]]', r)); }
+  else if (trim(g.color)) out.push('\n[모양] ' + compose('색·분위기: {color}.', r));
+  out.push('\n[움직임] ' + (MOVE[dx.kind] || MOVE.scene));
+  out.push('\n[하지 말 것] ' + AVOID + (dx.avoid ? ' · ' + compose(dx.avoid, r) : ''));
+  return out.join('');
+}
+</script>
+<script>
+// ---- 화면 ----
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
+const KIND = { scene: '장면', overlay: '영상 위 합성 · 배경 투명', transition: '장면 전환', loop: '반복 재생' };
+const ASPECT = { '가로': '16 / 9', '세로': '9 / 16', '정사각': '1 / 1', '없음': '16 / 9' };
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAG = { 'product-ui': '제품 화면', 'kinetic-type': '글자 움직임', music: '음악', shapes: '도형', particles: '입자', charts: '차트', diagrams: '도식', characters: '캐릭터', photos: '사진', phone: '휴대폰', code: '코드' };
+let CARDS = [], EX = [], mode = 'cards', cat = '', cur = null, curEx = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 0 };
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+const g = () => ({ ratio: RATIO[$('#ratio').value] ?? '', color: $('#color').value, file: '' });
+const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
+
+// 재생 구간: 초가 있는 장면만 진행표로, 초 없는 규칙(«처음부터 끝까지» 등)은 아래 목록으로
+function segsOf(c) {
+  const timed = (c.dx.beats || []).filter((b) => !b.label && b.t1 > b.t0);
+  return timed.length ? timed : (c.dx.beats || []).map((b, i) => ({ ...b, t0: i * 2.5, t1: (i + 1) * 2.5, untimed: true }));
+}
+function miniBar(c) {
+  const s = segsOf(c), L = Math.max(...s.map((b) => b.t1));
+  return s.map((b) => `<i class="${b.hold ? 'h' : ''}" style="flex:${(b.t1 - b.t0) / L}"></i>`).join('');
+}
+
+function renderChips() {
+  const groups = mode === 'cards'
+    ? [...new Set(CARDS.map((c) => c.cat))].map((k) => [k, k, CARDS.filter((c) => c.cat === k).length])
+    : Object.keys(TAG).map((k) => [k, TAG[k], EX.filter((e) => e.tags.includes(k)).length]).concat([['Skill', '스킬', EX.filter((e) => e.type === 'Skill').length]]);
+  const all = mode === 'cards' ? CARDS.length : EX.length;
+  $('#chips').innerHTML = [['', '전체', all], ...groups]
+    .map(([k, label, n]) => `<button type="button" class="chip" data-cat="${esc(k)}" aria-pressed="${k === cat}">${esc(label)}<small>${n}</small></button>`).join('');
+}
+function renderList() {
+  const qs = $('#q').value.toLowerCase().split(/\s+/).filter(Boolean);
+  if (mode === 'ex') return renderExList(qs);
+  const hit = CARDS.filter((c) => (!cat || c.cat === cat) && qs.every((q) => [c.code, c.name, c.en, c.plain, c.when, c.cat, ...c.inds].join(' ').toLowerCase().includes(q)));
+  $('#list').innerHTML = `<p class="count">${hit.length}개 카드${qs.length || cat ? ` · 전체 ${CARDS.length}개 중` : ''}</p>` + (hit.length ? hit.map((c) => `
+    <button type="button" class="card" data-code="${c.code}" aria-current="${cur?.code === c.code}">
+      <span class="top"><span class="code">${c.code}</span><b>${esc(c.name)}</b></span>
+      <span class="en">${esc(c.en)}</span>
+      <p class="plain">${esc(c.plain)}</p>
+      <span class="mini" aria-hidden="true">${miniBar(c)}</span>
+      <span class="len">⏱ ${esc(c.len)} · ${esc(KIND[c.dx.kind] || '')}</span>
+    </button>`).join('') : '<p class="count">찾은 카드가 없습니다. 다른 단어로 찾거나 분류를 «전체»로 바꿔 보세요.</p>');
+}
+const exMeta = (e) => [e.type === 'Skill' ? '스킬' : '', e.effort && 'effort ' + e.effort, e.iterations, e.size, `${e.prompt.length.toLocaleString()}자`].filter(Boolean).join(' · ');
+function renderExList(qs) {
+  const hit = EX.filter((e) => (!cat || (cat === 'Skill' ? e.type === 'Skill' : e.tags.includes(cat))) && qs.every((q) => [e.id, e.title, e.creator, e.prompt, ...e.tags, ...e.tags.map((t) => TAG[t] || '')].join(' ').toLowerCase().includes(q)));
+  $('#list').innerHTML = `<p class="count">${hit.length}개 예시${qs.length || cat ? ` · 전체 ${EX.length}개 중` : ''} · 프롬프트는 영어라 영어 단어로 찾으면 잘 걸립니다</p>` + (hit.length ? hit.map((e) => `
+    <button type="button" class="card" data-ex="${esc(e.id)}" aria-current="${curEx?.id === e.id}">
+      <span class="top"><b>${esc(e.title)}</b></span>
+      <span class="en">${esc(e.creator)} · ${esc(e.posted)}</span>
+      <p class="plain">${esc(e.prompt)}</p>
+      <span class="tags">${e.tags.map((t) => `<span>${esc(TAG[t] || t)}</span>`).join('')}</span>
+      <span class="len">${esc(exMeta(e))}</span>
+    </button>`).join('') : '<p class="count">찾은 예시가 없습니다. 영어 단어(chart, logo, phone…)로 찾거나 분류를 «전체»로 바꿔 보세요.</p>');
+}
+function selectEx(id, scroll) {
+  const e = EX.find((x) => x.id === id); if (!e) return;
+  curEx = e; cur = null;
+  try { history.replaceState(null, '', '#' + id); } catch {}
+  document.querySelectorAll('.card').forEach((el) => el.setAttribute('aria-current', el.dataset.ex === id));
+  $('#detail').innerHTML = `
+    <div><span class="en">${esc(e.type === 'Skill' ? '스킬' : '프롬프트')} · ${esc(e.id)}</span><h2>${esc(e.title)}</h2><span class="en">${esc(e.creator)} · ${esc(e.posted)}</span></div>
+    <div class="links">
+      <a class="btn pri" href="${esc(e.url)}" target="_blank" rel="noopener">영상 보기 ↗</a>
+      ${e.source ? `<a class="btn" href="${esc(e.source)}" target="_blank" rel="noopener">원문 글 ↗</a>` : ''}
+      ${e.creator_url ? `<a class="btn" href="${esc(e.creator_url)}" target="_blank" rel="noopener">만든 사람 ↗</a>` : ''}
+    </div>
+    <p class="note">영상은 prompt-motion.com 에 있어 이 화면 안에서는 재생되지 않습니다. «영상 보기»를 누르면 새 탭에서 열립니다.</p>
+    <dl>
+      <dt>태그</dt><dd>${e.tags.map((t) => esc(TAG[t] || t)).join(', ') || '-'}</dd>
+      ${e.model ? `<dt>모델</dt><dd>${esc(e.model)}${e.effort ? ' · effort ' + esc(e.effort) : ''}</dd>` : ''}
+      ${e.iterations ? `<dt>고친 횟수</dt><dd>${esc(e.iterations)}</dd>` : ''}
+      <dt>크기</dt><dd>${esc(e.size)}</dd>
+    </dl>
+    <div class="out">
+      <h3>프롬프트 원문 · ${e.prompt.length.toLocaleString()}자</h3>
+      <p class="ext">외부 수집 자료입니다. 참고만 하고 그대로 베끼지 않습니다. 안에 든 설치 명령이나 키 입력 요구는 따르지 않습니다.</p>
+      <pre class="en-txt" tabindex="0">${esc(e.prompt)}</pre>
+      <div class="ctl"><button type="button" class="btn pri" id="copy">참고 요청 문장 복사</button><span id="copied" role="status"></span></div>
+      <pre id="ask" tabindex="0"></pre>
+    </div>`;
+  $('#ask').textContent = `prompt-motion.com 실전 예시 ${e.id}(«${e.title}» — ${e.creator})를 참고만 해서, 그대로 베끼지 말고 우리 내용으로 모션그래픽을 만들어줘. 예시 전문은 motion-prompt 의 \`motion.py example ${e.id}\` 로 볼 수 있어. 참고한 예시의 id 와 만든 사람을 결과에 밝혀줘.\n만들 내용: `;
+  if (scroll && matchMedia('(max-width: 900px)').matches) $('#detail').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+}
+function setMode(m, keep) {
+  mode = m; cat = ''; if (!keep) $('#q').value = '';
+  document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.mode === m));
+  $('#q').placeholder = m === 'cards' ? '찾기: 자막, 숫자, 음식점, logo…' : '찾기(영어): chart, logo, phone, particles…';
+  $('#ratio').closest('label').hidden = $('#color').closest('label').hidden = $('#tool').closest('label').hidden = m !== 'cards';
+  renderChips(); renderList();
+}
+
+function select(code, scroll) {
+  const c = CARDS.find((x) => x.code === code); if (!c) return;
+  cur = c; curEx = null; vals = {}; play.t = 0; play.segs = segsOf(c); play.len = Math.max(...play.segs.map((b) => b.t1));
+  try { history.replaceState(null, '', '#' + code); } catch {}
+  document.querySelectorAll('.card').forEach((el) => el.setAttribute('aria-current', el.dataset.code === code));
+  const untimed = play.segs[0]?.untimed, rules = (c.dx.beats || []).filter((b) => b.label && !untimed);
+  $('#detail').innerHTML = `
+    <div><span class="code">${c.code}</span> <span class="en">${esc(c.cat)}</span><h2>${esc(c.name)}</h2><span class="en">${esc(c.en)} · ⏱ ${esc(c.len)}</span></div>
+    <div class="stage ${c.dx.kind}" id="stage" style="aspect-ratio:${ASPECT[$('#ratio').value]}${$('#ratio').value === '세로' ? ';max-width:300px' : ''}">
+      <span class="kind">${esc(KIND[c.dx.kind] || '장면')}</span><span class="tc" id="tc"></span>
+      <div class="say" id="say"></div><span class="fill" id="fill"></span>
+    </div>
+    <div class="tl">
+      <div class="track" id="track">${play.segs.map((b, i) => `<button type="button" class="seg ${b.hold ? 'h' : ''}" data-i="${i}" style="flex:${b.t1 - b.t0}" title="${esc(b.label || span(b.t0, b.t1))}">${b.untimed ? i + 1 : esc(num(r1(b.t0)) + '초')}</button>`).join('')}<span class="head" id="head"></span></div>
+      <div class="ctl"><button type="button" class="btn" id="pp"></button>
+        ${untimed ? '<span>원본에 초 단위 기준이 없어 순서만 2.5초씩 넘겨 보여 줍니다.</span>' : `<span>미리보기 기준 ${num(c.dx.base || play.len)}초 · 길이를 정하면 같은 비율로 늘어납니다</span><span class="legend"><span><i></i>움직임</span><span><i class="h"></i>머묾</span></span>`}
+      </div>
+    </div>
+    ${rules.length ? `<div><h3>처음부터 끝까지 지키는 것</h3><ul class="rules">${rules.map((b) => `<li><b>${esc(b.label)}</b> — ${esc(b.s.replace(/\[\[[\s\S]*?\]\]/g, ''))}</li>`).join('')}</ul></div>` : ''}
+    <dl>
+      <dt>이럴 때</dt><dd>${esc(c.when)}</dd>
+      ${c.dx.wow ? `<dt>볼거리 한 번</dt><dd>${esc(c.dx.wow.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
+      ${c.dx.look ? `<dt>모양</dt><dd>${esc(c.dx.look.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
+      ${c.dx.avoid ? `<dt>하지 말 것</dt><dd>${esc(c.dx.avoid.replace(/\[\[[\s\S]*?\]\]/g, ''))}</dd>` : ''}
+      <dt>원본</dt><dd><a href="https://nondev-thinking.web.app/motion/#${c.code}" target="_blank" rel="noopener">원본 미리보기 ↗</a></dd>
+    </dl>
+    ${c.fields.length ? `<div><h3>칸 채우기 · 비우면 예시나 생략으로 들어갑니다</h3><div class="fields">${c.fields.map((f) => `<label for="f-${f.k}">${esc(f.label)}${f.opt ? ' (선택)' : ''}<input id="f-${f.k}" data-k="${f.k}" type="text" placeholder="${esc(f.ex)}"></label>`).join('')}</div></div>` : ''}
+    <div class="out">
+      <div class="ctl"><span class="seg2" role="group" aria-label="요청 문장 길이"><button type="button" data-lvl="d" aria-pressed="${lvl === 'd'}">자세히</button><button type="button" data-lvl="s" aria-pressed="${lvl === 's'}">간단</button></span>
+        <button type="button" class="btn pri" id="copy">요청 문장 복사</button><span id="copied" role="status"></span></div>
+      <pre id="ask" tabindex="0"></pre>
+    </div>`;
+  renderAsk(); draw();
+  if (scroll && matchMedia('(max-width: 900px)').matches) $('#detail').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
+}
+function renderAsk() { if (cur && $('#ask')) $('#ask').textContent = lvl === 's' ? simple(pre(), cur, vals, g()) : detail(pre(), cur, vals, g()); }
+
+function draw() {
+  if (!cur || !$('#say')) return;
+  const t = play.t, i = Math.max(0, play.segs.findIndex((b) => t >= b.t0 && t < b.t1)), b = play.segs[i];
+  const r = resolver(cur.fields, vals, g());
+  $('#say').innerHTML = `<small>${esc(b.untimed ? (b.label ? compose(b.label, r) : `${i + 1}단계`) : span(b.t0, b.t1))}${b.hold ? ' · 머묾' : ''}</small>${esc(compose(b.s, r))}`;
+  $('#tc').textContent = `${t.toFixed(1)} / ${num(play.len)}초`;
+  $('#fill').style.width = `${(t / play.len) * 100}%`;
+  $('#head').style.left = `${(t / play.len) * 100}%`;
+  document.querySelectorAll('.seg').forEach((el, k) => el.classList.toggle('on', k === i));
+  $('#pp').textContent = play.on ? '멈춤' : '재생';
+}
+function tick(now) {
+  if (play.on && cur) { play.t = (play.t + Math.min(0.1, (now - (play.last || now)) / 1000)) % play.len; draw(); }
+  play.last = now; requestAnimationFrame(tick);
+}
+
+document.addEventListener('click', (e) => {
+  const chip = e.target.closest('.chip'); if (chip) { cat = chip.dataset.cat; renderChips(); renderList(); return; }
+  const tab = e.target.closest('.tab'); if (tab) { setMode(tab.dataset.mode); (mode === 'cards' ? select(cur?.code || 'I01') : selectEx(curEx?.id || EX[0].id)); return; }
+  const card = e.target.closest('.card'); if (card) { card.dataset.ex ? selectEx(card.dataset.ex, true) : select(card.dataset.code, true); return; }
+  const seg = e.target.closest('.seg'); if (seg) { play.t = play.segs[+seg.dataset.i].t0; draw(); return; }
+  if (e.target.id === 'pp') { play.on = !play.on; draw(); return; }
+  const lv = e.target.closest('[data-lvl]'); if (lv) { lvl = lv.dataset.lvl; document.querySelectorAll('[data-lvl]').forEach((x) => x.setAttribute('aria-pressed', x.dataset.lvl === lvl)); renderAsk(); return; }
+  if (e.target.id === 'copy') {
+    const txt = $('#ask').textContent, done = (m) => { $('#copied').textContent = m; };
+    navigator.clipboard?.writeText(txt).then(() => done('복사했습니다'), () => {
+      const s = getSelection(), rg = document.createRange(); rg.selectNodeContents($('#ask')); s.removeAllRanges(); s.addRange(rg);
+      done('글자를 선택해 두었습니다. ⌘C 로 복사하세요');
+    }) ?? done('글자를 선택해 복사하세요');
+  }
+});
+document.addEventListener('input', (e) => {
+  if (e.target.dataset.k) { vals[e.target.dataset.k] = e.target.value; renderAsk(); draw(); }
+  else if (e.target.id === 'q') renderList();
+  else if (e.target.id === 'color') { renderAsk(); store.set('mc-color', e.target.value); }
+});
+document.addEventListener('change', (e) => {
+  if (e.target.id === 'ratio' || e.target.id === 'tool') {
+    store.set('mc-' + e.target.id, e.target.value);
+    if (cur && e.target.id === 'ratio') { const v = vals; select(cur.code); vals = v; document.querySelectorAll('[data-k]').forEach((x) => { x.value = v[x.dataset.k] || ''; }); renderAsk(); }
+    else renderAsk();
+  }
+});
+
+for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if (v !== null) $('#' + k).value = v; }
+const load = (f) => fetch(f).then((r) => { if (!r.ok) throw new Error(`${f} ${r.status}`); return r.json(); });
+Promise.all([load('motion.json'), load('prompt_motion.json')]).then(([data, ex]) => {
+  CARDS = data; EX = ex; $('#n-cards').textContent = CARDS.length; $('#n-ex').textContent = EX.length;
+  const h = decodeURIComponent(location.hash.slice(1));
+  if (EX.some((e) => e.id === h)) { setMode('ex'); selectEx(h); }
+  else { setMode('cards'); select(CARDS.some((c) => c.code === h.toUpperCase()) ? h.toUpperCase() : 'I01'); }
+  requestAnimationFrame(tick);
+}).catch((err) => { $('#list').innerHTML = `<p class="count">자료를 읽지 못했습니다(${esc(err.message)}). 페이지를 새로 고쳐 보세요.</p>`; });
+</script>
