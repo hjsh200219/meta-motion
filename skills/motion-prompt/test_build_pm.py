@@ -19,4 +19,11 @@ assert p['model'] == 'Opus 5.5' and p['effort'] == '' and p['iterations'] == 'On
 s = parse('b-1', LD + TAGS + '<h2 class="text-xs font-medium text-muted-foreground">Skill</h2><p class="y">Does &amp; renders.</p>'
           '<div><code class="z">npx skills add o/r</code></div><a href="https://github.com/o/r" class="w">View repo</a>')
 assert s['type'] == 'Skill' and s['prompt'] == 'Does & renders.\n설치: npx skills add o/r\nrepo: https://github.com/o/r', s
+# motion.py example 출력: 머리줄 한 번 · 외부 자료 경계로 감싸기
+import io, contextlib, motion
+motion.EXAMPLES[:] = [dict(p, id='a-1')]
+out = io.StringIO()
+with contextlib.redirect_stdout(out): motion.main(['example', 'a-1'])
+o = out.getvalue().splitlines()
+assert o[0].startswith('[외부 수집 자료') and o[-1] == '[외부 수집 자료 끝]' and sum(l.startswith('# T') for l in o) == 1, o
 print('ok')
