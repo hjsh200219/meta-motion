@@ -1,12 +1,12 @@
 {
-  "name": "motion-prompt",
+  "name": "meta-motion",
   "description": "EDB 영상 제작용 모션그래픽 프롬프트 사전",
   "owner": {
     "name": "EDB Data Biz"
   },
   "plugins": [
     {
-      "name": "motion-prompt",
+      "name": "meta-motion",
       "source": "./",
       "description": "모션그래픽 요청 문장 사전 152종 + prompt-motion.com 실전 예시 233개 — 영상 제작 때 장면별 사양 프롬프트"
     }

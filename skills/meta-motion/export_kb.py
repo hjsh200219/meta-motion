@@ -9,7 +9,7 @@ HERE = Path(__file__).resolve().parent
 HEAD = """<!doctype html>
 <html lang="ko">
 <meta charset="utf-8">
-<!-- 생성 파일 — 정본은 motion-prompt repo skills/motion-prompt/preview.html, export_kb.py 로 다시 만든다 -->
+<!-- 생성 파일 — 정본은 meta-motion repo skills/meta-motion/preview.html, export_kb.py 로 다시 만든다 -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <link rel="icon" href="/static/icon.png">

@@ -102,7 +102,7 @@ def card(code):
     return c
 
 
-FLAG_RATIO = {'-v': '세로', '-h': '가로'}  # /motion-prompt -v = 세로 9:16 · -h = 가로 16:9 (어느 자리에 와도 된다)
+FLAG_RATIO = {'-v': '세로', '-h': '가로'}  # /meta-motion -v = 세로 9:16 · -h = 가로 16:9 (어느 자리에 와도 된다)
 
 
 def main(argv):

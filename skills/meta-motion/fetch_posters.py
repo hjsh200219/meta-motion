@@ -9,7 +9,7 @@ from pathlib import Path
 D = Path(__file__).resolve().parent / 'data'
 OUT = D / 'posters'
 CLIPS = D / 'clips'
-UA = {'User-Agent': 'motion-prompt-plugin/1 (internal reference)'}
+UA = {'User-Agent': 'meta-motion-plugin/1 (internal reference)'}
 
 
 def posters(items):

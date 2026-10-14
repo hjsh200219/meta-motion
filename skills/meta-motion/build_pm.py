@@ -6,7 +6,7 @@ from pathlib import Path
 
 BASE = 'https://prompt-motion.com'
 OUT = Path(__file__).resolve().parent / 'data' / 'prompt_motion.json'
-UA = {'User-Agent': 'motion-prompt-plugin/1 (internal reference)'}
+UA = {'User-Agent': 'meta-motion-plugin/1 (internal reference)'}
 NOT_ENTRY = {'templates', 'customize', 'blog', 'tags', 'submit'}
 
 
