@@ -102,9 +102,13 @@ def card(code):
     return c
 
 
+FLAG_RATIO = {'-v': '세로', '-h': '가로'}  # /motion-prompt -v = 세로 9:16 · -h = 가로 16:9 (어느 자리에 와도 된다)
+
+
 def main(argv):
+    flags = [a for a in argv if a in FLAG_RATIO]; argv = [a for a in argv if a not in FLAG_RATIO]
     cmd, rest = (argv[0] if argv else ''), argv[1:]
-    opt = {'tool': 'auto', 'ratio': '가로', 'color': '', 'file': '', 'simple': False}; vals, args = {}, []
+    opt = {'tool': 'auto', 'ratio': FLAG_RATIO[flags[-1]] if flags else '가로', 'color': '', 'file': '', 'simple': False}; vals, args = {}, []
     it = iter(rest)
     for a in it:
         if a == '--simple': opt['simple'] = True
@@ -160,7 +164,7 @@ def main(argv):
   examples [단어…]             prompt-motion.com 실전 예시 찾기(제목·태그·프롬프트·만든 사람, AND · 영어)
   example <id>                 예시 프롬프트 전문 + 만든 사람·원문·영상 링크
   recommend <스크립트.txt|-> [--top 3]  스크립트를 장면별로 나눠 어울리는 모션 추천(Jev — 글이 api.typesafe.ai 로 나감)
-옵션: --ratio 가로|세로|정사각|없음 (기본 가로) · --color "남색과 노랑" · --file video.mp4 · --tool auto|claude|codex''')
+옵션: -v 세로 9:16 · -h 가로 16:9 · --ratio 가로|세로|정사각|없음 (기본 가로) · --color "남색과 노랑" · --file video.mp4 · --tool auto|claude|codex''')
 
 
 if __name__ == '__main__':
