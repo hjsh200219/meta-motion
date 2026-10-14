@@ -4,7 +4,7 @@
 부모 페이지가 보내는 시각 t 로 맞춰(seek) 진행표·장면 설명과 같이 움직인다. 화면 비율(가로·세로·정사각)에 맞춰 늘어나게 vw/vh/vmin 으로 그린다.
 만드는 것은 edb-p(claude -p, 도구·MCP 끔)에 카드 하나씩 맡기고, 검사(스크립트·외부 주소·transition 금지 등)에 걸리면 다시 보낸다. 사양이 같으면 건너뛴다.
 실행: python3 build_card_anim.py [--limit N] [--only I01,T06] [--workers 4]   · 필요: ~/.local/bin/edb-p"""
-import hashlib, json, re, subprocess, sys
+import hashlib, json, os, re, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -29,6 +29,11 @@ addEventListener('message', (e) => { const t = Number(e.data && e.data.t); if (N
 BAD = [(r'<script', '<script> 금지'), (r'<(link|iframe|object|embed|video|audio|base|meta)\b', '외부·문서 태그 금지'), (r'@import', '@import 금지'),
        (r'https?:|//[a-z0-9.-]+\.[a-z]', '외부 주소 금지'), (r'url\((?!\s*["\']?data:)', 'url() 은 data: 만'), (r'\bon[a-z]+\s*=', '이벤트 속성 금지'),
        (r'\btransition\s*:', 'transition 금지(시각 맞추기가 안 됨)'), (r'animation-play-state\s*:\s*running', 'running 금지')]
+
+
+# 설정·CLAUDE.md 도 싣지 않는다 — 이 일은 프롬프트만으로 끝나서 기본 문맥(설정·에이전트 목록·CLAUDE.md 약 8천 토큰)이 매번 헛돈다(2026-10-14)
+LEAN = ['--setting-sources', '', '--system-prompt', '요청에 그대로 답한다. 한국어로 답한다.']
+LEAN_ENV = dict(os.environ, CLAUDE_CODE_DISABLE_CLAUDE_MDS='1')
 
 
 def segs(c):
@@ -79,8 +84,8 @@ GUIDE = """너는 모션그래픽 디자이너다. 아래 <data> 의 요청 카�
 def ask(c, retry_note=''):
     task = GUIDE + (f'\n지난번 결과가 검사에 걸렸다 — 고칠 것: {retry_note}\n' if retry_note else '') + '\n<data>\n' + json.dumps(spec(c), ensure_ascii=False).replace('</data>', '<\\/data>') + '\n</data>'
     r = subprocess.run([str(Path.home() / '.local/bin/edb-p'), '--model', 'sonnet', '--effort', 'medium',
-                        '--tools', '', '--strict-mcp-config', '--permission-mode', 'default'],
-                       input=task, capture_output=True, text=True, timeout=1200)
+                        '--tools', '', '--strict-mcp-config', '--permission-mode', 'default'] + LEAN,
+                       input=task, capture_output=True, text=True, timeout=1200, env=LEAN_ENV)
     if r.returncode == 3: raise SystemExit('edb 주간 상한 — 레인에서 처리하거나 리셋 뒤 다시')
     m = re.search(r'```html\s*([\s\S]*?)```', r.stdout)
     if not m: raise ValueError(f'html 블록 없음 (종료 {r.returncode}): {r.stdout[-200:]}{r.stderr[-200:]}')
