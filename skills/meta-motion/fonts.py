@@ -104,6 +104,23 @@ def judge_tone(text):
 
 
 USER_FONT_DIR = os.path.expanduser("~/Library/Fonts")
+HF_INLINE_LIMIT = 2 * 1024 * 1024  # HyperFrames 는 2MB 넘는 글꼴을 묶음에 넣지 않아 기본 서체로 대체된다(2026-10-16 실측)
+SUBSET_BASE = "0123456789.,:;!?()[]-~·•✓%/+& ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+
+def subset_font(src, dst, text):
+    """영상에 쓰는 글자만 남긴 부분 글꼴을 만든다(fontTools 필요). 만든 파일 크기를 돌려준다."""
+    from fontTools import subset
+    opts = subset.Options()
+    opts.layout_features = ["*"]
+    opts.name_IDs = ["*"]
+    opts.notdef_outline = True
+    font = subset.load_font(src, opts)
+    sub = subset.Subsetter(opts)
+    sub.populate(text=text + SUBSET_BASE)
+    sub.subset(font)
+    subset.save_font(font, dst, opts)
+    return os.path.getsize(dst)
 
 
 def ensure_installed(files=None):
@@ -154,6 +171,15 @@ def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True):
         os.makedirs(copy_to, exist_ok=True)
         dst = os.path.join(copy_to, font["file"])
         shutil.copyfile(src, dst)
+        if os.path.getsize(dst) > HF_INLINE_LIMIT:
+            # 2MB 를 넘으면 HyperFrames 가 묶지 않는다 → 대본 글자만 남긴 부분 글꼴로 바꾼다
+            stem = os.path.splitext(font["file"])[0]
+            sub = os.path.join(copy_to, f"{stem}-subset.ttf")
+            size = subset_font(src, sub, text)
+            if size > HF_INLINE_LIMIT:
+                raise SystemExit(f"부분 글꼴도 2MB 를 넘습니다({size} bytes): {sub}")
+            os.remove(dst)
+            dst = sub
         out["file_path"] = dst
     return out
 
