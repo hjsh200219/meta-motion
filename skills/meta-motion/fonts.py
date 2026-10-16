@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""스크립트 분위기에 맞는 한글 폰트를 고른다(표준 라이브러리만 사용).
+"""스크립트 분위기에 맞는 한글 폰트와 색 팔레트를 고른다(표준 라이브러리만 사용).
 
 분위기 네 가지와 서체(모두 무료 OFL, 저장소 `data/fonts/`):
 - info     : 정보·안내·절차·규정·숫자 중심 → Noto Sans KR (가변, 기본값)
@@ -16,7 +16,8 @@
   python3 fonts.py list                    # 분위기별 폰트 표
   python3 fonts.py pick script.txt --tone emotional   # 분위기 직접 지정(자동 판정 무시)
 
-규칙: 키워드 출현 횟수가 가장 많은 분위기를 고른다. 동점·0건이면 info.
+규칙: 분위기는 Jev choice 로 판정하고, 실패하면 키워드 출현 횟수가 가장 많은 분위기(동점·0건이면 info).
+같은 분위기로 색 팔레트(PALETTES)도 정해 결과의 `palette` 에 담는다 — `palette.color` 를 motion.py `--color` 로 넘긴다.
 사용자가 폰트를 직접 지정하면 그 지정이 자동 판정보다 우선한다.
 """
 import json
@@ -69,6 +70,22 @@ TONE_CRITERIA = {
     "playful": "일상·친구·간식·귀여운 톤. 가볍고 유쾌한 말투, 손글씨 느낌이 어울리는 대본",
 }
 JEV_PATH = os.path.expanduser("~/workspace/shared/jev.py")
+
+# 분위기별 색 팔레트 — 서체와 같은 분위기 판정(Jev 한 번)으로 함께 고른다. 영상 하나에 팔레트 하나.
+# 색을 정하지 않으면 매번 짙은 남색(#1d3557 등)으로 굳던 문제(2026-10-17)를 막는 기본값이다.
+# bg 배경 · surface 카드·상자 · text 본문 글자 · sub 보조 글자 · accent 강조 면·선(화살표·버튼·밑줄·큰 숫자)
+# on_accent 강조 면 위 글자. 글자 대비(2026-10-17 계산): text/bg 10.8~13.7 · sub/bg 4.1~6.3 · on_accent/accent 3.4~5.3.
+# accent/bg 는 2.1~3.5 라 강조색으로 본문 글자를 쓰지 않는다(면·선·굵은 큰 숫자만).
+PALETTES = {
+    "info": {"name": "밝은 회백", "bg": "#F5F7FA", "surface": "#FFFFFF", "text": "#1F2937", "sub": "#6B7280", "accent": "#0D9488", "on_accent": "#FFFFFF",
+             "color": "밝은 회백 바탕에 짙은 회색 글자, 청록 포인트"},
+    "casual": {"name": "선명한 노랑", "bg": "#FFD84D", "surface": "#FFFFFF", "text": "#1A1A1A", "sub": "#4B4B4B", "accent": "#FF4D2E", "on_accent": "#1A1A1A",
+               "color": "선명한 노랑 바탕에 검정 글자, 주홍 포인트"},
+    "emotional": {"name": "따뜻한 베이지", "bg": "#F3E9DC", "surface": "#FFF8EE", "text": "#3B2F2A", "sub": "#7A6A5F", "accent": "#C2794D", "on_accent": "#FFFFFF",
+                  "color": "따뜻한 베이지 바탕에 진갈색 글자, 테라코타 포인트"},
+    "playful": {"name": "연분홍 파스텔", "bg": "#FFE4EC", "surface": "#FFFFFF", "text": "#3A2E39", "sub": "#7D6B7A", "accent": "#2BB5A0", "on_accent": "#3A2E39",
+                "color": "연분홍 파스텔 바탕에 진보라 회색 글자, 민트 포인트"},
+}
 
 
 def judge_tone_jev(text):
@@ -166,7 +183,7 @@ def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True):
         raise SystemExit(f"글꼴 파일이 없습니다: {src}")
     newly = ensure_installed([font["file"]])  # 서체가 사용자 폰트 폴더에 없으면 설치
     out = {"tone": chosen, "auto_tone": auto_tone, "judge": judge, "confidence": confidence, "installed_now": newly,
-           "scores": scores, **font, "src": src}
+           "scores": scores, **font, "src": src, "palette": PALETTES[chosen]}
     if copy_to:
         os.makedirs(copy_to, exist_ok=True)
         dst = os.path.join(copy_to, font["file"])
@@ -195,7 +212,8 @@ def main(argv):
     if argv[1] == "list":
         print("분위기 기본값:")
         for tone, f in FONTS.items():
-            print(f"  {tone:10s} {f['name']}")
+            c = PALETTES[tone]
+            print(f"  {tone:10s} {f['name']} · 색 {c['name']} (bg {c['bg']} · 글자 {c['text']} · 강조 {c['accent']})")
         print("카탈로그 (--font 로 지정):")
         for fid, f in CATALOG.items():
             print(f"  {fid:15s} [{f['tone']}] {f['name']}")
