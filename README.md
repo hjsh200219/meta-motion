@@ -8,6 +8,7 @@
 
 출처: https://nondev-thinking.web.app/motion/ (한국경영교육연구소 AI ACADEMY «모션그래픽 주문 사전»), 2026-10-08 수집. 사내 참고용.
 실전 예시: https://prompt-motion.com — Claude 로 만든 모션 영상의 프롬프트 230여 개(영어, 만든 사람·원문 링크 포함), 2026-10-11 수집. 사내 참고용 — 영상·프롬프트는 만든 사람 소유.
+색·서체 템플릿: 조회 수 높은 국내 쇼츠·릴스의 제목 띠·글자색·강조색을 실측한 조합 18종(`skills/meta-motion/fonts.py`) — 대본 주제로 Jev 가 하나를 고르고, 제목·자막 서체(무료 SIL OFL 21종, `data/fonts/`)가 함께 정해진다. 플러그인을 켜면 세션 시작 훅이 서체를 `~/Library/Fonts` 에 설치한다.
 
 ## 설치
 
