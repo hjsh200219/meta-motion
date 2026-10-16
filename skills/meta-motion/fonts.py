@@ -19,16 +19,22 @@
   python3 fonts.py list                    # 분위기 기본값·템플릿·서체 카탈로그
   python3 fonts.py pick script.txt --tone emotional          # 분위기 지정(Jev 안 부르고 그 분위기 기본 템플릿)
   python3 fonts.py pick script.txt --template navy-lime      # 템플릿 지정
-  python3 fonts.py pick script.txt --exclude black-yellow    # 연재 영상: 직전 템플릿을 후보에서 뺀다(쉼표로 여러 개)
+  python3 fonts.py pick script.txt --series ai-daily         # 같은 시리즈 이력이 있으면 그 템플릿(Jev 안 부름)
+  python3 fonts.py pick script.txt --exclude black-yellow    # 특정 템플릿을 후보에서 뺀다(쉼표로 여러 개)
+  python3 fonts.py record script.txt --slug <id> --template <id> [--title 제목] [--series 시리즈] [--published URL]
+                                                              # 렌더가 끝난 영상을 템플릿 이력에 남긴다
+  python3 fonts.py history [N]                               # 최근 이력(기본 200건) · --history <파일> 로 원장 바꾸기
   python3 fonts.py pick script.txt --font jua                # 서체만 바꾼다
 
-규칙: Jev 한 번(choice 두 문항)으로 분위기와 템플릿을 함께 고른다. Jev 가 실패하면 키워드로 분위기를 정하고
+규칙: 같은 시리즈 이력이 있으면 그 템플릿을 그대로 쓴다. 없으면 Jev 한 번(choice 세 문항 — 분위기·템플릿·비슷한 이전 영상)으로
+고르고, 비슷한 이전 영상이 확신 0.6 이상이면 그 영상의 템플릿을 쓴다. Jev 가 실패하면 키워드로 분위기를 정하고
 (동점·0건이면 info) 그 분위기의 기본 템플릿을 쓴다. 사용자가 템플릿·서체를 지정하면 그 지정이 우선한다.
 """
 import json
 import os
 import shutil
 import sys
+import time
 
 FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "fonts")
 
@@ -218,9 +224,10 @@ def load_jev():
     return jev
 
 
-def judge_jev(text, exclude=()):
+def judge_jev(text, exclude=(), history=()):
     """Jev 한 번으로 분위기(tone)와 템플릿(template)을 함께 고른다. {"tone": (값, 확신), "template": (값, 확신)} 또는 None.
-    exclude 에 든 템플릿은 후보에서 뺀다(연재 영상이 직전 템플릿을 반복하지 않게).
+    exclude 에 든 템플릿은 후보에서 뺀다(사용자가 고른 수동 제외).
+    history(이력 레코드 목록)가 있으면 같은 호출에 「비슷한 이전 콘텐츠」 문항을 더해 {"similar": (slug|"none", 확신)} 도 돌려준다.
     API 키는 jev.py 가 환경변수·workspace .env 에서 스스로 읽는다(이 파일은 키를 다루지 않는다)."""
     try:
         jev = load_jev()
@@ -231,11 +238,19 @@ def judge_jev(text, exclude=()):
             "template": jev.choice("이 영상 대본의 주제·장르와 가장 잘 맞는 쇼츠 화면 스타일을 하나만 고른다. 대본이 다루는 분야와 전달 방식으로 판단한다.",
                                    options),
         }
+        if history:
+            past = {h["slug"]: f'{h.get("title") or ""} — {h.get("summary") or ""}'[:300] for h in history}
+            past[NO_SIMILAR] = "비슷한 이전 콘텐츠 없음 — 주제·시리즈·형식이 다른 새 콘텐츠"
+            questions["similar"] = jev.choice(
+                "이 영상 대본과 주제·시리즈·형식이 같은 이전 영상이 있으면 그 영상을, 없으면 none 을 고른다. 단어 몇 개가 겹치는 정도로는 같다고 보지 않는다.",
+                past)
         answers = jev.ask(text, questions, timeout_s=60)
         tone = jev.choice_of(answers, "tone")
         tpl = jev.choice_of(answers, "template")
+        sim = jev.choice_of(answers, "similar") if history else (None, 0.0)
         if tone[0] in FONTS:
-            return {"tone": tone, "template": tpl if tpl[0] in options else (None, 0.0)}
+            return {"tone": tone, "template": tpl if tpl[0] in options else (None, 0.0),
+                    "similar": sim if sim[0] in {h["slug"] for h in history} else (None, sim[1])}
     except Exception as e:  # 네트워크·키·import 실패는 키워드 판정으로 물러난다
         sys.stderr.write(f"fonts.py: Jev 판정 실패, 키워드 판정으로 대체 ({type(e).__name__})\n")
     return None
@@ -289,14 +304,70 @@ def ensure_installed(files=None):
     return installed
 
 
+# 템플릿 이력(2026-10-17 사용자 지시 「유사한 콘텐츠는 동일한 템플릿」 · 「이제부터 이력을 관리」 — 그 전 영상은 소급하지 않는다).
+# 렌더가 성공한 영상마다 `fonts.py record` 로 한 줄 남긴다. pick 은 읽기만 한다(중단된 렌더가 이력을 더럽히지 않게).
+# 저장소 밖(사용자 홈)에 둔다 — 이 스킬 repo 는 커밋이 곧 원격 게시라 대본 요약을 올리지 않는다. META_MOTION_HISTORY 로 바꾼다.
+HISTORY_PATH = os.environ.get("META_MOTION_HISTORY") or os.path.expanduser("~/.local/share/meta-motion/template-history.jsonl")
+HISTORY_LIMIT = 200  # Jev choice 옵션 상한 255 안
+NO_SIMILAR = "none"
+
+
+def summarize(text, n=200):
+    return " ".join(text.split())[:n]
+
+
+def load_history(path=None, limit=HISTORY_LIMIT):
+    """최근 limit 건(같은 slug 는 마지막 기록만)."""
+    path = path or HISTORY_PATH
+    if not os.path.exists(path):
+        return []
+    rows = {}
+    for line in open(path, encoding="utf-8"):
+        line = line.strip()
+        if line:
+            r = json.loads(line)
+            rows.pop(r["slug"], None)
+            rows[r["slug"]] = r
+    return list(rows.values())[-limit:]
+
+
+def record(slug, template, text="", title="", series=None, font=None, caption_font=None, published=None, path=None):
+    """렌더가 끝난 영상 한 편의 템플릿을 이력에 남긴다. 같은 slug 를 다시 기록하면 load_history 가 마지막 것을 쓴다."""
+    if template not in TEMPLATES:
+        raise SystemExit(f"알 수 없는 템플릿: {template}")
+    path = path or HISTORY_PATH
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    t = TEMPLATES[template]
+    row = {"date": time.strftime("%Y-%m-%d %H:%M"), "slug": slug, "title": title, "series": series,
+           "summary": summarize(text), "template": template, "font": font or t["font"],
+           "caption_font": caption_font or t["caption_font"], "published": published}
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    return row
+
+
+def series_template(series, history):
+    """같은 시리즈의 가장 최근 템플릿(결정론 — Jev 를 부르지 않는다)."""
+    for h in reversed(history):
+        if series and h.get("series") == series:
+            return h["slug"], h["template"]
+    return None
+
+
 TEMPLATE_MIN_CONF = 0.6  # Jev 템플릿 확신도가 이보다 낮으면 분위기 기본 템플릿으로 대체(2026-10-17 사용자 지시)
 
 
-def choose_template(template_id, jev_tpl, jev_conf, tone, exclude=()):
-    """(템플릿 id, 고른 경로). 경로: user 지정 · jev · low-confidence(확신 낮아 대체) · tone-default(Jev 없음).
-    대체할 기본 템플릿이 exclude 에 들면 Jev 답을 그대로 쓴다(연재에서 직전 템플릿을 되풀이하지 않게)."""
+def choose_template(template_id, jev_tpl, jev_conf, tone, exclude=(), series_hit=None, similar=None):
+    """(템플릿 id, 고른 경로). 우선순위: 사용자 지정 > 같은 시리즈 이력 > 비슷한 이전 영상(Jev ≥ 문턱) > Jev 템플릿(≥ 문턱) > 분위기 기본.
+    경로: user · series:<slug> · similar:<slug> · jev · low-confidence(확신 낮아 대체) · tone-default(Jev 없음).
+    series_hit = (slug, 템플릿), similar = (slug, 템플릿, 확신). exclude 는 사용자가 뺀 템플릿이라 이력이 가리켜도 쓰지 않는다.
+    대체할 기본 템플릿이 exclude 에 들면 Jev 답을 그대로 쓴다."""
     if template_id:
         return template_id, "user"
+    if series_hit and series_hit[1] not in exclude:
+        return series_hit[1], f"series:{series_hit[0]}"
+    if similar and (similar[2] or 0) >= TEMPLATE_MIN_CONF and similar[1] not in exclude:
+        return similar[1], f"similar:{similar[0]}"
     fallback = TONE_TEMPLATE[tone]
     if jev_tpl and (jev_conf or 0) >= TEMPLATE_MIN_CONF:
         return jev_tpl, "jev"
@@ -307,10 +378,11 @@ def choose_template(template_id, jev_tpl, jev_conf, tone, exclude=()):
     return fallback, "tone-default"
 
 
-def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True, template_id=None, exclude=()):
+def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True, template_id=None, exclude=(), series=None, history_path=None):
     """분위기·색 템플릿·서체를 고른다.
     - 템플릿: template_id 지정 > Jev 판정(분위기와 같은 호출, 확신 ≥ TEMPLATE_MIN_CONF) > 분위기 기본 템플릿(TONE_TEMPLATE).
-      결과의 template_how 가 어느 경로였는지(user·jev·low-confidence·tone-default), jev_template 이 Jev 원래 답이다.
+      그보다 앞서 이력(HISTORY_PATH)에서 같은 series 가 있으면 그 템플릿, 없으면 Jev 가 비슷하다고 본 이전 영상(확신 ≥ 문턱)의 템플릿.
+      결과의 template_how 가 어느 경로였는지(user·series:·similar:·jev·low-confidence·tone-default), jev_template 이 Jev 원래 답이다.
     - 서체: font_id 지정 > 템플릿 서체(제목 `font` · 자막 `caption_font` — 결과의 caption_font 에 담는다).
     - 분위기: tone 지정 > Jev > 키워드 판정. tone 을 지정하면 Jev 를 부르지 않고 그 분위기의 기본 템플릿을 쓴다.
     exclude 에 든 템플릿은 Jev 후보에서 뺀다. copy_to 를 주면 글꼴 파일을 거기로 복사하고 file_path 를 돌려준다."""
@@ -321,16 +393,23 @@ def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True, template_id=
     if tone and tone not in FONTS:
         raise SystemExit(f"알 수 없는 분위기: {tone} (info | casual | emotional | playful)")
     judge, confidence, tpl_conf = "keyword", None, None
-    jev_result = judge_jev(text, exclude) if use_jev and not tone and not template_id else None
+    history = load_history(history_path)
+    series_hit = series_template(series, history) if not template_id else None
+    ask_similar = history if not series_hit else ()
+    jev_result = judge_jev(text, exclude, ask_similar) if use_jev and not tone and not template_id else None
+    similar = None
     if jev_result:
         auto_tone, confidence = jev_result["tone"]
         jev_tpl, tpl_conf = jev_result["template"]
         judge, scores = "jev", {}
+        sim_slug, sim_conf = jev_result.get("similar", (None, 0.0))
+        if sim_slug:
+            similar = (sim_slug, next(h["template"] for h in history if h["slug"] == sim_slug), sim_conf)
     else:
         jev_tpl = None
         auto_tone, scores = judge_tone(text)
     chosen = tone or (CATALOG[font_id]["tone"] if font_id else None) or auto_tone
-    tpl_id, tpl_how = choose_template(template_id, jev_tpl, tpl_conf, chosen, exclude)
+    tpl_id, tpl_how = choose_template(template_id, jev_tpl, tpl_conf, chosen, exclude, series_hit, similar)
     template = TEMPLATES[tpl_id]
     font = CATALOG[font_id or template["font"]]
     caption = CATALOG[font_id or template["caption_font"]]  # 서체를 지정하면 제목·자막 모두 그 서체
@@ -338,6 +417,7 @@ def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True, template_id=
     newly = ensure_installed(sorted({font["file"], caption["file"]}))  # 서체가 사용자 폰트 폴더에 없으면 설치
     out = {"tone": chosen, "auto_tone": auto_tone, "judge": judge, "confidence": confidence,
            "template": tpl_id, "template_confidence": tpl_conf, "template_how": tpl_how, "jev_template": jev_tpl,
+           "similar": {"slug": similar[0], "template": similar[1], "confidence": similar[2]} if similar else None,
            "installed_now": newly, "scores": scores,
            **font, "src": src, "palette": template,
            "caption_font": {**caption, "src": font_src(caption)}}
@@ -371,8 +451,12 @@ def copy_font(font, text, copy_to):
     return dst
 
 
+def opt(argv, name):
+    return argv[argv.index(name) + 1] if name in argv else None
+
+
 def main(argv):
-    if len(argv) < 2 or argv[1] not in ("pick", "list", "install"):
+    if len(argv) < 2 or argv[1] not in ("pick", "list", "install", "record", "history"):
         print(__doc__)
         return 2
     if argv[1] == "install":
@@ -390,21 +474,30 @@ def main(argv):
         for fid, f in CATALOG.items():
             print(f"  {fid:15s} [{f['tone']}] {f['name']}")
         return 0
-    tone = None
-    font_id = None
-    if "--tone" in argv:
-        tone = argv[argv.index("--tone") + 1]
-    if "--font" in argv:
-        font_id = argv[argv.index("--font") + 1]
-    template_id = argv[argv.index("--template") + 1] if "--template" in argv else None
-    exclude = tuple(argv[argv.index("--exclude") + 1].split(",")) if "--exclude" in argv else ()
-    use_jev = "--keyword" not in argv
-    flags = {"--tone", "--font", "--template", "--exclude"}
+    flags = {"--tone", "--font", "--template", "--exclude", "--series", "--history", "--slug", "--title", "--published", "--caption-font"}
     args = [a for i, a in enumerate(argv[2:], 2)
             if a not in flags and a != "--keyword" and argv[i - 1] not in flags]
+    hist = opt(argv, "--history")
+    if argv[1] == "history":
+        rows = load_history(hist, limit=int(args[0]) if args else HISTORY_LIMIT)
+        for r in rows:
+            print(f"{r['date']}  {r['template']:20s} {r['slug']}" + (f"  [{r['series']}]" if r.get("series") else "") + f"  {r.get('title') or ''}")
+        print(f"({len(rows)}건 · {hist or HISTORY_PATH})")
+        return 0
     src = args[0] if args else "-"
     text = sys.stdin.read() if src == "-" else open(src, encoding="utf-8").read()
-    print(json.dumps(pick(text, tone, font_id=font_id, use_jev=use_jev, template_id=template_id, exclude=exclude), ensure_ascii=False, indent=2))
+    if argv[1] == "record":
+        if not opt(argv, "--slug") or not opt(argv, "--template"):
+            raise SystemExit("record 는 --slug 와 --template 이 필요하다")
+        row = record(opt(argv, "--slug"), opt(argv, "--template"), text, title=opt(argv, "--title") or "",
+                     series=opt(argv, "--series"), font=opt(argv, "--font"), caption_font=opt(argv, "--caption-font"),
+                     published=opt(argv, "--published"), path=hist)
+        print(json.dumps(row, ensure_ascii=False))
+        return 0
+    exclude = tuple(opt(argv, "--exclude").split(",")) if "--exclude" in argv else ()
+    print(json.dumps(pick(text, opt(argv, "--tone"), font_id=opt(argv, "--font"), use_jev="--keyword" not in argv,
+                          template_id=opt(argv, "--template"), exclude=exclude, series=opt(argv, "--series"),
+                          history_path=hist), ensure_ascii=False, indent=2))
     return 0
 
 

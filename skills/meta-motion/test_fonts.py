@@ -2,7 +2,10 @@
 """fonts.py 점검(네트워크 없음) — 템플릿 글자 대비·서체 파일·라이선스·키워드 대체 경로. 실행: python3 test_fonts.py"""
 import os
 import tempfile
-from fonts import CATALOG, FONT_DIR, FONTS, TEMPLATE_MIN_CONF, TEMPLATES, TONE_TEMPLATE, choose_template, pick
+TMP = tempfile.mkdtemp()
+os.environ["META_MOTION_HISTORY"] = os.path.join(TMP, "history.jsonl")   # 사용자 실제 이력을 건드리지 않는다
+from fonts import (CATALOG, FONT_DIR, FONTS, TEMPLATE_MIN_CONF, TEMPLATES, TONE_TEMPLATE, choose_template, load_history,
+                   pick, record, series_template)
 
 
 def lum(h):
@@ -61,4 +64,20 @@ with tempfile.TemporaryDirectory() as d:                                  # 제�
     r = pick("성수에서 줄 서는 신상", use_jev=False, template_id="black-neon", copy_to=d)
     assert os.path.exists(r["file_path"]) and os.path.exists(r["caption_font"]["file_path"])
     assert r["file"] != r["caption_font"]["file"]
+
+# 이력: 시리즈 일치 > 비슷한 이전 영상(확신 ≥ 문턱) > Jev 템플릿 · 사용자 제외는 이력보다 앞선다
+assert choose_template(None, "navy-lime", 0.99, "info", series_hit=("ai-daily-1", "black-red")) == ("black-red", "series:ai-daily-1")
+assert choose_template(None, "navy-lime", 0.99, "info", similar=("pc-1", "white-red", 0.6)) == ("white-red", "similar:pc-1")
+assert choose_template(None, "navy-lime", 0.99, "info", similar=("pc-1", "white-red", 0.59)) == ("navy-lime", "jev")
+assert choose_template(None, "navy-lime", 0.99, "info", exclude=("black-red",), series_hit=("a", "black-red")) == ("navy-lime", "jev")
+assert choose_template("light-teal", None, 0, "info", series_hit=("a", "black-red")) == ("light-teal", "user")
+assert load_history() == []                                                # 원장이 없으면 빈 이력 · 기존 동작 그대로
+record("ai-daily-1", "black-red", "오늘의 AI 소식 첫째", title="AI 데일리 1", series="ai-daily")
+record("pc-1", "white-red", "필첵 복약 알림 소개", title="필첵 알림")
+record("ai-daily-1", "navy-lime", "다시 렌더", title="AI 데일리 1", series="ai-daily")   # 같은 slug 는 마지막 기록
+h = load_history()
+assert [r["slug"] for r in h] == ["pc-1", "ai-daily-1"] and h[-1]["template"] == "navy-lime"
+assert series_template("ai-daily", h) == ("ai-daily-1", "navy-lime") and series_template("other", h) is None
+r = pick("오늘의 AI 소식 둘째", use_jev=False, series="ai-daily")      # 시리즈 일치는 Jev 없이 정해진다
+assert r["template"] == "navy-lime" and r["template_how"] == "series:ai-daily-1"
 print('ok')
