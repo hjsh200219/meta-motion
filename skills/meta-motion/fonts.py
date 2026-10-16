@@ -289,9 +289,28 @@ def ensure_installed(files=None):
     return installed
 
 
+TEMPLATE_MIN_CONF = 0.6  # Jev 템플릿 확신도가 이보다 낮으면 분위기 기본 템플릿으로 대체(2026-10-17 사용자 지시)
+
+
+def choose_template(template_id, jev_tpl, jev_conf, tone, exclude=()):
+    """(템플릿 id, 고른 경로). 경로: user 지정 · jev · low-confidence(확신 낮아 대체) · tone-default(Jev 없음).
+    대체할 기본 템플릿이 exclude 에 들면 Jev 답을 그대로 쓴다(연재에서 직전 템플릿을 되풀이하지 않게)."""
+    if template_id:
+        return template_id, "user"
+    fallback = TONE_TEMPLATE[tone]
+    if jev_tpl and (jev_conf or 0) >= TEMPLATE_MIN_CONF:
+        return jev_tpl, "jev"
+    if jev_tpl and fallback in exclude:
+        return jev_tpl, "jev"
+    if jev_tpl:
+        return fallback, "low-confidence"
+    return fallback, "tone-default"
+
+
 def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True, template_id=None, exclude=()):
     """분위기·색 템플릿·서체를 고른다.
-    - 템플릿: template_id 지정 > Jev 판정(분위기와 같은 호출) > 분위기 기본 템플릿(TONE_TEMPLATE).
+    - 템플릿: template_id 지정 > Jev 판정(분위기와 같은 호출, 확신 ≥ TEMPLATE_MIN_CONF) > 분위기 기본 템플릿(TONE_TEMPLATE).
+      결과의 template_how 가 어느 경로였는지(user·jev·low-confidence·tone-default), jev_template 이 Jev 원래 답이다.
     - 서체: font_id 지정 > 템플릿 서체(제목 `font` · 자막 `caption_font` — 결과의 caption_font 에 담는다).
     - 분위기: tone 지정 > Jev > 키워드 판정. tone 을 지정하면 Jev 를 부르지 않고 그 분위기의 기본 템플릿을 쓴다.
     exclude 에 든 템플릿은 Jev 후보에서 뺀다. copy_to 를 주면 글꼴 파일을 거기로 복사하고 file_path 를 돌려준다."""
@@ -311,14 +330,15 @@ def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True, template_id=
         jev_tpl = None
         auto_tone, scores = judge_tone(text)
     chosen = tone or (CATALOG[font_id]["tone"] if font_id else None) or auto_tone
-    tpl_id = template_id or jev_tpl or TONE_TEMPLATE[chosen]
+    tpl_id, tpl_how = choose_template(template_id, jev_tpl, tpl_conf, chosen, exclude)
     template = TEMPLATES[tpl_id]
     font = CATALOG[font_id or template["font"]]
     caption = CATALOG[font_id or template["caption_font"]]  # 서체를 지정하면 제목·자막 모두 그 서체
     src = font_src(font)
     newly = ensure_installed(sorted({font["file"], caption["file"]}))  # 서체가 사용자 폰트 폴더에 없으면 설치
     out = {"tone": chosen, "auto_tone": auto_tone, "judge": judge, "confidence": confidence,
-           "template": tpl_id, "template_confidence": tpl_conf, "installed_now": newly, "scores": scores,
+           "template": tpl_id, "template_confidence": tpl_conf, "template_how": tpl_how, "jev_template": jev_tpl,
+           "installed_now": newly, "scores": scores,
            **font, "src": src, "palette": template,
            "caption_font": {**caption, "src": font_src(caption)}}
     if copy_to:

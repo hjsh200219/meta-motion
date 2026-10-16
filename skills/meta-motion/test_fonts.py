@@ -2,7 +2,7 @@
 """fonts.py 점검(네트워크 없음) — 템플릿 글자 대비·서체 파일·라이선스·키워드 대체 경로. 실행: python3 test_fonts.py"""
 import os
 import tempfile
-from fonts import CATALOG, FONT_DIR, FONTS, TEMPLATES, TONE_TEMPLATE, pick
+from fonts import CATALOG, FONT_DIR, FONTS, TEMPLATE_MIN_CONF, TEMPLATES, TONE_TEMPLATE, choose_template, pick
 
 
 def lum(h):
@@ -41,6 +41,14 @@ for fid, f in CATALOG.items():
     assert os.path.exists(os.path.join(FONT_DIR, f["file"])), (fid, f["file"])
     family = f["file"].split("-")[0]                                     # Pretendard-Black.otf → OFL-Pretendard.txt
     assert os.path.exists(os.path.join(FONT_DIR, f"OFL-{family}.txt")), (fid, family)
+
+# 템플릿 결정: 지정 > Jev(확신 ≥ 문턱) > 분위기 기본 · 기본이 제외 목록이면 Jev 답 유지
+assert TEMPLATE_MIN_CONF == 0.6
+assert choose_template("white-red", "navy-lime", 0.99, "info") == ("white-red", "user")
+assert choose_template(None, "navy-lime", 0.6, "info") == ("navy-lime", "jev")
+assert choose_template(None, "navy-lime", 0.59, "info") == ("light-teal", "low-confidence")
+assert choose_template(None, "navy-lime", 0.3, "info", exclude=("light-teal",)) == ("navy-lime", "jev")
+assert choose_template(None, None, 0.0, "casual") == ("yellow-black", "tone-default")
 
 # Jev 없이(키워드 판정) 분위기 기본 템플릿으로 떨어진다 · 지정이 판정보다 우선한다
 r = pick("신고 절차와 수수료 안내", use_jev=False)
