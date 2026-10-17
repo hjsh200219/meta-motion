@@ -18,9 +18,9 @@ HEAD = """<!doctype html>
 <script>window.MOTION_MEDIA = 'origin'</script>
 """
 # 만들 때만 쓰는 키(재료 해시·repo 커밋·카드 재료인 변수·싱크 지점)를 빼고 내보내는 파일과 그 꼴.
-# KB PR 의 AI 리뷰는 diff 50만 자 상한이 있다(2026-10-17 #284 초과) — 원래 줄 단위인 파일은 줄 단위(indent=1)로 두어 diff 를 줄이고,
-# 새 파일은 한 줄로 줄여 한 PR 에 하나씩 들어가게 한다.
-KO = {'prompt_motion_ko.json': 1, 'hf_registry_ko.json': None, 'hf_registry.json': None}
+# KB PR 의 AI 리뷰는 diff 50만 자 상한이 있다(2026-10-17 #284 초과) — 한 줄로 줄여 파일 하나가 한 PR 에 들어가게 한다.
+# prompt_motion_ko.json 은 KB 에 이미 있는 그대로 둔다(해시를 빼면 233줄이 바뀌어 diff 16만 자가 더 붙는다).
+KO = {'hf_registry_ko.json': None, 'hf_registry.json': None}
 BUILD_KEYS = {'src_sha', 'cat_src', 'cat_p', 'hold_checked', 'commit', 'variables', 'sync'}
 
 
