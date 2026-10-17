@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""영상 스크립트를 장면별로 나눠 어울리는 모션 카드(요청 카드 152 + 실전 예시 233)를 Jev(TypeSafe)로 추천한다.
+"""영상 스크립트를 장면별로 나눠 어울리는 모션 카드(요청 카드 152 + 실전 예시 233 + HyperFrames 레지스트리 444)를 Jev(TypeSafe)로 추천한다.
 Jev choice 는 옵션이 255개까지라 두 단계로 고른다 — ① 장면마다 분류 16개 중 고르고 ② 확률 위쪽 분류들의 카드 중 고른다.
+②의 후보가 255개를 넘으면(레지스트리가 몰린 분류) 후보를 고르게 나눈 묶음마다 위쪽 몇 개를 뽑고 그 결승 후보 중에서 다시 고른다.
 장면 나누기·후보 모으기·순위 매기기는 코드가, 고르기만 Jev 가 한다. 스크립트 글은 외부 API(api.typesafe.ai)로 나간다.
 필요: workspace shared/jev.py(또는 같은 폴더의 jev.py)와 JEV_API_KEY(환경변수 또는 workspace .env).
 실행: python3 motion.py recommend <스크립트.txt|-> [--top 3]"""
@@ -16,15 +17,20 @@ KB = 'https://kb.pilldoc.co.kr/motion/#'  # 사내 KB 미리보기 — #코드 �
 LOW = 0.3          # 1순위 확률이 이보다 낮으면 «확신 낮음» — 카드 목록에 딱 맞는 게 없다는 신호
 
 
+FINALISTS = 8      # 묶음마다 결승에 올리는 수
+
+
 def items():
-    """요청 카드와 실전 예시(한국어 카드)를 한 목록으로 — preview.html 처럼 출처를 나누지 않는다."""
-    cards = json.loads((HERE / 'data/motion.json').read_text(encoding='utf-8'))
-    out = [{'code': c['code'], 'name': c['name'], 'plain': c['plain'], 'when': c['when'], 'cat': c['cat'], 'how': f"show {c['code']}"} for c in cards]
-    ko = HERE / 'data/prompt_motion_ko.json'
-    if ko.exists():
-        for k, c in json.loads(ko.read_text(encoding='utf-8')).items():
-            out.append({'code': k, 'name': c['name'], 'plain': c['plain'], 'when': c['when'], 'cat': c['cat'], 'how': f'example {k}'})
-    return out
+    """요청 카드·실전 예시·레지스트리(한국어 카드)를 한 목록으로 — motion.py·preview.html 처럼 출처를 나누지 않는다."""
+    import motion
+    return [{'code': c['code'], 'name': c['name'], 'plain': c['plain'], 'when': c['when'], 'cat': c['cat'], 'src': c.get('src', 'card'),
+             'how': f"show {c['code']}"} for c in motion.everything()]
+
+
+def chunks(cand, size=MAX_OPTIONS):
+    """후보를 size 이하 묶음으로 고르게 나눈다 — 앞뒤로 자르면 한 묶음에 한 출처만 몰리므로 번갈아 담는다."""
+    k = -(-len(cand) // size)
+    return [cand[i::k] for i in range(k)]
 
 
 def scenes(text):
@@ -53,9 +59,13 @@ def recommend_scene(sc, i, pool, cats, top):
         picked.append(k); mass += p
         if mass >= CAT_MASS: break
     cand = [it for k in picked for it in by_cat[k]]
+    ask_card = lambda opts: sorted((jev.ask(state, {'card': jev.choice('scene 의 내용을 화면으로 보여 주기에 가장 알맞은 모션은 무엇인가.',
+                                                                         {it['code']: describe(it) for it in opts})}).get('card') or {}).get('probabilities', {}).items(), key=lambda x: -x[1])
+    if len(cand) > MAX_OPTIONS:  # 결승: 묶음마다 위쪽 FINALISTS 개
+        code = {it['code']: it for it in cand}
+        cand = [code[k] for ch in chunks(cand) for k, _ in ask_card(ch)[:FINALISTS] if k in code]
     assert 2 <= len(cand) <= MAX_OPTIONS, f'후보 {len(cand)}개 — Jev choice 범위(2~{MAX_OPTIONS}) 밖'
-    a = jev.ask(state, {'card': jev.choice('scene 의 내용을 화면으로 보여 주기에 가장 알맞은 모션은 무엇인가.', {it['code']: describe(it) for it in cand})})
-    ranked = sorted((a.get('card') or {}).get('probabilities', {}).items(), key=lambda x: -x[1])[:top]
+    ranked = ask_card(cand)[:top]
     code = {it['code']: it for it in cand}
     return {'scene': sc[i], 'cats': picked, 'picks': [{**code[k], 'p': round(p, 3)} for k, p in ranked if k in code]}
 
@@ -81,7 +91,8 @@ def main(args):
         low = ' · 확신 낮음 — 직접 고르거나 search 로 찾기' if not r['picks'] or r['picks'][0]['p'] < LOW else ''
         print(f"\n## 장면 {i}: {r['scene'][:80]}{'…' if len(r['scene']) > 80 else ''}\n   (분류 후보: {', '.join(r['cats'])}{low})")
         for it in r['picks']:
-            print(f"   {it['p']:.2f}  {it['code']}\t{it['name']}\t→ python3 motion.py {it['how']}\n         보기 {KB}{it['code']}")
+            add = f"\n         넣기 python3 motion.py registry-add {it['code']} --dir <프로젝트>" if it['src'] == 'hf' else ''
+            print(f"   {it['p']:.2f}  {it['code']}\t{it['name']}\t→ python3 motion.py {it['how']}\n         보기 {KB}{it['code']}{add}")
 
 
 if __name__ == '__main__':

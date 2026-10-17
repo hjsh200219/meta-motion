@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """preview.html 을 사내 KB(kb.pilldoc.co.kr/motion/)용 페이지로 내보낸다 — preview.html 이 정본, 내보낸 파일은 고치지 않는다.
 KB 에는 외부 영상을 막는 CSP 가 없어 원본 영상·그림을 바로 쓴다(window.MOTION_MEDIA='origin'). 접근은 KB 로그인(kb 역할)이 막는다.
-실행: python3 export_kb.py <PillDocKb>/site/motion   → index.html + motion.json·prompt_motion.json·prompt_motion_ko.json + anim/(요청 카드 샘플)"""
+실행: python3 export_kb.py <PillDocKb>/site/motion   → index.html + motion.json·prompt_motion.json·prompt_motion_ko.json·hf_registry.json·hf_registry_ko.json
+                                                     + anim/(요청 카드 샘플) + hf_thumb/(레지스트리 렌더 그림)"""
 import shutil, sys
 from pathlib import Path
 
@@ -16,6 +17,7 @@ HEAD = """<!doctype html>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <script>window.MOTION_MEDIA = 'origin'</script>
 """
+DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_registry.json', 'hf_registry_ko.json')
 BACK = '<a href="/" style="color:inherit;opacity:.7;font-size:13px;text-decoration:none">← PillDocKb</a>\n    <h1>'
 
 
@@ -25,10 +27,12 @@ def build(out: Path) -> None:
     out.mkdir(parents=True, exist_ok=True)
     body = src.removeprefix('<meta charset="utf-8">\n').replace('<h1>', BACK, 1)
     (out / 'index.html').write_text(HEAD + body + '\n</html>\n', encoding='utf-8')
-    for f in ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json'):
+    for f in DATA:
         shutil.copyfile(HERE / 'data' / f, out / f)
     shutil.rmtree(out / 'anim', ignore_errors=True)
     shutil.copytree(HERE / 'data' / 'anim', out / 'anim', ignore=shutil.ignore_patterns('index.json'))
+    shutil.rmtree(out / 'hf_thumb', ignore_errors=True)
+    shutil.copytree(HERE / 'data' / 'hf_thumb', out / 'hf_thumb')
 
 
 if __name__ == '__main__':

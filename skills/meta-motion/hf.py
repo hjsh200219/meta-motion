@@ -2,7 +2,7 @@
 """HyperFrames 공식 레지스트리(블록·컴포넌트 444개, Apache-2.0) 찾기·넣기.
 search 는 저장해 둔 목록(data/hf_registry.json, build_hf.py)만 읽고, add 는 `npx hyperframes add` 로 항목을 받은 뒤
 연결 조각(host div)을 lint 를 통과하는 꼴로 만들어 주고, 프로젝트 비율·서체와 어긋나는 곳을 짚어 준다(자동으로 고치지는 않는다).
-실행: python3 motion.py registry <단어…> [--type block|component] [--portrait]
+실행: python3 motion.py registry <단어…(영어·한국어)> [--type block|component] [--portrait]
       python3 motion.py registry-add <이름> --dir <HyperFrames 프로젝트> [--start 0] [--track 1]"""
 import json, re, subprocess, sys
 from pathlib import Path
@@ -10,6 +10,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REG = json.loads((HERE / 'data' / 'hf_registry.json').read_text(encoding='utf-8'))
 ITEMS = {it['name']: it for it in REG['items']}
+_KO = HERE / 'data' / 'hf_registry_ko.json'  # 분류(Jev)·한국어 카드(build_hf_ko.py) — 있으면 한국어로도 찾고 이름·분류를 같이 보여 준다
+KO = json.loads(_KO.read_text(encoding='utf-8')) if _KO.exists() else {}
 # 남의 제품 화면·브랜드를 흉내 낸 항목 — 그 회사 영상이 아니면 쓰지 않는다(상표·오인 위험)
 BRAND = {'instagram', 'tiktok', 'spotify', 'slack', 'heygen', 'chatgpt', 'claude', 'youtube', 'apple', 'google', 'figma', 'github', 'x', 'twitter', 'linkedin'}
 SIZE = re.compile(r'data-width="(\d+)"[^>]*?data-height="(\d+)"')
@@ -31,12 +33,13 @@ def search(args):
     qs = [a.lower() for i, a in enumerate(args) if not a.startswith('--') and (i == 0 or args[i - 1] != '--type')]
     hit = [it for it in REG['items'] if (not kind or it['type'] == kind)
            and (not portrait or (it.get('dimensions') or {}).get('height', 0) > (it.get('dimensions') or {}).get('width', 0))
-           and all(q in ' '.join([it['name'], it['title'], it['description'], *it['tags']]).lower() for q in qs)]
+           and all(q in ' '.join([it['name'], it['title'], it['description'], *it['tags'], *[str(KO.get(it['name'], {}).get(k, '')) for k in ('name', 'plain', 'cat')]]).lower() for q in qs)]
     for it in hit:
         dur = f"{it['duration']}초" if it.get('duration') else ''
         brand = '⚠브랜드 흉내\t' if is_brand(it) else ''
-        print(f"{brand}{it['name']}\t{it['type']}\t{dims(it)}\t{dur}\t{','.join(it['tags'][:6])}\t{it['description'][:90]}")
-    if not hit: print('찾은 항목 없음 — 영어 태그로 찾기: ' + ' '.join(sorted({t for it in REG['items'] for t in it['tags']})[:80]))
+        ko = KO.get(it['name'], {})
+        print(f"{brand}{it['name']}\t{ko.get('name', it['title'])}\t{ko.get('cat', '')}\t{it['type']}\t{dims(it)}\t{dur}\t{','.join(it['tags'][:6])}\t{it['description'][:90]}")
+    if not hit: print('찾은 항목 없음 — 한국어 이름·분류나 영어 태그로 찾기: ' + ' '.join(sorted({t for it in REG['items'] for t in it['tags']})[:80]))
     print(f"\n({len(hit)}/{len(REG['items'])}개 · 목록 {REG['fetched']} · {REG['license']} · 넣기: python3 motion.py registry-add <이름> --dir <프로젝트>)", file=sys.stderr)
 
 
@@ -80,7 +83,9 @@ def add(args):
     res = json.loads(out) if out else {}
     if r.returncode or not res.get('ok'): sys.exit(f'add 실패: {(r.stderr or r.stdout).strip()[-400:]}')
     proj_size = project_size(proj)
-    for f in map(Path, res['written']):
+    written = list(map(Path, res['written']))
+    assets = [f for f in written if f.suffix.lower() != '.html']
+    for f in [f for f in written if f.suffix.lower() == '.html']:
         text, rel = f.read_text(encoding='utf-8'), f.relative_to(proj).as_posix()
         cid = re.search(r'data-composition-id="([^"]+)"', text)
         size = SIZE.search(text)
@@ -93,6 +98,9 @@ def add(args):
         else:
             print('붙여 넣는 조각 — 마크업·CSS 를 장면 하위 컴포지션 안에 옮기고, 움직임은 그 장면의 일시정지된 GSAP 타임라인(window.__timelines)에 건다.')
         for c in checks(text, size, proj_size): print('- ' + c)
+    pics = [f for f in assets if f.suffix.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.gif')]
+    if pics:  # 캐러셀 25종 등은 실제 가수·앨범 사진을 견본으로 받아 온다(2026-10-17 실측) — 그대로 내보내지 않는다
+        print(f"- 견본 그림 {len(pics)}개({pics[0].relative_to(proj).parent.as_posix()}/…) — 원본 저장소의 예시(실제 인물·앨범 사진 포함)다. 영상에는 우리 사진으로 바꿔 넣는다.")
     print(f"출처: {REG['source']} ({REG['license']}) · 넣은 뒤 npx --yes {REG['cli']} check")
 
 

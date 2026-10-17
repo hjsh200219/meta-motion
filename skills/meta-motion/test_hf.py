@@ -1,13 +1,23 @@
 #!/usr/bin/env python3
-"""hf.py 점검(네트워크 없음) — 레지스트리 목록·제외 항목·host 조각·비율/서체 짚기·브랜드 표시. 실행: python3 test_hf.py"""
+"""hf.py 점검(네트워크 없음) — 레지스트리 목록·제외 항목·분류·한국어 카드·그림·host 조각·비율/서체 짚기·브랜드 표시. 실행: python3 test_hf.py"""
 import contextlib, io
+from pathlib import Path
 from build_hf import EXCLUDE, FLOOR
-from hf import ITEMS, REG, checks, host, is_brand, search
+from build_pm_ko import CATS
+from hf import ITEMS, KO, REG, checks, host, is_brand, search
 
 assert len(REG['items']) >= FLOOR - len(EXCLUDE), len(REG['items'])
 assert not set(EXCLUDE) & set(ITEMS) and set(REG['excluded']) == set(EXCLUDE)   # 출처 미확인 자산 항목은 목록에서 빠진다
 assert all(it['type'] in ('block', 'component') and it['description'] for it in REG['items'])
 assert all(it.get('dimensions') for it in REG['items'] if it['type'] == 'block')  # 블록은 크기가 있어야 --portrait 가 걸러진다
+assert all(u.startswith('https://') for it in REG['items'] for u in it['preview'].values())
+
+# 444개 모두 분류 16개 중 하나 + 한국어 카드 + 렌더 그림 — 하나라도 빠지면 list·recommend·미리보기에서 그 항목이 사라진다
+assert set(KO) == set(ITEMS), (set(ITEMS) - set(KO), set(KO) - set(ITEMS))
+assert all(v['cat'] in CATS and 0 < v['cat_p'] <= 1 for v in KO.values())
+assert all(v.get('tpl') and v['dx'].get('beats') and v['dx']['base'] for v in KO.values())
+thumbs = {p.stem for p in (Path(__file__).resolve().parent / 'data' / 'hf_thumb').glob('*.jpg')}
+assert thumbs == set(ITEMS), (set(ITEMS) - thumbs, thumbs - set(ITEMS))
 
 # lint 가 요구하는 속성(host_missing_composition_id·studio_missing_editable_id)이 다 들어가고, CLI 조각의 크기는 유지
 h = host('<div data-composition-id="lt-clean-bar" data-composition-src="compositions/lt-clean-bar.html" data-duration="4.8" data-width="1920" data-height="1080"></div>',

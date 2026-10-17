@@ -3,10 +3,17 @@
 import json, math, re, sys
 from pathlib import Path
 
-CARDS = json.loads((Path(__file__).resolve().parent / 'data' / 'motion.json').read_text(encoding='utf-8'))
+_D = Path(__file__).resolve().parent / 'data'
+_load = lambda f, empty: json.loads((_D / f).read_text(encoding='utf-8')) if (_D / f).exists() else empty
+CARDS = _load('motion.json', [])
 BY = {c['code']: c for c in CARDS}
-_PM = Path(__file__).resolve().parent / 'data' / 'prompt_motion.json'  # prompt-motion.com 실전 예시(build_pm.py)
-EXAMPLES = json.loads(_PM.read_text(encoding='utf-8')) if _PM.exists() else []
+EXAMPLES = _load('prompt_motion.json', [])  # prompt-motion.com 실전 예시(build_pm.py)
+# 요청 카드와 같은 모양의 한국어 카드 — 실전 예시(build_pm_ko.py)·HyperFrames 레지스트리(build_hf_ko.py). 출처를 나누지 않고 한 목록으로 쓴다
+_EX = {e['id']: e for e in EXAMPLES}
+_HF = {it['name']: it for it in _load('hf_registry.json', {}).get('items', [])}
+MORE = ([{**c, 'code': k, 'en': _EX[k]['title'], 'inds': _EX[k]['tags'], 'src': 'pm'} for k, c in _load('prompt_motion_ko.json', {}).items() if k in _EX]
+        + [{**c, 'code': k, 'en': _HF[k]['title'], 'inds': _HF[k]['tags'], 'src': 'hf'} for k, c in _load('hf_registry_ko.json', {}).items() if c.get('tpl') and k in _HF])
+MORE_BY = {c['code']: c for c in MORE}
 TOOLS = {'auto': '하이퍼프레임(HyperFrames)으로', 'claude': '/hyperframes 로', 'codex': '$hyperframes 로'}
 RATIO = {'가로': '가로 16:9', '세로': '세로 9:16', '정사각': '정사각 1:1', '없음': ''}
 TAIL = '[[ 화면 비율: {ratio}.]][[ 색·분위기: {color}.]]'
@@ -97,9 +104,29 @@ def detail(pre, c, vals, g):
 
 
 def card(code):
-    c = BY.get(str(code).upper())
+    c = BY.get(str(code).upper()) or MORE_BY.get(str(code))
     if not c: sys.exit(f'없는 코드: {code}')
     return c
+
+
+def everything():
+    """요청 카드 + 실전 예시·레지스트리 한국어 카드를 분류 순서대로(분류 안에서는 요청 카드 먼저)."""
+    cats = list(dict.fromkeys(c['cat'] for c in CARDS + MORE))
+    return [c for k in cats for c in CARDS + MORE if c['cat'] == k]
+
+
+def credit(c):
+    """실전 예시는 만든 사람을, 레지스트리는 받는 명령을 문장 끝에 붙인다(preview.html 의 credit 과 같은 꼴)."""
+    if c.get('src') == 'pm':
+        e = _EX[c['code']]; return f"\n[참고한 실전 예시] {c['code']} — {e['creator']} ({e['url']}) · 참고만 하고 그대로 베끼지 않음"
+    if c.get('src') == 'hf':
+        return f"\n[출발점] HyperFrames 레지스트리 {c['code']} (Apache-2.0) — python3 motion.py registry-add {c['code']} --dir <프로젝트> 로 받아 이 사양대로 고친다"
+    return ''
+
+
+def where(c):
+    if c.get('src') == 'pm': return f"\t[실전 예시 · {_EX[c['code']]['creator']}]"
+    return '\t[레지스트리]' if c.get('src') == 'hf' else ''
 
 
 FLAG_RATIO = {'-v': '세로', '-h': '가로'}  # /meta-motion -v = 세로 9:16 · -h = 가로 16:9 (어느 자리에 와도 된다)
@@ -112,33 +139,35 @@ def main(argv):
     it = iter(rest)
     for a in it:
         if a == '--simple': opt['simple'] = True
+        elif a == '--cards': continue
         elif a.startswith('--'): opt[a[2:]] = next(it, '')
         elif re.match(r'^\w+=', a): k, v = a.split('=', 1); vals[k] = v
         else: args.append(a)
     g = {'ratio': RATIO.get(opt['ratio'], opt['ratio']), 'color': opt['color'], 'file': opt['file']}
     pre = TOOLS.get(opt['tool'], TOOLS['auto'])
-    line = lambda c: f"{c['code']}\t{c['name']} ({c['en']})\t{c['len']}\t{c['plain']}"
+    line = lambda c: f"{c['code']}\t{c['name']} ({c['en']})\t{c['len']}\t{c['plain']}{where(c)}"
+    pool = CARDS if '--cards' in rest else everything()  # --cards: 요청 카드 152개만
     if cmd == 'list':
         q, cat = ' '.join(args), None
-        for c in CARDS:
+        for c in pool:
             if q and q not in c['cat']: continue
             if c['cat'] != cat: cat = c['cat']; print(f'\n## {cat}')
             print(line(c))
     elif cmd == 'search':
         qs = [s.lower() for s in args]
-        hit = [c for c in CARDS if all(q in ' '.join([c['code'], c['name'], c['en'], c['plain'], c['when'], c['cat'], *c['inds']]).lower() for q in qs)]
+        hit = [c for c in pool if all(q in ' '.join([c['code'], c['name'], c['en'], c['plain'], c['when'], c['cat'], *c['inds']]).lower() for q in qs)]
         print('\n'.join(map(line, hit)) if hit else '찾은 카드 없음 — list 로 전체 보기')
     elif cmd == 'fields':
         c = card(args[0]); print(f"{c['code']} {c['name']} · {c['len']} · 이럴 때: {c['when']}")
         for f in c['fields']: print(f"  {f['k']}=…\t{f['label']}{' (선택)' if f['opt'] else ''}\t예: {f['ex']}")
     elif cmd == 'show':
         c = card(args[0])
-        print(simple(pre, c, vals, g) if opt['simple'] or not c['dx'] else detail(pre, c, vals, g))
+        print((simple(pre, c, vals, g) if opt['simple'] or not c['dx'] else detail(pre, c, vals, g)) + credit(c))
     elif cmd == 'order':  # 사이트 «주문서» — 여러 카드를 한 요청으로(간단 문장, 공통 칸은 맨 앞에 한 번)
         cs = [card(a) for a in args]
         only = lambda k: (g.get(k) or '').strip() or None
         out = [f'{pre} 아래 그래픽 {len(cs)}개를 순서대로 만들어줘.' + compose(TAIL, only) + compose('[[ 넣을 영상: {file}.]]', only)]
-        out += [f"{i}) [{c['code']} {c['name']}] " + compose(c['tpl'], resolver(c['fields'], vals, g, no_file=True)) for i, c in enumerate(cs, 1)]
+        out += [f"{i}) [{c['code']} {c['name']}] " + compose(c['tpl'], resolver(c['fields'], vals, g, no_file=True)) + credit(c).replace('\n', ' ') for i, c in enumerate(cs, 1)]
         print('\n'.join(out))
     elif cmd == 'examples':  # prompt-motion.com — Claude 로 실제 만든 영상과 그 프롬프트(영어)
         qs = [q.lower() for q in args]
@@ -158,10 +187,10 @@ def main(argv):
         import hf; hf.main((['add'] if cmd == 'registry-add' else ['search']) + rest)
     else:
         print('''사용법 (python3 motion.py …):
-  list [카테고리 일부]          카드 목록(코드·이름·길이·설명)
-  search <단어…>               이름·영문·설명·업종으로 찾기(AND)
-  fields <코드>                채울 칸 보기
-  show <코드> [칸=값…] [옵션]   요청 문장(기본 🔍자세히, --simple 이면 간단)
+  list [카테고리 일부]          카드 목록(코드·이름·길이·설명) — 요청 카드·실전 예시·레지스트리를 분류별로 한 목록(--cards 면 요청 카드만)
+  search <단어…>               이름·영문·설명·업종으로 찾기(AND, 같은 범위)
+  fields <코드>                채울 칸 보기(요청 카드 코드·실전 예시 id·레지스트리 이름)
+  show <코드> [칸=값…] [옵션]   요청 문장(기본 🔍자세히, --simple 이면 간단) — 실전 예시는 만든 사람, 레지스트리는 받는 명령을 끝에 붙임
   order <코드…> [칸=값…] [옵션] 여러 카드를 한 요청으로(주문서)
   examples [단어…]             prompt-motion.com 실전 예시 찾기(제목·태그·프롬프트·만든 사람, AND · 영어)
   example <id>                 예시 프롬프트 전문 + 만든 사람·원문·영상 링크

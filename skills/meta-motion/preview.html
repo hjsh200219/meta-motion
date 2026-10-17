@@ -107,7 +107,7 @@ footer { color: var(--muted); font-size: 12px; }
 <div class="wrap">
   <header>
     <h1>모션 카드 고르기</h1>
-    <p class="sub">영상에 쓸 모션 385가지입니다. 고르면 실제 화면이 장면 순서대로 움직이고 몇 초에 무엇을 하는지 함께 보여 주며, 칸을 채워 요청 문장을 복사할 수 있습니다. 다른 사람이 만든 영상은 만든 사람을 함께 적었습니다.</p>
+    <p class="sub">영상에 쓸 모션 <span id="total">여러</span>가지입니다. 고르면 실제 화면이 장면 순서대로 움직이고 몇 초에 무엇을 하는지 함께 보여 주며, 칸을 채워 요청 문장을 복사할 수 있습니다. 다른 사람이 만든 영상은 만든 사람을, HyperFrames 공식 레지스트리 항목은 받는 명령을 함께 적었습니다.</p>
     <div class="bar">
       <input id="q" type="search" placeholder="찾기: 자막, 숫자, 앱 화면, 출시…" aria-label="카드 찾기">
       <label for="ratio">화면 비율 <select id="ratio"><option value="가로">가로 16:9</option><option value="세로">세로 9:16</option><option value="정사각">정사각 1:1</option><option value="없음">정하지 않음</option></select></label>
@@ -120,7 +120,7 @@ footer { color: var(--muted); font-size: 12px; }
     <div class="list" id="list"><p class="count">카드를 불러오는 중…</p></div>
     <section class="detail" id="detail" aria-live="polite"><p class="note">왼쪽에서 카드를 고르세요.</p></section>
   </div>
-  <footer>실전 예시 출처: <a href="https://prompt-motion.com" target="_blank" rel="noopener">prompt-motion.com</a>, 2026-10-11 수집 · 사내 참고용. 영상과 프롬프트는 만든 사람의 것이며, 참고만 하고 그대로 베끼지 않습니다. 실전 예시 영상은 만든 사람의 원본(외부 영상을 못 여는 Artifact 에서는 미리보기용으로 줄인 사본)이고, 카드 내용은 원문 프롬프트를 우리 말로 새로 정리한 것입니다. 원본 화질은 «원본 영상 보기»로 엽니다.<br>요청 카드 출처: <a href="https://nondev-thinking.web.app/motion/" target="_blank" rel="noopener">모션그래픽 주문 사전</a>(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 · 사내 참고용. 이 화면의 재생은 카드에 적힌 장면 순서와 초를 그대로 따라가는 진행표이고, 실제 그림 미리보기는 카드마다 있는 «원본 미리보기» 링크에서 볼 수 있습니다. 요청 문장은 meta-motion 플러그인의 <code>motion.py show</code> 와 같은 규칙으로 만듭니다.</footer>
+  <footer>실전 예시 출처: <a href="https://prompt-motion.com" target="_blank" rel="noopener">prompt-motion.com</a>, 2026-10-11 수집 · 사내 참고용. 영상과 프롬프트는 만든 사람의 것이며, 참고만 하고 그대로 베끼지 않습니다. 실전 예시 영상은 만든 사람의 원본(외부 영상을 못 여는 Artifact 에서는 미리보기용으로 줄인 사본)이고, 카드 내용은 원문 프롬프트를 우리 말로 새로 정리한 것입니다. 원본 화질은 «원본 영상 보기»로 엽니다.<br>요청 카드 출처: <a href="https://nondev-thinking.web.app/motion/" target="_blank" rel="noopener">모션그래픽 주문 사전</a>(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 · 사내 참고용. 이 화면의 재생은 카드에 적힌 장면 순서와 초를 그대로 따라가는 진행표이고, 실제 그림 미리보기는 카드마다 있는 «원본 미리보기» 링크에서 볼 수 있습니다. 요청 문장은 meta-motion 플러그인의 <code>motion.py show</code> 와 같은 규칙으로 만듭니다.<br>레지스트리 출처: <a href="https://github.com/heygen-com/hyperframes/tree/main/registry" target="_blank" rel="noopener">HyperFrames 공식 레지스트리</a>(HeyGen, Apache-2.0) · 목록 그림은 각 항목을 직접 렌더한 한 장면, 영상은 공식 미리보기가 있는 항목만 · 카드 내용은 영어 설명과 타임라인 코드를 우리 말로 새로 정리한 것입니다. 남의 제품 화면·실제 계정을 흉내 낸 항목은 그 회사·그 사람 영상이 아니면 쓰지 않습니다.</footer>
 </div>
 
 <script>
@@ -204,12 +204,19 @@ const g = () => ({ ratio: RATIO[$('#ratio').value] ?? '', color: $('#color').val
 const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
 // KB(kb.pilldoc.co.kr)처럼 외부 영상을 막지 않는 곳은 window.MOTION_MEDIA = 'origin' 으로 원본 영상·그림을 바로 쓴다(Artifact 는 CSP 가 막아 함께 올린 사본을 쓴다)
 const ORIGIN = window.MOTION_MEDIA === 'origin';
-const poster = (it) => !it.pm?.poster ? '' : ORIGIN ? url(it.pm.poster) : `${BASE}posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}`;
-const clip = (it) => ORIGIN ? url(it.pm.video) : `${BASE}clips/${esc(it.code)}.mp4`;
+const poster = (it) => it.hf ? `${BASE}hf_thumb/${esc(it.code)}.jpg` : !it.pm?.poster ? '' : ORIGIN ? url(it.pm.poster) : `${BASE}posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}`;
+// 레지스트리 영상은 공식 미리보기가 있는 항목만, 외부 영상을 여는 곳(KB)에서만 — 없으면 직접 렌더한 그림 위에서 진행표를 넘긴다
+const clip = (it) => it.hf ? (ORIGIN && it.hf.preview?.video ? url(it.hf.preview.video) : '') : ORIGIN ? url(it.pm.video) : `${BASE}clips/${esc(it.code)}.mp4`;
+const media = (it) => it.pm || it.hf;
+const HF_CMD = (it) => `python3 motion.py registry-add ${it.code} --dir <프로젝트>`;
+const BRAND = new Set(['instagram', 'tiktok', 'spotify', 'slack', 'heygen', 'chatgpt', 'claude', 'youtube', 'apple', 'google', 'figma', 'github', 'x', 'twitter', 'linkedin']);
+const isBrand = (it) => !!it.hf && (it.code.split('-').some((w) => BRAND.has(w)) || /@\w/.test(it.hf.description)); // hf.py is_brand 와 같은 규칙
 // 영상이 읽혔으면 영상 시각이 재생 기준, 없거나 못 읽으면 포스터 위에서 타이머로 넘긴다
 const vid = () => { const v = $('#vid'); return v && !v.error && v.readyState >= 1 ? v : null; };
-const credit = (it) => it.pm ? `\n[참고한 실전 예시] ${it.code} — ${it.pm.creator} (${it.pm.url}) · 참고만 하고 그대로 베끼지 않음` : '';
+const credit = (it) => it.pm ? `\n[참고한 실전 예시] ${it.code} — ${it.pm.creator} (${it.pm.url}) · 참고만 하고 그대로 베끼지 않음`
+  : it.hf ? `\n[출발점] HyperFrames 레지스트리 ${it.code} (Apache-2.0) — ${HF_CMD(it)} 로 받아 이 사양대로 고친다` : '';
 const aspectOf = (it) => {
+  if (it.hf) { const d = it.hf.dimensions; return d ? `${d.width} / ${d.height}` : '16 / 9'; }
   const m = it.pm?.size?.match(/^(\d+)x(\d+)$/);
   return m ? `${m[1]} / ${m[2]}` : ASPECT[$('#ratio').value];
 };
@@ -234,9 +241,9 @@ function renderList() {
   const hit = ITEMS.filter((it) => (!cat || it.cat === cat) && qs.every((q) => it.hay.includes(q)));
   $('#list').innerHTML = `<p class="count">${hit.length}개${qs.length || cat ? ` · 전체 ${ITEMS.length}개 중` : ''}</p>` + (hit.length ? hit.map((it) => `
     <button type="button" class="card has-pic" data-code="${esc(it.code)}" aria-current="${cur?.code === it.code}">
-      <img class="pic" src="${it.pm ? poster(it) : `${BASE}anim/thumb/${esc(it.code)}.jpg`}" alt="" loading="lazy" style="aspect-ratio:${it.pm ? aspectOf(it) : '16 / 9'}" onerror="this.remove()">
-      <span class="top">${it.pm ? '' : `<span class="code">${esc(it.code)}</span>`}<b>${esc(it.name)}</b></span>
-      <span class="en">${esc(it.en)}${it.pm ? ` · ${esc(it.pm.creator)}` : ''}</span>
+      <img class="pic" src="${media(it) ? poster(it) : `${BASE}anim/thumb/${esc(it.code)}.jpg`}" alt="" loading="lazy" style="aspect-ratio:${media(it) ? aspectOf(it) : '16 / 9'}" onerror="this.remove()">
+      <span class="top">${media(it) ? '' : `<span class="code">${esc(it.code)}</span>`}<b>${esc(it.name)}</b></span>
+      <span class="en">${esc(it.en)}${it.pm ? ` · ${esc(it.pm.creator)}` : it.hf ? ' · HyperFrames' : ''}</span>
       <p class="plain">${esc(it.plain)}</p>
       <span class="mini" aria-hidden="true">${miniBar(it)}</span>
       <span class="len">⏱ ${esc(it.len)} · ${esc(KIND[it.dx.kind] || '')}</span>
@@ -248,20 +255,21 @@ function select(code, scroll) {
   cur = it; vals = {}; play.t = 0; play.segs = segsOf(it); play.len = Math.max(...play.segs.map((b) => b.t1));
   try { history.replaceState(null, '', '#' + code); } catch {}
   document.querySelectorAll('.card').forEach((el) => el.setAttribute('aria-current', el.dataset.code === code));
-  const untimed = play.segs[0]?.untimed, rules = (it.dx.beats || []).filter((b) => b.label && !untimed), p = it.pm;
-  const tall = (it.pm ? aspectOf(it) : ASPECT[$('#ratio').value]).match(/^(\d+) \/ (\d+)$/).slice(1).map(Number);
+  const untimed = play.segs[0]?.untimed, rules = (it.dx.beats || []).filter((b) => b.label && !untimed), p = it.pm, h = it.hf, v = media(it) && clip(it);
+  const tall = (media(it) ? aspectOf(it) : ASPECT[$('#ratio').value]).match(/^(\d+) \/ (\d+)$/).slice(1).map(Number);
   $('#detail').innerHTML = `
-    <div>${p ? '' : `<span class="code">${esc(it.code)}</span> `}<span class="en">${esc(it.cat)}</span><h2>${esc(it.name)}</h2><span class="en">${esc(it.en)} · ⏱ ${esc(it.len)}${p ? ` · ${esc(p.creator)}` : ''}</span></div>
-    <div class="stage ${esc(it.dx.kind)}${p ? ' pic' : ''}" id="stage" style="aspect-ratio:${aspectOf(it)}${tall[1] > tall[0] ? ';max-width:300px' : ''}">
-      ${p ? `<video id="vid" src="${clip(it)}" poster="${poster(it)}" muted loop playsinline preload="auto" aria-label="${esc(p.title)} 실제 영상"></video>` : ''}
+    <div>${media(it) ? '' : `<span class="code">${esc(it.code)}</span> `}<span class="en">${esc(it.cat)}</span><h2>${esc(it.name)}</h2><span class="en">${esc(it.en)} · ⏱ ${esc(it.len)}${p ? ` · ${esc(p.creator)}` : h ? ' · HyperFrames 레지스트리' : ''}</span></div>
+    ${isBrand(it) ? '<p class="ext">남의 제품 화면·로고·실제 계정을 흉내 낸 항목입니다. 그 회사·그 사람 영상이 아니면 쓰지 않습니다.</p>' : ''}
+    <div class="stage ${esc(it.dx.kind)}${media(it) ? ' pic' : ''}" id="stage" style="aspect-ratio:${aspectOf(it)}${tall[1] > tall[0] ? ';max-width:300px' : ''}">
+      ${v ? `<video id="vid" src="${v}" poster="${poster(it)}" muted loop playsinline preload="auto" aria-label="${esc(p?.title || it.en)} 실제 영상"></video>` : h ? `<img src="${poster(it)}" alt="${esc(it.en)} 렌더 장면">` : ''}
       <span class="kind">${esc(KIND[it.dx.kind] || '장면')}</span><span class="tc" id="tc"></span>
-      ${p ? '' : '<iframe id="anim" sandbox="allow-scripts" title="샘플 화면" hidden></iframe><div class="say" id="say"></div>'}<span class="fill" id="fill"></span>
+      ${media(it) ? '' : '<iframe id="anim" sandbox="allow-scripts" title="샘플 화면" hidden></iframe><div class="say" id="say"></div>'}<span class="fill" id="fill"></span>
     </div>
-    <div class="say sub" id="say2" ${p ? '' : 'hidden'}></div>
+    <div class="say sub" id="say2" ${media(it) ? '' : 'hidden'}></div>
     <div class="tl">
       <div class="track" id="track">${play.segs.map((b, i) => `<button type="button" class="seg ${b.hold ? 'h' : ''}" data-i="${i}" style="flex:${b.t1 - b.t0}" title="${esc(b.label || span(b.t0, b.t1))}">${b.untimed ? i + 1 : esc(num(r1(b.t0)) + '초')}</button>`).join('')}<span class="head" id="head"></span></div>
-      <div class="ctl"><button type="button" class="btn" id="pp"></button>${p ? '<button type="button" class="btn" id="snd">소리 켜기</button>' : ''}
-        ${untimed ? '<span>초 단위 기준이 없어 순서만 2.5초씩 넘겨 보여 줍니다.</span>' : `<span>${p ? `실제 영상 ${num(play.len)}초 기준` : `미리보기 기준 ${num(it.dx.base || play.len)}초`} · 길이를 정하면 같은 비율로 늘어납니다</span><span class="legend"><span><i></i>움직임</span><span><i class="h"></i>머묾</span></span>`}
+      <div class="ctl"><button type="button" class="btn" id="pp"></button>${v ? '<button type="button" class="btn" id="snd">소리 켜기</button>' : ''}
+        ${untimed ? '<span>초 단위 기준이 없어 순서만 2.5초씩 넘겨 보여 줍니다.</span>' : `<span>${v ? `실제 영상 ${num(play.len)}초 기준` : `미리보기 기준 ${num(it.dx.base || play.len)}초`} · 길이를 정하면 같은 비율로 늘어납니다</span><span class="legend"><span><i></i>움직임</span><span><i class="h"></i>머묾</span></span>`}
       </div>
     </div>
     ${p ? `<div class="links">
@@ -269,6 +277,11 @@ function select(code, scroll) {
       ${p.source ? `<a class="btn" href="${url(p.source)}" target="_blank" rel="noopener">원문 글 ↗</a>` : ''}
       ${p.creator_url ? `<a class="btn" href="${url(p.creator_url)}" target="_blank" rel="noopener">만든 사람 ↗</a>` : ''}
     </div>` : ''}
+    ${h ? `<div class="links">
+      <a class="btn pri" href="https://hyperframes.heygen.com/catalog/${esc(h.type)}s/${esc(it.code)}" target="_blank" rel="noopener">레지스트리에서 보기 ↗</a>
+      <a class="btn" href="https://github.com/heygen-com/hyperframes/tree/main/registry/${esc(h.type)}s/${esc(it.code)}" target="_blank" rel="noopener">원본 코드 ↗</a>
+    </div>
+    <div><h3>받아서 고치기 · HyperFrames 프로젝트 폴더에서</h3><pre class="en-txt" tabindex="0">${esc(HF_CMD(it))}</pre></div>` : ''}
     ${rules.length ? `<div><h3>처음부터 끝까지 지키는 것</h3><ul class="rules">${rules.map((b) => `<li><b>${esc(b.label)}</b> — ${esc(strip(b.s))}</li>`).join('')}</ul></div>` : ''}
     <dl>
       <dt>이럴 때</dt><dd>${esc(it.when)}</dd>
@@ -276,6 +289,7 @@ function select(code, scroll) {
       ${it.dx.look ? `<dt>모양</dt><dd>${esc(strip(it.dx.look))}</dd>` : ''}
       ${it.dx.avoid ? `<dt>하지 말 것</dt><dd>${esc(strip(it.dx.avoid))}</dd>` : ''}
       ${p ? `<dt>만든 방법</dt><dd>${esc([p.model, p.effort && 'effort ' + p.effort, p.iterations, p.posted].filter(Boolean).join(' · '))}</dd>`
+          : h ? `<dt>원본</dt><dd>${esc([h.type === 'block' ? '장면 블록' : h.composition ? '장면 컴포넌트' : '붙여 넣는 조각', h.dimensions && `${h.dimensions.width}x${h.dimensions.height}`, 'Apache-2.0'].filter(Boolean).join(' · '))}</dd>`
           : `<dt>원본</dt><dd><a href="https://nondev-thinking.web.app/motion/#${esc(it.code)}" target="_blank" rel="noopener">원본 미리보기 ↗</a></dd>`}
     </dl>
     ${it.fields.length ? `<div><h3>칸 채우기 · 비우면 예시나 생략으로 들어갑니다</h3><div class="fields">${it.fields.map((f) => `<label for="f-${esc(f.k)}">${esc(f.label)}${f.opt ? ' (선택)' : ''}<input id="f-${esc(f.k)}" data-k="${esc(f.k)}" type="text" placeholder="${esc(f.ex)}"></label>`).join('')}</div></div>` : ''}
@@ -289,7 +303,7 @@ function select(code, scroll) {
       <pre class="en-txt" tabindex="0">${esc(p.prompt)}</pre></details>` : ''}`;
   renderAsk(); draw(); animOk = false;
   // 요청 카드 샘플(build_card_anim.py) — 스크립트만 허용한 격리 iframe 에 띄우고 진행표 시각을 보낸다. 없으면 글 진행표만
-  if (!p) fetch(`${BASE}anim/${encodeURIComponent(it.code)}.html`).then((r) => r.ok ? r.text() : null).then((h) => { if (h && cur === it && $('#anim')) { $('#anim').srcdoc = h; $('#anim').hidden = false; } }).catch(() => {});
+  if (!media(it)) fetch(`${BASE}anim/${encodeURIComponent(it.code)}.html`).then((r) => r.ok ? r.text() : null).then((h) => { if (h && cur === it && $('#anim')) { $('#anim').srcdoc = h; $('#anim').hidden = false; } }).catch(() => {});
   if (scroll && matchMedia('(max-width: 900px)').matches) $('#detail').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
 }
 function renderAsk() { if (cur && $('#ask')) $('#ask').textContent = (lvl === 's' ? simple(pre(), cur, vals, g()) : detail(pre(), cur, vals, g())) + credit(cur); }
@@ -353,12 +367,15 @@ document.addEventListener('change', (e) => {
 for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if (v !== null) $('#' + k).value = v; }
 // 게시본은 자료를 같은 폴더에, repo 는 data/ 아래에 둔다 — 없으면 data/ 에서 찾는다
 const load = (f) => fetch(f).then((r) => r.ok ? r : fetch('data/' + f).then((d) => { if (!d.ok) throw new Error(`${f} ${r.status}`); BASE = 'data/'; return d; })).then((r) => r.json());
-Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json')]).then(([cards, ex, ko]) => {
+const optional = (f, empty) => load(f).catch(() => empty);  // 레지스트리 자료가 없는 옛 게시본에서도 나머지는 뜬다
+Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {})]).then(([cards, ex, ko, reg, hko]) => {
   const pm = ex.filter((e) => ko[e.id]).map((e) => ({ ...ko[e.id], code: e.id, en: e.title, inds: e.tags.map((t) => TAG[t] || t), src: 'pm', pm: e }));
-  // 두 출처를 나누지 않고 분류별로 번갈아 섞는다(2026-10-12 «요청카드와 실전 예시를 왜 분리한거야?»)
-  const all = [...cards.map((c) => ({ ...c, src: 'card' })), ...pm], order = [...new Set(all.map((it) => it.cat))];
-  ITEMS = order.flatMap((k) => { const a = all.filter((it) => it.cat === k && !it.pm), b = all.filter((it) => it.cat === k && it.pm); return Array.from({ length: Math.max(a.length, b.length) }, (_, i) => [a[i], b[i]]).flat().filter(Boolean); });
-  for (const it of ITEMS) it.hay = [it.code, it.name, it.en, it.plain, it.when, it.cat, ...it.inds, it.pm?.creator, ...(it.pm?.tags || [])].join(' ').toLowerCase();
+  const hf = reg.items.filter((r) => hko[r.name]?.tpl).map((r) => ({ ...hko[r.name], code: r.name, en: r.title, inds: r.tags, src: 'hf', hf: r }));
+  // 출처를 나누지 않고 분류별로 번갈아 섞는다(2026-10-12 «요청카드와 실전 예시를 왜 분리한거야?» — 레지스트리도 같은 규칙)
+  const all = [...cards.map((c) => ({ ...c, src: 'card' })), ...pm, ...hf], order = [...new Set(all.map((it) => it.cat))];
+  ITEMS = order.flatMap((k) => { const by = ['card', 'pm', 'hf'].map((s) => all.filter((it) => it.cat === k && it.src === s)); return Array.from({ length: Math.max(...by.map((a) => a.length)) }, (_, i) => by.map((a) => a[i])).flat().filter(Boolean); });
+  for (const it of ITEMS) it.hay = [it.code, it.name, it.en, it.plain, it.when, it.cat, ...it.inds, it.pm?.creator, ...(it.pm?.tags || []), it.hf && 'hyperframes 레지스트리'].join(' ').toLowerCase();
+  $('#total').textContent = ITEMS.length;
   const h = decodeURIComponent(location.hash.slice(1));
   renderChips(); renderList();
   select((ITEMS.find((it) => it.code === h || it.code === h.toUpperCase()) || ITEMS[0]).code);
