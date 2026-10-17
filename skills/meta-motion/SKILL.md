@@ -1,6 +1,6 @@
 ---
 name: meta-motion
-description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com 실전 예시(Claude 로 만든 영상의 프롬프트 230여 개) — 영상·쇼츠·인트로·광고·안내 영상을 만들거나 고칠 때 장면마다 맞는 카드(자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩)를 찾아 그 «자세히» 문장(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 장면 사양으로 쓴다. HyperFrames·Remotion·HTML 애니메이션 어느 도구든 적용. 트리거 — "/meta-motion", "meta-motion", "motion-prompt"(옛 이름), "모션그래픽", "모션 그래픽", "모션 템플릿", "영상 만들어", "영상 제작", "영상 만들기", "쇼츠 만들어", "숏폼", "인트로 영상", "로고 인트로", "오프닝 타이틀", "엔딩 화면", "구독 버튼", "자막 애니메이션", "자막 효과", "키네틱 타이포", "장면 전환", "트랜지션", "켄 번스", "하이퍼프레임", "hyperframes", "remotion", "리모션", "nondev motion", "prompt-motion", "prompt motion", "모션 프롬프트 예시".
+description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com 실전 예시(Claude 로 만든 영상의 프롬프트 230여 개) + HyperFrames 공식 레지스트리(블록·컴포넌트 444개 찾기·넣기) — 영상·쇼츠·인트로·광고·안내 영상을 만들거나 고칠 때 장면마다 맞는 카드(자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩)를 찾아 그 «자세히» 문장(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 장면 사양으로 쓴다. HyperFrames·Remotion·HTML 애니메이션 어느 도구든 적용. 트리거 — "/meta-motion", "meta-motion", "motion-prompt"(옛 이름), "모션그래픽", "모션 그래픽", "모션 템플릿", "영상 만들어", "영상 제작", "영상 만들기", "쇼츠 만들어", "숏폼", "인트로 영상", "로고 인트로", "오프닝 타이틀", "엔딩 화면", "구독 버튼", "자막 애니메이션", "자막 효과", "키네틱 타이포", "장면 전환", "트랜지션", "켄 번스", "하이퍼프레임", "hyperframes", "hyperframes registry", "하이퍼프레임 레지스트리", "자막 스타일", "하단 자막", "lower third", "remotion", "리모션", "nondev motion", "prompt-motion", "prompt motion", "모션 프롬프트 예시".
 ---
 
 # meta-motion
@@ -32,6 +32,8 @@ python3 $M order T01 I02 --ratio 세로   # 여러 카드를 한 요청으로(�
 python3 $M examples chart          # prompt-motion.com 실전 예시 찾기(영어 · 태그 product-ui·kinetic-type·charts 등)
 python3 $M recommend script.txt    # 스크립트(빈 줄 = 장면)를 장면별로 나눠 어울리는 카드 3개씩 추천 — Jev, 글이 api.typesafe.ai 로 나감
 python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람·원문·영상 링크
+python3 $M registry caption karaoke  # HyperFrames 공식 레지스트리 444개 찾기(영어 · --type block|component · --portrait)
+python3 $M registry-add caption-pill-karaoke --dir <프로젝트> --start 0 --track 2   # 받기 + host 조각 + 고칠 곳
 ```
 
 - 비운 필수 칸은 사이트 예시값이, 비운 선택 칸은 그 구절이 통째로 빠진다.
@@ -51,10 +53,26 @@ python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람�
 1. 영상을 장면 단위로 나눈다 — 첫 장면은 인트로, 마지막 장면은 아웃트로로 고정하고 그 사이를 본문(설명·데이터·전환·자막 등)으로 나눈다.
 2. 장면마다 맞는 카드를 1개씩 고른다 — 스크립트·대본이 있으면 먼저 `recommend`(장면 = 빈 줄로 나눈 문단, stdin 은 `-`)로 후보를 받고, «확신 낮음» 장면이나 Jev 를 못 쓰면(키·클라이언트 없음) `python3 $M list` 전체 목록(152줄)·`search` 로 고른다. 외부로 보내면 안 되는 대본(개인정보·미공개 내용)은 `recommend` 에 넣지 않는다. 맞는 카드가 없으면 그 장면은 건너뛴다(억지로 끼우지 않는다).
 3. 고른 카드마다 `fields` 로 칸을 보고 실제 값(제목·파일·숫자·길이)과 영상 비율(`--ratio`)·색(`--color` — 사용자 기본값 7번 템플릿의 `palette.color`)으로 `show`(자세히)를 뽑는다.
-4. 그 문장을 장면 사양으로 삼아 구현한다 — `[장면 순서]` 타이밍·`[볼거리 한 번]`·`[하지 말 것]` 을 지킨다. 대상이 HyperFrames 가 아니면(Remotion·HTML 등) 첫 줄 도구 이름만 무시하고 본문을 따른다.
+4. 그 문장을 장면 사양으로 삼아 구현한다 — `[장면 순서]` 타이밍·`[볼거리 한 번]`·`[하지 말 것]` 을 지킨다. 대상이 HyperFrames 가 아니면(Remotion·HTML 등) 첫 줄 도구 이름만 무시하고 본문을 따른다. 자막 스타일·하단 자막·전환·숫자 세기·차트·글리치·필름 그레인처럼 이름 붙은 효과는 손으로 처음부터 짜기 전에 아래 「HyperFrames 레지스트리」에서 같은 효과를 찾아 출발점으로 쓴다(사양은 여전히 카드가 기준).
 5. 사용자에게 장면별로 쓴 카드 코드·이름을 한 줄씩 밝힌다(예: 「오프닝 T01 입자 로고 인트로」). 인트로·아웃트로 줄은 빠뜨리지 않는다.
 6. 영상 전체의 결·연출 수준을 잡을 참고가 필요하면 `examples <영어 단어>` 로 비슷한 실전 예시 1~2개를 `example` 로 읽고 참고한다 — 그 프롬프트 문장을 그대로 베껴 쓰지 않고, 참고했으면 예시 id·만든 사람을 밝힌다.
 7. **렌더가 성공하면 템플릿 이력을 남긴다**: `python3 fonts.py record <대본파일> --slug <영상 id> --template <쓴 템플릿> --title <제목> [--series <시리즈>] [--published <게시 URL>]`. 렌더가 실패·중단되면 남기지 않는다(`pick` 은 이력을 읽기만 한다). 외부로 보내면 안 되는 대본은 `recommend` 와 마찬가지로 `pick` 에도 넣지 않는다 — 이력 요약 200자가 Jev 로 나간다.
+
+## HyperFrames 레지스트리 (2026-10-17 추가)
+
+렌더 엔진과 같은 repo(heygen-com/hyperframes, Apache-2.0)의 공식 블록 207·컴포넌트 237개. 목록은 `data/hf_registry.json`(build_hf.py), 항목 파일은 쓸 때 받는다(repo 에 싣지 않는다).
+
+1. `registry <영어 단어…>` 로 찾는다 — 자막 스타일 16종은 `registry caption`, 하단 자막 `lower third`, 전환 `transition`, 숫자 `count`, 차트 `chart`. 세로 원본은 `--portrait`(14개뿐 — 대부분 1920x1080).
+2. `registry-add <이름> --dir <프로젝트>` 가 `npx hyperframes add` 로 받고 **host 조각을 lint 통과 꼴로** 준다. CLI 기본 조각은 `id`·`class="clip"`·`data-start`·`data-track-index` 가 빠져 lint 가 막고(`host_missing_composition_id`·`studio_missing_editable_id`), 일부 컴포넌트는 조각 대신 「붙여 넣으라」는 주석만 준다(2026-10-17 실측). 「붙여 넣는 조각」이라고 나오면 마크업·CSS 를 장면 하위 컴포지션에 옮기고 움직임은 그 장면 타임라인에 건다.
+3. 출력의 「고칠 곳」을 고친다 — 자동으로 고치지 않는다(항목마다 상수 이름이 달라 일반화 불가). ① 비율: 9:16 프로젝트에 1920x1080 항목을 그대로 넣으면 띠가 화면 밖으로 나가고(`panel_out_of_canvas`) 위치가 화면 가운데에 뜬다 — viewport·html/body·루트 data-width/height·폭 상수·아래 여백을 세로로 바꾸고 host 의 data-width/height 도 맞춘다(caption-pill-karaoke 를 1080x1920·폭 920·아래 380px 로 바꿔 check 레이아웃 0건, 한글 두 줄 자동 나눔 확인). ② 서체: 레지스트리는 영문 Google Fonts(Inter·Poppins·Montserrat 등)라 한글이 기본 글꼴로 떨어진다 — 사용자 기본값 5번 서체로 바꾼다(캔버스로 글자 폭을 재는 항목은 `FONT_FAMILY` 상수도). ③ 색: 사용자 기본값 7번 템플릿 색으로 바꾸고 check 대비 경고를 없앤다.
+4. `⚠브랜드 흉내` 로 표시된 항목(남의 제품 화면·로고·실제 @계정 — chatgpt-exchange·instagram-follow·x-post 등 13개)은 그 회사·그 사람 영상이 아니면 쓰지 않는다.
+5. 쓰지 않는 항목: canopy-part-title·glass-shard-title·frost-sequence-camera-orbit — repo CREDITS.md 가 자산 출처를 「작성자 확인 필요」로 적었다. 목록에서 빠져 있고 `registry-add` 가 거절한다.
+
+**글자·단어 단위 키네틱 타이포는 GSAP SplitText**: HyperFrames 런타임·레지스트리는 GSAP 본체만 불러온다(레지스트리 HTML 에 SplitText 사용 0건). 컴포지션에 `<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/SplitText.min.js"></script>` 를 GSAP 다음 줄에 넣고 `gsap.registerPlugin(SplitText)` → `SplitText.create(el, { type: 'chars', mask: 'chars' })` → `tl.from(split.chars, { yPercent: 110, stagger: 0.06 })`. 한글 글자 마스크 리빌이 렌더에서 정상(2026-10-17 캡처 확인). GSAP 은 2025-04 부터 SplitText 포함 상업 사용 무료이고, 라이선스 FAQ 가 「AI 가 만든 코드는 금지 용도 아님」이라고 답한다.
+
+**자막 변형 — TikTok 식 단어 강조** (Remotion 공식 template-tiktok 의 수치만 옮김 · Remotion 은 직원 4명 이상 회사는 유료 Company License 라 코드는 가져오지 않는다): 단어를 1.2초 창으로 묶어 한 화면 · 흰 글자 + 검정 외곽선 20px(`-webkit-text-stroke` + `paint-order: stroke fill`) · 화면 폭 90% 안에서 최대 120px · 화면 아래에서 350px 위 · 지금 말하는 단어만 강조색(원본 `#39E508`, 템플릿 `accent` 가 우선) · 묶음이 바뀔 때 scale 0.8→1·y 50→0 을 약 0.17초 ease-out.
+
+참고로 읽을 것(설치하지 않는다 — 읽기만): 공식 스킬 21개 https://github.com/heygen-com/hyperframes/tree/main/skills (embedded-captions·motion-graphics·remotion-to-hyperframes 등) · GSAP 공식 스킬 https://github.com/greensock/gsap-skills (MIT) · https://github.com/iart-ai/motion-skills (MIT, 키네틱 타이포·데이터 시각화·쇼츠 스킬 50개).
 
 ## 사용자에게 줄 때 (프롬프트 자체를 원할 때)
 
@@ -69,6 +87,7 @@ python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람�
 
 사이트가 바뀌면 `python3 <이 스킬 폴더>/build.py` — data/motion.json·compose.mjs 를 다시 받는다.
 실전 예시는 `python3 <이 스킬 폴더>/build_pm.py` — sitemap 의 항목 페이지를 1초 간격으로 읽어 data/prompt_motion.json 을 다시 만든다(약 4분, 90% 미만 파싱이면 중단).
+HyperFrames 레지스트리 목록은 `python3 <이 스킬 폴더>/build_hf.py` — `npx hyperframes@0.8.162 catalog --json` 을 받아 data/hf_registry.json 을 다시 만든다(400개 미만이면 중단). 렌더 고정 버전을 올리면 `build_hf.py` 의 `HF` 도 같이 올린다.
 카드 150개 미만이면 중단하고, 조립 규칙이 바뀌었거나 간단 문장이 사이트와 다르면 경고한다(그때는 motion.py 를 compose.mjs 에 맞춰 고친다).
 
 ## 파일
@@ -76,6 +95,8 @@ python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람�
 - `data/motion.json` — 카드 152개: code·cat·name·en·plain·len·when·inds·fields·tpl·dx(자세히 재료)
 - `data/compose.mjs` — 사이트 원본 조립 코드(참조용 · 수정 금지, build.py 가 덮어씀)
 - `data/prompt_motion.json` — prompt-motion.com 예시: id·title·type(Prompt/Skill)·tags·prompt·creator·source·model·effort·iterations·posted·url·video
+- `data/hf_registry.json` — HyperFrames 공식 레지스트리 목록 444개: name·type·title·description·tags·dimensions·duration + 출처·라이선스·받은 날·제외 항목
+- `hf.py` — 레지스트리 찾기·넣기(`motion.py registry`·`registry-add`) · `build_hf.py` — 목록 다시 받기 · `test_hf.py` — 목록·제외·host 조각·고칠 곳 검사
 - `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사·이력(`pick`·`list`·`install`·`record`·`history`·`templates`) · `test_fonts.py` — 템플릿 대비·서체·라이선스·이력 검사
   - `python3 fonts.py templates` 는 템플릿·서체(절대 경로) JSON 을 부수 효과 없이 낸다 — 다른 렌더러가 같은 템플릿을 쓰는 통로다. 발행 릴스(`SHC/shconsulting/scripts/instagram/motion/theme.mjs`)가 이것과 `pick`·`record` 를 부른다. 키를 바꾸면 그쪽 `node --test scripts/instagram/motion/theme.test.mjs` 도 돌린다.
 - `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `check_card_anim.mjs` — 샘플 검사·목록 그림(data/anim/thumb) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `recommend.py` — 스크립트 → 장면별 카드 추천(Jev, `motion.py recommend`) · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지
