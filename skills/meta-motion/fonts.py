@@ -24,6 +24,7 @@
   python3 fonts.py record script.txt --slug <id> --template <id> [--title 제목] [--series 시리즈] [--published URL]
                                                               # 렌더가 끝난 영상을 템플릿 이력에 남긴다
   python3 fonts.py history [N]                               # 최근 이력(기본 200건) · --history <파일> 로 원장 바꾸기
+  python3 fonts.py templates                                 # 템플릿·서체 카탈로그 JSON(서체 파일 절대 경로 포함 · Jev·설치 없음)
   python3 fonts.py pick script.txt --font jua                # 서체만 바꾼다
 
 규칙: 같은 시리즈 이력이 있으면 그 템플릿을 그대로 쓴다. 없으면 Jev 한 번(choice 세 문항 — 분위기·템플릿·비슷한 이전 영상)으로
@@ -456,12 +457,17 @@ def opt(argv, name):
 
 
 def main(argv):
-    if len(argv) < 2 or argv[1] not in ("pick", "list", "install", "record", "history"):
+    if len(argv) < 2 or argv[1] not in ("pick", "list", "install", "record", "history", "templates"):
         print(__doc__)
         return 2
     if argv[1] == "install":
         done = ensure_installed()
         print(json.dumps({"dir": USER_FONT_DIR, "installed": done, "total": len(set(f["file"] for f in CATALOG.values()) | set(f["file"] for f in FONTS.values()))}, ensure_ascii=False))
+        return 0
+    if argv[1] == "templates":  # 다른 렌더러(발행 릴스 등)가 색·서체를 읽는 용도 — 부수 효과 없음
+        print(json.dumps({"templates": TEMPLATES, "tone_template": TONE_TEMPLATE, "min_conf": TEMPLATE_MIN_CONF,
+                          "catalog": {k: {**f, "src": os.path.join(FONT_DIR, f["file"])} for k, f in CATALOG.items()}},
+                         ensure_ascii=False))
         return 0
     if argv[1] == "list":
         print("분위기 기본 서체·템플릿:")

@@ -76,5 +76,6 @@ python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람�
 - `data/motion.json` — 카드 152개: code·cat·name·en·plain·len·when·inds·fields·tpl·dx(자세히 재료)
 - `data/compose.mjs` — 사이트 원본 조립 코드(참조용 · 수정 금지, build.py 가 덮어씀)
 - `data/prompt_motion.json` — prompt-motion.com 예시: id·title·type(Prompt/Skill)·tags·prompt·creator·source·model·effort·iterations·posted·url·video
-- `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사(`pick`·`list`·`install`) · `test_fonts.py` — 템플릿 대비·서체·라이선스 검사
+- `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사·이력(`pick`·`list`·`install`·`record`·`history`·`templates`) · `test_fonts.py` — 템플릿 대비·서체·라이선스·이력 검사
+  - `python3 fonts.py templates` 는 템플릿·서체(절대 경로) JSON 을 부수 효과 없이 낸다 — 다른 렌더러가 같은 템플릿을 쓰는 통로다. 발행 릴스(`SHC/shconsulting/scripts/instagram/motion/theme.mjs`)가 이것과 `pick`·`record` 를 부른다. 키를 바꾸면 그쪽 `node --test scripts/instagram/motion/theme.test.mjs` 도 돌린다.
 - `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `check_card_anim.mjs` — 샘플 검사·목록 그림(data/anim/thumb) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `recommend.py` — 스크립트 → 장면별 카드 추천(Jev, `motion.py recommend`) · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지

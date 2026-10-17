@@ -80,4 +80,14 @@ assert [r["slug"] for r in h] == ["pc-1", "ai-daily-1"] and h[-1]["template"] ==
 assert series_template("ai-daily", h) == ("ai-daily-1", "navy-lime") and series_template("other", h) is None
 r = pick("오늘의 AI 소식 둘째", use_jev=False, series="ai-daily")      # 시리즈 일치는 Jev 없이 정해진다
 assert r["template"] == "navy-lime" and r["template_how"] == "series:ai-daily-1"
+
+# templates: 다른 렌더러가 읽는 JSON — 템플릿 전부와 서체 절대 경로
+import contextlib, io, json
+from fonts import main
+buf = io.StringIO()
+with contextlib.redirect_stdout(buf):
+    assert main(["fonts.py", "templates"]) == 0
+d = json.loads(buf.getvalue())
+assert set(d["templates"]) == set(TEMPLATES) and d["min_conf"] == TEMPLATE_MIN_CONF
+assert all(os.path.isabs(f["src"]) and os.path.exists(f["src"]) for f in d["catalog"].values())
 print('ok')
