@@ -17,8 +17,8 @@ HEAD = """<!doctype html>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <script>window.MOTION_MEDIA = 'origin'</script>
 """
-KO = ('prompt_motion_ko.json', 'hf_registry_ko.json')
-BUILD_KEYS = {'src_sha', 'cat_src', 'hold_checked'}
+KO = ('prompt_motion_ko.json', 'hf_registry_ko.json', 'hf_registry.json')  # 만들 때만 쓰는 키를 빼고 내보내는 파일
+BUILD_KEYS = {'src_sha', 'cat_src', 'hold_checked', 'commit'}
 
 
 def strip_build(v):
@@ -38,9 +38,9 @@ def build(out: Path) -> None:
     body = src.removeprefix('<meta charset="utf-8">\n').replace('<h1>', BACK, 1)
     (out / 'index.html').write_text(HEAD + body + '\n</html>\n', encoding='utf-8')
     for f in DATA:
-        if f in KO:  # 만들 때만 쓰는 키(재료 해시 등)는 빼고 내보낸다 — 16진 해시가 KB pre-commit 시크릿 검사에 걸린다(2026-10-17)
+        if f in KO:  # 만들 때만 쓰는 키(재료 해시·repo 커밋)는 빼고 내보낸다 — 16진 해시가 KB pre-commit 시크릿 검사에 걸린다(2026-10-17)
             data = json.loads((HERE / 'data' / f).read_text(encoding='utf-8'))
-            (out / f).write_text(json.dumps({k: strip_build(v) for k, v in data.items()}, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+            (out / f).write_text(json.dumps(strip_build(data), ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
         else:
             shutil.copyfile(HERE / 'data' / f, out / f)
     shutil.rmtree(out / 'anim', ignore_errors=True)

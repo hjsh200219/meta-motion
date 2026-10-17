@@ -11,6 +11,6 @@ with tempfile.TemporaryDirectory() as d:
     assert "window.MOTION_MEDIA = 'origin'" in html and '← PillDocKb</a>\n    <h1>' in html
     assert sorted(p.stem for p in (Path(d) / 'anim').glob('*.html')) == sorted(p.stem for p in (Path(__file__).resolve().parent / 'data/anim').glob('*.html')) and not (Path(d) / 'anim/index.json').exists() and len(list((Path(d) / 'anim/thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/anim/thumb').glob('*.jpg')))
     assert all((Path(d) / f).stat().st_size > 1000 for f in DATA)
-    assert all(k not in (Path(d) / f).read_text(encoding='utf-8') for f in KO for k in ('"src_sha"', '"cat_src"', '"hold_checked"'))
+    assert all(k not in (Path(d) / f).read_text(encoding='utf-8') for f in KO for k in ('"src_sha"', '"cat_src"', '"hold_checked"', '"commit"'))
     assert len(list((Path(d) / 'hf_thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/hf_thumb').glob('*.jpg'))) > 400
 print('ok')
