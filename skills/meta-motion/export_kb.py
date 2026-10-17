@@ -17,8 +17,11 @@ HEAD = """<!doctype html>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <script>window.MOTION_MEDIA = 'origin'</script>
 """
-KO = ('prompt_motion_ko.json', 'hf_registry_ko.json', 'hf_registry.json')  # 만들 때만 쓰는 키를 빼고 내보내는 파일
-BUILD_KEYS = {'src_sha', 'cat_src', 'hold_checked', 'commit'}
+# 만들 때만 쓰는 키(재료 해시·repo 커밋·카드 재료인 변수·싱크 지점)를 빼고 내보내는 파일과 그 꼴.
+# KB PR 의 AI 리뷰는 diff 50만 자 상한이 있다(2026-10-17 #284 초과) — 원래 줄 단위인 파일은 줄 단위(indent=1)로 두어 diff 를 줄이고,
+# 새 파일은 한 줄로 줄여 한 PR 에 하나씩 들어가게 한다.
+KO = {'prompt_motion_ko.json': 1, 'hf_registry_ko.json': None, 'hf_registry.json': None}
+BUILD_KEYS = {'src_sha', 'cat_src', 'cat_p', 'hold_checked', 'commit', 'variables', 'sync'}
 
 
 def strip_build(v):
@@ -40,7 +43,7 @@ def build(out: Path) -> None:
     for f in DATA:
         if f in KO:  # 만들 때만 쓰는 키(재료 해시·repo 커밋)는 빼고 내보낸다 — 16진 해시가 KB pre-commit 시크릿 검사에 걸린다(2026-10-17)
             data = json.loads((HERE / 'data' / f).read_text(encoding='utf-8'))
-            (out / f).write_text(json.dumps(strip_build(data), ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+            (out / f).write_text(json.dumps(strip_build(data), ensure_ascii=False, indent=KO[f], separators=(',', ': ') if KO[f] else (',', ':')), encoding='utf-8')
         else:
             shutil.copyfile(HERE / 'data' / f, out / f)
     shutil.rmtree(out / 'anim', ignore_errors=True)

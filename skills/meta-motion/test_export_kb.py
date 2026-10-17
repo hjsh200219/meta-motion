@@ -12,5 +12,6 @@ with tempfile.TemporaryDirectory() as d:
     assert sorted(p.stem for p in (Path(d) / 'anim').glob('*.html')) == sorted(p.stem for p in (Path(__file__).resolve().parent / 'data/anim').glob('*.html')) and not (Path(d) / 'anim/index.json').exists() and len(list((Path(d) / 'anim/thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/anim/thumb').glob('*.jpg')))
     assert all((Path(d) / f).stat().st_size > 1000 for f in DATA)
     assert all(k not in (Path(d) / f).read_text(encoding='utf-8') for f in KO for k in ('"src_sha"', '"cat_src"', '"hold_checked"', '"commit"'))
+    assert all(len((Path(d) / f).read_text(encoding='utf-8')) < 480_000 for f in KO)   # KB PR AI 리뷰 diff 상한 50만 자 — 파일 하나가 한 PR 에 들어가야 한다
     assert len(list((Path(d) / 'hf_thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/hf_thumb').glob('*.jpg'))) > 400
 print('ok')
