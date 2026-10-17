@@ -98,8 +98,10 @@ def thumb(it):
         shutil.copytree(d, proj)
         # 자산은 registry-item.json 의 설치 위치(target, 예: assets/background.jpeg)에 둔다 — 항목 HTML 이 그 경로로 부른다
         for x in json.loads((d / 'registry-item.json').read_text(encoding='utf-8')).get('files', []):
-            if (d / x['path']).is_file() and '..' not in x['target']:
-                (proj / x['target']).parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(d / x['path'], proj / x['target'])
+            src, dst = (d / x['path']).resolve(), (proj / x['target']).resolve()
+            # 외부 저장소가 적은 경로라 절대 경로·.. 로 항목 폴더·임시 프로젝트 밖을 가리키면 건너뛴다
+            if src.is_file() and src.is_relative_to(d.resolve()) and dst.is_relative_to(proj.resolve()):
+                dst.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(src, dst)
         best = (0, None)  # (또렷함, 시점)
         for html in attempts(it, d, f, proj):
             (proj / 'index.html').write_text(html, encoding='utf-8')

@@ -3,7 +3,7 @@
 KB 에는 외부 영상을 막는 CSP 가 없어 원본 영상·그림을 바로 쓴다(window.MOTION_MEDIA='origin'). 접근은 KB 로그인(kb 역할)이 막는다.
 실행: python3 export_kb.py <PillDocKb>/site/motion   → index.html + motion.json·prompt_motion.json·prompt_motion_ko.json·hf_registry.json·hf_registry_ko.json
                                                      + anim/(요청 카드 샘플) + hf_thumb/(레지스트리 렌더 그림)"""
-import shutil, sys
+import json, shutil, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -17,6 +17,16 @@ HEAD = """<!doctype html>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
 <script>window.MOTION_MEDIA = 'origin'</script>
 """
+KO = ('prompt_motion_ko.json', 'hf_registry_ko.json')
+BUILD_KEYS = {'src_sha', 'cat_src', 'hold_checked'}
+
+
+def strip_build(v):
+    if isinstance(v, dict): return {k: strip_build(x) for k, x in v.items() if k not in BUILD_KEYS}
+    if isinstance(v, list): return [strip_build(x) for x in v]
+    return v
+
+
 DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_registry.json', 'hf_registry_ko.json')
 BACK = '<a href="/" style="color:inherit;opacity:.7;font-size:13px;text-decoration:none">← PillDocKb</a>\n    <h1>'
 
@@ -28,7 +38,11 @@ def build(out: Path) -> None:
     body = src.removeprefix('<meta charset="utf-8">\n').replace('<h1>', BACK, 1)
     (out / 'index.html').write_text(HEAD + body + '\n</html>\n', encoding='utf-8')
     for f in DATA:
-        shutil.copyfile(HERE / 'data' / f, out / f)
+        if f in KO:  # 만들 때만 쓰는 키(재료 해시 등)는 빼고 내보낸다 — 16진 해시가 KB pre-commit 시크릿 검사에 걸린다(2026-10-17)
+            data = json.loads((HERE / 'data' / f).read_text(encoding='utf-8'))
+            (out / f).write_text(json.dumps({k: strip_build(v) for k, v in data.items()}, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+        else:
+            shutil.copyfile(HERE / 'data' / f, out / f)
     shutil.rmtree(out / 'anim', ignore_errors=True)
     shutil.copytree(HERE / 'data' / 'anim', out / 'anim', ignore=shutil.ignore_patterns('index.json'))
     shutil.rmtree(out / 'hf_thumb', ignore_errors=True)
