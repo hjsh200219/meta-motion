@@ -31,7 +31,7 @@ python3 $M show I02 --simple           # 간단
 python3 $M show caption-pill-karaoke -v # 실전 예시 id·레지스트리 이름도 같은 «자세히» 사양 — 끝에 만든 사람 / 받는 명령이 붙는다
 python3 $M order T01 I02 --ratio 세로   # 여러 카드를 한 요청으로(사이트 «주문서»)
 python3 $M examples chart          # prompt-motion.com 실전 예시 찾기(영어 · 태그 product-ui·kinetic-type·charts 등)
-python3 $M recommend script.txt    # 스크립트(빈 줄 = 장면)를 장면별로 나눠 어울리는 카드 3개씩 추천(세 출처 섞어서) — Jev, 글이 api.typesafe.ai 로 나감
+python3 $M recommend script.txt    # 스크립트(빈 줄 = 장면)를 장면별로 나눠 어울리는 카드 3개씩 추천(세 출처 섞어서, 기본 세로 — 가로는 -h, 기계용 --json) — Jev, 글이 api.typesafe.ai 로 나감
 python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람·원문·영상 링크
 python3 $M registry caption karaoke  # HyperFrames 공식 레지스트리 444개 찾기(영어 · --type block|component · --portrait)
 python3 $M registry-add caption-pill-karaoke --dir <프로젝트> --start 0 --track 2   # 받기 + host 조각 + 고칠 곳
@@ -52,7 +52,7 @@ python3 $M registry-add caption-pill-karaoke --dir <프로젝트> --start 0 --tr
    - 기존 영상을 고칠 때 인트로·아웃트로가 없으면 같이 넣는다. 사용자가 「인트로 빼고」처럼 명시적으로 빼라고 한 경우만 생략하고, 그 사실을 보고에 적는다.
    - 음성이 있으면 인트로·아웃트로에도 짧은 멘트(제목·인사)를 붙이고, 아웃트로 끝에는 1~2초 여운을 둔다.
 1. 영상을 장면 단위로 나눈다 — 첫 장면은 인트로, 마지막 장면은 아웃트로로 고정하고 그 사이를 본문(설명·데이터·전환·자막 등)으로 나눈다.
-2. 장면마다 맞는 카드를 1개씩 고른다 — 스크립트·대본이 있으면 먼저 `recommend`(장면 = 빈 줄로 나눈 문단, stdin 은 `-`)로 후보를 받고, «확신 낮음» 장면이나 Jev 를 못 쓰면(키·클라이언트 없음) `python3 $M list <분류>`·`search` 로 고른다(전체 829줄은 길다 — 분류로 좁힌다). 외부로 보내면 안 되는 대본(개인정보·미공개 내용)은 `recommend` 에 넣지 않는다. 맞는 카드가 없으면 그 장면은 건너뛴다(억지로 끼우지 않는다).
+2. 장면마다 맞는 카드를 1개씩 고른다 — 스크립트·대본이 있으면 먼저 `recommend`(장면 = 빈 줄로 나눈 문단, stdin 은 `-`)로 후보를 받고(세로 영상이면 가로 고정 레지스트리 항목은 후보에서 빠지고, 영상 비율 깃발 `-v`/`-h` 를 그대로 넘긴다 · 카드마다 «적합도» = Jev 가 «이 장면을 이 모션으로 잘 보여 주나»에 답한 예 확률), 1위 적합도 0.5 미만 «확신 낮음» 장면이나 Jev 를 못 쓰면(키·클라이언트 없음) `python3 $M list <분류>`·`search` 로 고른다(전체 829줄은 길다 — 분류로 좁힌다). 외부로 보내면 안 되는 대본(개인정보·미공개 내용)은 `recommend` 에 넣지 않는다. 맞는 카드가 없으면 그 장면은 건너뛴다(억지로 끼우지 않는다).
    추천·목록의 코드는 세 가지다 — 요청 카드(`I02`), 실전 예시(`emollick-8661a8`, 만든 사람 표기 필수), 레지스트리(`caption-pill-karaoke`, `registry-add` 로 원본 컴포지션을 받아 출발점으로). 셋 다 `fields`·`show` 가 같은 꼴로 동작한다.
 3. 고른 카드마다 `fields` 로 칸을 보고 실제 값(제목·파일·숫자·길이)과 영상 비율(`--ratio`)·색(`--color` — 사용자 기본값 7번 템플릿의 `palette.color`)으로 `show`(자세히)를 뽑는다.
 4. 그 문장을 장면 사양으로 삼아 구현한다 — `[장면 순서]` 타이밍·`[볼거리 한 번]`·`[하지 말 것]` 을 지킨다. 대상이 HyperFrames 가 아니면(Remotion·HTML 등) 첫 줄 도구 이름만 무시하고 본문을 따른다. 자막 스타일·하단 자막·전환·숫자 세기·차트·글리치·필름 그레인처럼 이름 붙은 효과는 손으로 처음부터 짜기 전에 아래 「HyperFrames 레지스트리」에서 같은 효과를 찾아 출발점으로 쓴다(사양은 여전히 카드가 기준).
@@ -103,4 +103,4 @@ HyperFrames 레지스트리는 세 단계 — ① `python3 build_hf.py`(catalog 
 - `hf.py` — 레지스트리 찾기·넣기(`motion.py registry`·`registry-add`) · `build_hf.py` — 목록 다시 받기 · `build_hf_ko.py` — 분류·한국어 카드 · `build_hf_thumbs.py` — 그림 렌더 · `test_hf.py` — 목록·제외·host 조각·고칠 곳 검사
 - `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사·이력(`pick`·`list`·`install`·`record`·`history`·`templates`) · `test_fonts.py` — 템플릿 대비·서체·라이선스·이력 검사
   - `python3 fonts.py templates` 는 템플릿·서체(절대 경로) JSON 을 부수 효과 없이 낸다 — 다른 렌더러가 같은 템플릿을 쓰는 통로다. 발행 릴스(`SHC/shconsulting/scripts/instagram/motion/theme.mjs`)가 이것과 `pick`·`record` 를 부른다. 키를 바꾸면 그쪽 `node --test scripts/instagram/motion/theme.test.mjs` 도 돌린다.
-- `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `check_card_anim.mjs` — 샘플 검사·목록 그림(data/anim/thumb) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `recommend.py` — 스크립트 → 장면별 카드 추천(Jev, `motion.py recommend`) · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지
+- `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `check_card_anim.mjs` — 샘플 검사·목록 그림(data/anim/thumb) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `recommend.py` — 스크립트 → 장면별 카드 추천(Jev, `motion.py recommend` — 비율 거르기 → 후보 전체 묶음별 결승 → 고른 카드마다 적합도) · `eval_recommend.py` — 추천 품질 재기(게시된 릴스 대본 장면 → recommend → edb-p 심판 1~5점 → 지표, 고친 뒤 비교용) · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지

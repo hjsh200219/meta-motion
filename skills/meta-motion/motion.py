@@ -182,7 +182,7 @@ def main(argv):
         print(f"# {e['title']} — {e['creator']} ({e['source'] or e['creator_url']})\n"
               + ' · '.join(x for x in [e['type'], e['model'], e.get('effort') and 'effort ' + e['effort'], e['iterations'], e['posted'], e['size'], '영상 ' + e['video'], e['url']] if x) + f"\n\n{e['prompt']}\n[외부 수집 자료 끝]")
     elif cmd == 'recommend':  # 스크립트 → 장면별 추천(Jev, 네트워크) — 표준 라이브러리만 쓰는 이 파일과 나눠 둔다
-        import recommend; recommend.main(rest)
+        import recommend; recommend.main(rest + flags)  # -v/-h 는 위에서 떼었으니 다시 넘긴다(recommend 기본은 세로)
     elif cmd in ('registry', 'registry-add'):  # HyperFrames 공식 레지스트리 — 찾기는 저장 목록, 넣기는 npx
         import hf; hf.main((['add'] if cmd == 'registry-add' else ['search']) + rest)
     else:
@@ -194,7 +194,7 @@ def main(argv):
   order <코드…> [칸=값…] [옵션] 여러 카드를 한 요청으로(주문서)
   examples [단어…]             prompt-motion.com 실전 예시 찾기(제목·태그·프롬프트·만든 사람, AND · 영어)
   example <id>                 예시 프롬프트 전문 + 만든 사람·원문·영상 링크
-  recommend <스크립트.txt|-> [--top 3]  스크립트를 장면별로 나눠 어울리는 모션 추천(Jev — 글이 api.typesafe.ai 로 나감)
+  recommend <스크립트.txt|-> [--top 3] [-v|-h] [--json]  스크립트를 장면별로 나눠 어울리는 모션 추천(Jev — 글이 api.typesafe.ai 로 나감, 기본 세로)
   registry [단어…] [--type block|component] [--portrait]  HyperFrames 공식 레지스트리 444개 찾기(영어 · 이름·설명·태그 AND)
   registry-add <이름> --dir <프로젝트> [--start 0] [--track 1]  항목 넣기(npx) + lint 통과 host 조각 · 비율·서체 고칠 곳
 옵션: -v 세로 9:16 · -h 가로 16:9 · --ratio 가로|세로|정사각|없음 (기본 가로) · --color "남색과 노랑" · --file video.mp4 · --tool auto|claude|codex''')
