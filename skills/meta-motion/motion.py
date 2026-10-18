@@ -183,6 +183,8 @@ def main(argv):
               + ' · '.join(x for x in [e['type'], e['model'], e.get('effort') and 'effort ' + e['effort'], e['iterations'], e['posted'], e['size'], '영상 ' + e['video'], e['url']] if x) + f"\n\n{e['prompt']}\n[외부 수집 자료 끝]")
     elif cmd == 'recommend':  # 스크립트 → 장면별 추천(Jev, 네트워크) — 표준 라이브러리만 쓰는 이 파일과 나눠 둔다
         import recommend; recommend.main(rest + flags)  # -v/-h 는 위에서 떼었으니 다시 넘긴다(recommend 기본은 세로)
+    elif cmd == 'film':  # Claude Motion 검토 필름(첫 묶음·클립 장면·ffmpeg 자르기·계획) — 표준 라이브러리, Jev 안 부름
+        import film; film.main(rest + flags)
     elif cmd in ('registry', 'registry-add'):  # HyperFrames 공식 레지스트리 — 찾기는 저장 목록, 넣기는 npx
         import hf; hf.main((['add'] if cmd == 'registry-add' else ['search']) + rest)
     else:
@@ -197,6 +199,7 @@ def main(argv):
   recommend <스크립트.txt|-> [--top 3] [-v|-h] [--json]  스크립트를 장면별로 나눠 어울리는 모션 추천(Jev — 글이 api.typesafe.ai 로 나감, 기본 세로)
   registry [단어…] [--type block|component] [--portrait]  HyperFrames 공식 레지스트리 444개 찾기(영어 · 이름·설명·태그 AND)
   registry-add <이름> --dir <프로젝트> [--start 0] [--track 1]  항목 넣기(npx) + lint 통과 host 조각 · 비율·서체 고칠 곳
+  film <recommend.json|-> --durs 3.2,5.1,… [--template <id>] [-v|-h] [--out 폴더]  Claude Motion 검토 필름 기록(scenes.json·base.css·클립 장면·split.sh·plan) — 렌더는 HyperFrames, 검토·댓글은 Motion
 옵션: -v 세로 9:16 · -h 가로 16:9 · --ratio 가로|세로|정사각|없음 (기본 가로) · --color "남색과 노랑" · --file video.mp4 · --tool auto|claude|codex''')
 
 

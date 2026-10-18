@@ -1,6 +1,6 @@
 ---
 name: meta-motion
-description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com 실전 예시(Claude 로 만든 영상의 프롬프트 230여 개) + HyperFrames 공식 레지스트리(블록·컴포넌트 444개) — 셋을 같은 한국어 카드·같은 분류 16개로 한 목록에서 찾고 추천받고 넣는다. 영상·쇼츠·인트로·광고·안내 영상을 만들거나 고칠 때 장면마다 맞는 카드(자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩)를 찾아 그 «자세히» 문장(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 장면 사양으로 쓴다. HyperFrames·Remotion·HTML 애니메이션 어느 도구든 적용. 트리거 — "/meta-motion", "meta-motion", "motion-prompt"(옛 이름), "모션그래픽", "모션 그래픽", "모션 템플릿", "영상 만들어", "영상 제작", "영상 만들기", "쇼츠 만들어", "숏폼", "인트로 영상", "로고 인트로", "오프닝 타이틀", "엔딩 화면", "구독 버튼", "자막 애니메이션", "자막 효과", "키네틱 타이포", "장면 전환", "트랜지션", "켄 번스", "하이퍼프레임", "hyperframes", "hyperframes registry", "하이퍼프레임 레지스트리", "자막 스타일", "하단 자막", "lower third", "remotion", "리모션", "nondev motion", "prompt-motion", "prompt motion", "모션 프롬프트 예시".
+description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com 실전 예시(Claude 로 만든 영상의 프롬프트 230여 개) + HyperFrames 공식 레지스트리(블록·컴포넌트 444개) — 셋을 같은 한국어 카드·같은 분류 16개로 한 목록에서 찾고 추천받고 넣는다. 영상·쇼츠·인트로·광고·안내 영상을 만들거나 고칠 때 장면마다 맞는 카드(자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩)를 찾아 그 «자세히» 문장(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 장면 사양으로 쓴다. HyperFrames·Remotion·HTML 애니메이션 어느 도구든 적용. 트리거 — "/meta-motion", "meta-motion", "motion-prompt"(옛 이름), "모션그래픽", "모션 그래픽", "모션 템플릿", "영상 만들어", "영상 제작", "영상 만들기", "쇼츠 만들어", "숏폼", "인트로 영상", "로고 인트로", "오프닝 타이틀", "엔딩 화면", "구독 버튼", "자막 애니메이션", "자막 효과", "키네틱 타이포", "장면 전환", "트랜지션", "켄 번스", "하이퍼프레임", "hyperframes", "hyperframes registry", "하이퍼프레임 레지스트리", "자막 스타일", "하단 자막", "lower third", "remotion", "리모션", "nondev motion", "prompt-motion", "prompt motion", "모션 프롬프트 예시", "클로드 모션", "claude motion", "검토 필름", "모션 댓글".
 ---
 
 # meta-motion
@@ -16,7 +16,7 @@ description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com �
 3. **기본 비율은 9:16 (세로, 1080x1920)**. `-h` 또는 가로 지정이 있을 때만 16:9 로 바꾼다. 이 기본값은 아래 `--ratio` 기본값(가로)보다 우선한다.
 4. **Indent 는 기본 들여쓰기(행잉 인덴트)**: 자막·항목 글이 두 줄 이상으로 넘어가면 두 번째 줄부터 항목 글자 시작 위치에 맞춘다. 항목 기호(·)는 첫 줄 왼쪽에 두고 글은 기호 뒤에서 시작한다. 줄바꿈 뒤 글이 왼쪽 끝으로 돌아가는 배치는 쓰지 않는다.
 5. **서체는 템플릿을 따라 자동 배선한다**: 영상 하나에 제목 서체 하나·자막 서체 하나를 쓰고 장면마다 바꾸지 않는다. `fonts.py` 의 `pick(text, copy_to=<작업 폴더>)` 가 고른 템플릿(7번)의 제목 서체(`font`)와 자막 서체(`caption_font`)를 영상 작업 폴더로 복사해 각각 `file_path`·`caption_font.file_path` 를 돌려준다(2MB 넘는 글꼴은 대본 글자만 남긴 부분 글꼴). 가석·검은고딕·붓글씨 같은 장식 서체는 제목에만 쓰고 자막은 본문용 서체로 둔다(자막 크기에서 뭉개짐 — 2026-10-17 시안 렌더 확인). 서체 파일은 `data/fonts/`(모두 무료 SIL OFL, 서체마다 `OFL-<이름>.txt`). 사용자가 서체를 지정하면 `--font <id>` 가 제목·자막 모두에 우선한다(`python3 fonts.py list` 로 id 확인). 굵기는 결과의 `weight` 를 쓴다(명조·손글씨체는 400 고정).
-6. **영상 렌더링은 항상 HyperFrames 로 한다** (2026-10-16 사용자 지정). 장면은 HyperFrames 컴포지션(HTML + GSAP 타임라인, 장면마다 하위 컴포지션 파일)으로 만들고 `npx --yes hyperframes@0.8.162 lint` 와 `render` 로 MP4 를 만든다. 정지 이미지 + ffmpeg 이어 붙이기, 임의 줌·페이드 같은 대체 파이프라인은 쓰지 않는다. 장면마다 카드는 `recommend`(Jev)로 고르고, 카드의 「자세히」 사양(장면 순서·볼거리·움직임)을 GSAP 트윈으로 구현한다. 린트 경고가 남으면 해결한 뒤 보고한다. 렌더 전 `hyperframes check` 를 통과시킨다. ⛔ 함정 두 가지(2026-10-16 실측): ① 2MB 넘는 글꼴은 묶음에 안 들어가 기본 명조로 대체된다 — `fonts.py pick(..., copy_to=)` 가 대본 글자만 남긴 부분 글꼴을 만든다. ② 하위 컴포지션에는 루트 `#root` 스타일이 안 닿는다 — 글자색·`font-family`·`@font-face` 를 하위 컴포지션 안 장면 요소에 직접 둔다. 자막은 의미 단위로 직접 줄을 나누고(줄 안에서는 `white-space:nowrap`), 넘치면 글자 크기를 줄여 맞춘다. HyperFrames 를 쓸 수 없는 사정이 생기면 그 사실과 이유를 사용자에게 먼저 알리고 승인을 받는다.
+6. **영상 렌더링은 항상 HyperFrames 로 한다** (2026-10-16 사용자 지정). 장면은 HyperFrames 컴포지션(HTML + GSAP 타임라인, 장면마다 하위 컴포지션 파일)으로 만들고 `npx --yes hyperframes@0.8.162 lint` 와 `render` 로 MP4 를 만든다. 정지 이미지 + ffmpeg 이어 붙이기, 임의 줌·페이드 같은 대체 파이프라인은 쓰지 않는다. 장면마다 카드는 `recommend`(Jev)로 고르고, 카드의 「자세히」 사양(장면 순서·볼거리·움직임)을 GSAP 트윈으로 구현한다. 린트 경고가 남으면 해결한 뒤 보고한다. 렌더 전 `hyperframes check` 를 통과시킨다. ⛔ 함정 두 가지(2026-10-16 실측): ① 2MB 넘는 글꼴은 묶음에 안 들어가 기본 명조로 대체된다 — `fonts.py pick(..., copy_to=)` 가 대본 글자만 남긴 부분 글꼴을 만든다. ② 하위 컴포지션에는 루트 `#root` 스타일이 안 닿는다 — 글자색·`font-family`·`@font-face` 를 하위 컴포지션 안 장면 요소에 직접 둔다. 자막은 의미 단위로 직접 줄을 나누고(줄 안에서는 `white-space:nowrap`), 넘치면 글자 크기를 줄여 맞춘다. HyperFrames 를 쓸 수 없는 사정이 생기면 그 사실과 이유를 사용자에게 먼저 알리고 승인을 받는다. **Claude Motion 은 렌더러가 아니라 검토·보완 수단이다**(2026-10-18 사용자 지시 「모션은 HyperFrames 로 만들고 control 은 Claude Motion 으로」): 렌더한 클립을 Motion 필름에 올려 긁어 보고 시각에 댓글을 달며, 맞는 카드가 없는 장면만 Motion 안에서 직접 그린 뒤 HyperFrames 로 옮긴다 — 아래 「Claude Motion 과 합쳐 쓰기」.
 7. **색·서체 조합은 템플릿 18종에서 대본 주제로 고른다** (2026-10-17 사용자 지정 — 「배경색·글자색·강조색 등 다양한 조합의 템플릿」). 색 지정이 없으면 매번 짙은 남색(`#1d3557` 등) 한 가지로 굳던 단조로움을 막는다. 템플릿은 조회 수 높은 국내 쇼츠·릴스의 제목 띠·글자·강조색을 실측해 만들었다(유튜브 17개 채널 53편 · 출처와 실측 hex 는 템플릿의 `source`, 시안 https://claude.ai/artifact/UqbrbQLGBncXHJUXsYqpH3). `fonts.py pick` 이 Jev `ask` 한 번(choice 두 문항: 분위기·템플릿 — 추가 비용 없음)으로 고른 템플릿을 `template`(id)·`palette`(값)로 돌려준다. 템플릿 확신도가 0.6 미만이거나(`TEMPLATE_MIN_CONF`) Jev 가 실패하면 분위기 기본 템플릿(`TONE_TEMPLATE`)으로 대체한다 — 어느 경로였는지는 결과의 `template_how`(user·jev·low-confidence·tone-default), Jev 원래 답은 `jev_template`. 어두운 띠(검정·남색·짙은 초록)는 실측상 주류 선택지다 — 금지하지 않는다. 다양성은 주제로 고르는 데서 나온다. **비슷한 콘텐츠는 같은 템플릿**(2026-10-17 사용자 지시): `fonts.py pick --series <시리즈>` 는 같은 시리즈 이력이 있으면 그 템플릿을 그대로 쓰고(Jev 안 부름), 시리즈가 없으면 같은 Jev 호출에 「비슷한 이전 영상」 문항을 더해 확신 0.6 이상이면 그 영상의 템플릿을 쓴다(`template_how` = `series:<slug>`·`similar:<slug>`). 이력은 `~/.local/share/meta-motion/template-history.jsonl`(`META_MOTION_HISTORY`·`--history` 로 바꿈 · 저장소 밖 — 대본 요약이 원격에 안 올라가게), `python3 fonts.py history` 로 본다. 2026-10-17 이전 영상은 템플릿 없이 만들었으므로 이력에 없다(소급 안 함). 사용자가 고르면 `--template <id>`, 특정 템플릿을 빼려면 `--exclude <id,...>`(이력보다 앞선다). 컴포지션에는 결과 키를 그대로 배선한다: `band` 제목 띠 · `bg` 화면 바탕 · `text` 제목·자막 글자 · `sub` 보조 글자 · `accent` 강조 단어 글자(제목에서 핵심 한두 단어만) · `accent_shape`+`on_accent` 알약·번호·화살표 면과 그 위 글자 · `stroke` 글자 외곽선(사진·영상이 바탕인 `photo` 템플릿은 필수, `-webkit-text-stroke` + `paint-order: stroke fill`) · `chip` 제목 상자(있을 때만) · `title_scale` 제목 크기 배율. `palette.color` 문장을 `motion.py show/order` 의 `--color` 로 넘기고, 카드 「자세히」 사양에 적힌 배경·글자 hex 보다 템플릿이 우선한다(구성·움직임은 카드대로). 우선순위: 사용자 색 지정 > 로고·브랜드 색(로고 주색을 `accent_shape` 로) > 템플릿(사용자 지정 > 같은 시리즈 이력 > 비슷한 이전 영상 > Jev > 분위기 기본). 대비는 `test_fonts.py` 가 지킨다(제목 ≥ 7 · 강조 글자 ≥ 4.5) — 템플릿 색을 바꾸면 테스트를 돌린다. 보고 첫 줄에 비율과 함께 템플릿 id·이름, 고른 경로와 확신도(`template_how`·`template_confidence`), 제목/자막 서체를 밝힌다.
 
 ## 쓰는 법
@@ -77,6 +77,40 @@ python3 $M registry-add caption-pill-karaoke --dir <프로젝트> --start 0 --tr
 
 참고로 읽을 것(설치하지 않는다 — 읽기만): 공식 스킬 21개 https://github.com/heygen-com/hyperframes/tree/main/skills (embedded-captions·motion-graphics·remotion-to-hyperframes 등) · GSAP 공식 스킬 https://github.com/greensock/gsap-skills (MIT) · https://github.com/iart-ai/motion-skills (MIT, 키네틱 타이포·데이터 시각화·쇼츠 스킬 50개).
 
+## Claude Motion 과 합쳐 쓰기 — 렌더는 HyperFrames, 검토·댓글은 Motion, 카드 없는 장면은 Motion 에서 (2026-10-18)
+
+Claude Motion = claude.ai Artifact «Motion» 타입(Team 이상 · 이 계정 타입 목록에 있음 · `Artifact list scope=types` 로 type_url 확인). 필름은 ArtifactData 저장소 문서(`film/meta`·`modules/scenes.json`·`modules/base.css`·`film/script`·장면마다 `modules/scene-<id>.js`·자산 `assets/<이름>`)로 이뤄지고, 장면은 `kit.scene(id, {init, render(t)})` 순수 함수다. 타입 설명서(`SKILL.md`·`rough-cut.md`·`finalize.md`·`film-api.md`·`motion.md`)는 필름을 만드는 Artifact 호출 결과와 `Artifact read url=<type_url> path=artifact-type/reference/<이름>.md` 로 읽는다 — 그 규칙(한 장면 한 set·`if_version`·id 규약)을 따르고 여기 되풀이하지 않는다.
+
+**세 역할의 분담**
+1. **렌더·MP4·내레이션 = HyperFrames**(기본값 6번 그대로). Motion 은 영상·음성 파일을 못 만들고(자산에 오디오 타입 없음 · 클립은 무음 · MP4 는 페이지 Export 단추뿐) 내레이션을 필름 안에 넣을 수 없다 — 그래서 최종 산출물은 늘 HyperFrames 쪽이다.
+2. **control = Motion 검토 필름**. 렌더한 영상을 장면 클립으로 잘라 올리면 사용자가 페이지에서 긁어 보고(scrub) 시각·구간에 댓글을 단다. 댓글은 `ArtifactComments read` 로 받아 `Location: 0:12`(`Anchor detail` 의 초·x/y%)를 `plan.json` 의 장면 `start` 와 대응시켜 그 장면의 HyperFrames 코드를 고치고, 다시 렌더해 그 클립 자산만 바꾼다(같은 자산 문서를 `if_version` 으로 set). 답글·resolve 는 사용자가 Claude 에게 보낸 스레드에만 된다.
+3. **맞는 카드가 없는 장면 = Motion 에서 직접**. `recommend` 1위 적합도가 0.5 미만(「확신 낮음」)이면 `film` 이 그 장면을 `native` 로 표시한다. 그 장면은 Motion 필름 안에 `kit.scene` 으로 직접 그린다(rough-cut.md·finalize.md 규칙 · 한글은 `fonts` 비우고 템플릿 서체 파일을 자산으로 — `film` 이 `base.css` 에 stem 으로 미리 적어 둔다). 사용자가 보고 확정하면 같은 모듈을 `data/motion_kit.js` 로 HyperFrames 하위 컴포지션에 옮겨 최종 MP4 에 넣는다.
+
+**순서**(대본 → 영상 → 검토 → 수정)
+```bash
+M=<이 스킬 폴더>/motion.py
+python3 $M recommend 대본.txt --json -v > rec.json         # Jev — 장면별 카드·적합도
+python3 $M film rec.json --durs 3.2,5.1,4.0 --template <id> -v --title "<제목>" --source reel.mp4 --out film/
+#   → film/plan.md(장면·모드·시작 초) · batch.json(첫 묶음 — <upload ref> 자리) · split.sh(ffmpeg 클립 자르기) · scene-*.js(클립 장면 모듈)
+#   --durs 는 HyperFrames 장면 길이(내레이션 길이) 순서대로 · 인트로 2.5·아웃트로 3초가 앞뒤에 붙는다(--intro 0 --outro 0 으로 뺌)
+```
+HyperFrames 렌더가 끝난 뒤: ① `sh film/split.sh` 로 클립(`clip-<id>.mp4`, 무음·15MB 이하) → ② `Artifact publish type_url=<Motion> title=<제목> auto_open=after_first_write` 로 필름 생성(한 번만, 이후는 그 url) → 클립·서체 파일을 `Artifact publish url=<필름> file_path=… asset=true` 로 올리고 `batch.json` 의 `<upload ref>`·`<now ISO8601>` 을 채워 `ArtifactData batch` → ③ 장면 모듈을 필름 순서대로 하나씩 `set`(clip 은 `scene-<id>.js` 그대로 · native 는 Motion 규칙으로 작성) → ④ 사용자에게 필름 링크를 주고 댓글을 기다린다(비공개 — 다른 사람은 Share 전엔 못 연다) → ⑤ 댓글 라운드마다 고친 장면만 다시 렌더·클립 교체.
+
+**Motion 장면을 HyperFrames 로 옮기기** — `data/motion_kit.js`(의존성 없음 · `node test_motion_kit.mjs`). HyperFrames 0.8.162 `render` 는 paused GSAP 타임라인을 seek 할 때 트윈의 `onUpdate` 를 부른다(2026-10-18 실측: 0.5초 프레임에 render(0.50)). 하위 컴포지션:
+```html
+<div id="s2" data-composition-id="s2" data-width="1080" data-height="1920"></div>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="motion_kit.js"></script>
+<script>
+const kit = MotionKit.kit(document.getElementById('s2'), { width: 1080, height: 1920, duration: 5 });
+/* 여기에 Motion 필름의 modules/scene-<id>.js 본문을 그대로 붙인다 — kit.scene('s2', { init, render }) */
+MotionKit.hyperframes('s2', { compId: 's2', duration: 5 });   // __timelines.s2 등록 · onUpdate → render(tl.time())
+</script>
+```
+릴스 파이프라인처럼 Playwright 가 `render(t)` 를 부르는 호스트면 `MotionKit.mount('s2', el, {...})` 뒤 `window.render = t => MotionKit.render('s2', t)`. 셰임에 없는 kit(Camera·Marks·cursor·chip·spotlight·raster·fx 캔버스·score)은 쓰는 순간 오류가 난다 — 그런 장면은 Motion 안에만 두거나 손으로 옮긴다. 옮긴 뒤 `hyperframes check`·렌더 정지 화면으로 Motion 쪽과 같은지 본다.
+
+**한계·주의** · 검토 필름은 무음이라 내레이션이 안 들린다(대본 줄은 `desc` 에 들어간다) · Motion 안전 영역은 위 250·아래 420·오른쪽 120px(film-api) — HyperFrames 쪽 아래 380px 규칙과 다르므로 native 장면을 옮길 때 자막 위치를 본다 · 필름 문서는 고치기 전에 `list` 로 읽고 `if_version` 을 쓴다 · 실측 예(비공개, 480x270 클립 1장): https://claude.ai/artifact/HFgwWS7xXJGRnkVfKDWFu8
+
 ## 사용자에게 줄 때 (프롬프트 자체를 원할 때)
 
 1. 원하는 장면을 `search` 로 찾아 후보 2~3개를 코드·이름·한 줄 설명으로 보여 준다.
@@ -103,4 +137,5 @@ HyperFrames 레지스트리는 세 단계 — ① `python3 build_hf.py`(catalog 
 - `hf.py` — 레지스트리 찾기·넣기(`motion.py registry`·`registry-add`) · `build_hf.py` — 목록 다시 받기 · `build_hf_ko.py` — 분류·한국어 카드 · `build_hf_thumbs.py` — 그림 렌더 · `test_hf.py` — 목록·제외·host 조각·고칠 곳 검사
 - `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사·이력(`pick`·`list`·`install`·`record`·`history`·`templates`) · `test_fonts.py` — 템플릿 대비·서체·라이선스·이력 검사
   - `python3 fonts.py templates` 는 템플릿·서체(절대 경로) JSON 을 부수 효과 없이 낸다 — 다른 렌더러가 같은 템플릿을 쓰는 통로다. 발행 릴스(`SHC/shconsulting/scripts/instagram/motion/theme.mjs`)가 이것과 `pick`·`record` 를 부른다. 키를 바꾸면 그쪽 `node --test scripts/instagram/motion/theme.test.mjs` 도 돌린다.
+- `film.py` — Claude Motion 검토 필름 기록·클립 장면·split.sh·계획(`motion.py film`) · `test_film.py` · `data/motion_kit.js` — Motion 장면(kit.scene)을 HyperFrames·Playwright 호스트에서 돌리는 kit 부분집합 · `test_motion_kit.mjs`
 - `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `check_card_anim.mjs` — 샘플 검사·목록 그림(data/anim/thumb) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `recommend.py` — 스크립트 → 장면별 카드 추천(Jev, `motion.py recommend` — 비율 거르기 → 후보 전체 묶음별 결승 → 고른 카드마다 적합도) · `eval_recommend.py` — 추천 품질 재기(게시된 릴스 대본 장면 → recommend → edb-p 심판 1~5점 → 지표, 고친 뒤 비교용) · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지

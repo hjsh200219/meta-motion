@@ -11,6 +11,8 @@
 HyperFrames 레지스트리: 렌더 엔진과 같은 repo(heygen-com/hyperframes, Apache-2.0)의 공식 블록·컴포넌트 444개(`data/hf_registry.json`). 444개 모두 요청 카드 분류 16개로 나누고(Jev) 같은 모양의 한국어 카드를 붙여(`data/hf_registry_ko.json`) `list`·`search`·`show`·`recommend`·미리보기 화면에 요청 카드·실전 예시와 한 목록으로 섞인다. 목록 그림은 항목마다 직접 렌더한 한 장면(`data/hf_thumb/`). `motion.py registry-add` 로 받으면 lint 를 통과하는 연결 조각과 세로·한글 서체로 고칠 곳을 알려 준다. 출처 미확인 자산이 든 3개는 뺐다.
 색·서체 템플릿: 조회 수 높은 국내 쇼츠·릴스의 제목 띠·글자색·강조색을 실측한 조합 18종(`skills/meta-motion/fonts.py`) — 대본 주제로 Jev 가 하나를 고르고, 제목·자막 서체(무료 SIL OFL 21종, `data/fonts/`)가 함께 정해진다. 플러그인을 켜면 세션 시작 훅이 서체를 `~/Library/Fonts` 에 설치한다.
 
+Claude Motion 과 합쳐 쓰기(2026-10-18): 렌더·MP4·내레이션은 HyperFrames 그대로, 검토는 claude.ai «Motion» 필름(렌더 클립을 장면마다 올려 긁어 보고 시각에 댓글)으로, 맞는 카드가 없는 장면(추천 1위 적합도 0.5 미만)만 Motion 안에서 `kit.scene` 으로 직접 그린 뒤 `data/motion_kit.js` 로 HyperFrames 하위 컴포지션에 옮긴다. 필름 기록은 `python3 skills/meta-motion/motion.py film rec.json --durs … --out film/` 이 만든다(SKILL.md 「Claude Motion 과 합쳐 쓰기」).
+
 ## 설치
 
 ```
