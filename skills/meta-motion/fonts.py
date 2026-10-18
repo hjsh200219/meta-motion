@@ -276,7 +276,10 @@ SUBSET_BASE = "0123456789.,:;!?()[]-~·•✓%/+& ABCDEFGHIJKLMNOPQRSTUVWXYZabcd
 
 def subset_font(src, dst, text):
     """영상에 쓰는 글자만 남긴 부분 글꼴을 만든다(fontTools 필요). 만든 파일 크기를 돌려준다."""
-    from fontTools import subset
+    try:
+        from fontTools import subset
+    except ModuleNotFoundError as e:  # 2026-10-18 새 환경에서 pick(copy_to=) 가 여기서 죽었다(PEP 668 환경은 --user)
+        raise SystemExit("fontTools 가 없어 2MB 넘는 글꼴을 줄일 수 없다: python3 -m pip install --user fonttools") from e
     opts = subset.Options()
     opts.layout_features = ["*"]
     opts.name_IDs = ["*"]
