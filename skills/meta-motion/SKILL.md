@@ -23,6 +23,7 @@ description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com �
 
 ```bash
 M="<이 스킬 폴더>/motion.py"   # 스킬을 부르면 표시되는 Base directory (개인 설치는 ~/.claude/skills/meta-motion)
+python3 $M                            # 인자 없음 — KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬 127.0.0.1:8765/motion/ 에 띄우고 브라우저를 연다(끄기 Ctrl-C · --port · --no-open · 사용법은 help)
 python3 $M search 로고                 # 찾기(이름·영문·설명·업종, 여러 단어는 AND)
 python3 $M list 자막                   # 분류별 목록 — 요청 카드·실전 예시·레지스트리를 한 목록으로(인자 없으면 16개 전체 829개, --cards 면 요청 카드만)
 python3 $M fields I02                  # 채울 칸
@@ -37,6 +38,7 @@ python3 $M registry caption karaoke  # HyperFrames 공식 레지스트리 444개
 python3 $M registry-add caption-pill-karaoke --dir <프로젝트> --start 0 --track 2   # 받기 + host 조각 + 고칠 곳
 ```
 
+- **`/meta-motion` 을 인자 없이 부르면** `python3 $M` 을 백그라운드로 실행해(서버가 계속 떠 있어야 한다) 찍힌 주소를 사용자에게 알린다. 페이지는 `export_kb.py` 로 KB 와 같게 만들어 `~/.cache/meta-motion/kb/motion/` 에서 보여 준다(원본 영상 모드라 실전 예시 영상은 인터넷이 필요하다).
 - 비운 필수 칸은 사이트 예시값이, 비운 선택 칸은 그 구절이 통째로 빠진다.
 - `--tool auto|claude|codex` → 문장 머리 `하이퍼프레임(HyperFrames)으로` / `/hyperframes 로` / `$hyperframes 로`.
 - `--ratio` 기본 가로 16:9(사이트 기본값). 쇼츠면 `세로`. 줄임 `-v` = 세로 9:16, `-h` = 가로 16:9(명령 앞뒤 어디에 와도 된다).

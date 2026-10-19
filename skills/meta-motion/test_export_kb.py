@@ -14,4 +14,9 @@ with tempfile.TemporaryDirectory() as d:
     assert all(k not in (Path(d) / f).read_text(encoding='utf-8') for f in KO for k in ('"src_sha"', '"cat_src"', '"hold_checked"', '"commit"'))
     assert all(len((Path(d) / f).read_text(encoding='utf-8')) < 480_000 for f in KO)   # KB PR AI 리뷰 diff 상한 50만 자 — 파일 하나가 한 PR 에 들어가야 한다
     assert len(list((Path(d) / 'hf_thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/hf_thumb').glob('*.jpg'))) > 400
+
+with tempfile.TemporaryDirectory() as d:   # 로컬 보기(serve.py · motion.py 인자 없음) — KB 로 가는 링크·KB 아이콘 없이, 원본 영상 모드는 같게
+    build(Path(d), back=False)
+    html = (Path(d) / 'index.html').read_text(encoding='utf-8')
+    assert "window.MOTION_MEDIA = 'origin'" in html and '← PillDocKb' not in html and '/static/' not in html and html.count('<h1>') == 1
 print('ok')

@@ -135,6 +135,7 @@ FLAG_RATIO = {'-v': '세로', '-h': '가로'}  # /meta-motion -v = 세로 9:16 �
 def main(argv):
     flags = [a for a in argv if a in FLAG_RATIO]; argv = [a for a in argv if a not in FLAG_RATIO]
     cmd, rest = (argv[0] if argv else ''), argv[1:]
+    if cmd.startswith('--'): cmd, rest = '', argv   # 인자 없이 옵션만(--port·--no-open) — KB 화면 띄우기
     opt = {'tool': 'auto', 'ratio': FLAG_RATIO[flags[-1]] if flags else '가로', 'color': '', 'file': '', 'simple': False}; vals, args = {}, []
     it = iter(rest)
     for a in it:
@@ -185,10 +186,13 @@ def main(argv):
         import recommend; recommend.main(rest + flags)  # -v/-h 는 위에서 떼었으니 다시 넘긴다(recommend 기본은 세로)
     elif cmd == 'film':  # Claude Motion 검토 필름(첫 묶음·클립 장면·ffmpeg 자르기·계획) — 표준 라이브러리, Jev 안 부름
         import film; film.main(rest + flags)
+    elif not cmd:  # 인자 없음 — KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬에서 띄운다
+        import serve; serve.main(rest)  # 사용법은 help
     elif cmd in ('registry', 'registry-add'):  # HyperFrames 공식 레지스트리 — 찾기는 저장 목록, 넣기는 npx
         import hf; hf.main((['add'] if cmd == 'registry-add' else ['search']) + rest)
     else:
         print('''사용법 (python3 motion.py …):
+  (인자 없음) [--port 8765] [--no-open]  KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬에서 띄움 — 브라우저가 열림, 끄기 Ctrl-C
   list [카테고리 일부]          카드 목록(코드·이름·길이·설명) — 요청 카드·실전 예시·레지스트리를 분류별로 한 목록(--cards 면 요청 카드만)
   search <단어…>               이름·영문·설명·업종으로 찾기(AND, 같은 범위)
   fields <코드>                채울 칸 보기(요청 카드 코드·실전 예시 id·레지스트리 이름)

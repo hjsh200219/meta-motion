@@ -34,12 +34,14 @@ DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_regist
 BACK = '<a href="/" style="color:inherit;opacity:.7;font-size:13px;text-decoration:none">← PillDocKb</a>\n    <h1>'
 
 
-def build(out: Path) -> None:
+def build(out: Path, back: bool = True) -> None:  # back=False: 로컬 보기(serve.py) — KB 첫 화면으로 가는 링크가 없다
     src = (HERE / 'preview.html').read_text(encoding='utf-8')
     assert src.startswith('<meta charset="utf-8">\n') and src.count('<h1>') == 1, 'preview.html 머리 모양이 바뀜 — 이 스크립트를 맞출 것'
     out.mkdir(parents=True, exist_ok=True)
-    body = src.removeprefix('<meta charset="utf-8">\n').replace('<h1>', BACK, 1)
-    (out / 'index.html').write_text(HEAD + body + '\n</html>\n', encoding='utf-8')
+    body = src.removeprefix('<meta charset="utf-8">\n')
+    if back: body = body.replace('<h1>', BACK, 1)
+    head = HEAD if back else '\n'.join(l for l in HEAD.split('\n') if '/static/' not in l)  # 로컬엔 KB 아이콘이 없다
+    (out / 'index.html').write_text(head + body + '\n</html>\n', encoding='utf-8')
     for f in DATA:
         if f in KO:  # 만들 때만 쓰는 키(재료 해시·repo 커밋)는 빼고 내보낸다 — 16진 해시가 KB pre-commit 시크릿 검사에 걸린다(2026-10-17)
             data = json.loads((HERE / 'data' / f).read_text(encoding='utf-8'))
