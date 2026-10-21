@@ -30,6 +30,11 @@ class Gate(unittest.TestCase):
         self.assertFalse(g.allowed('100.3.3.3', 'edb-mac.tail.ts.net:8765'))
         self.assertFalse(g.allowed('127.0.0.1', 'evil.com:8765'))
 
+    def test_tagged_nodes(self):  # 태그 기기는 tailnet 공용 UserID — 이 기기에 태그가 있으면 열지 않고, 태그 peer 는 뺀다
+        peers = {'t': {'UserID': 1, 'TailscaleIPs': ['100.4.4.4'], 'Tags': ['tag:server']}}
+        self.assertTrue(localnet.refuse_reason({'Self': {'UserID': 1, 'TailscaleIPs': ['100.1.1.1'], 'Tags': ['tag:x']}, 'Peer': peers}))
+        self.assertNotIn('100.4.4.4', localnet.allowlist({'Self': {'UserID': 1, 'TailscaleIPs': ['100.1.1.1']}, 'Peer': peers})[3])
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=1)
