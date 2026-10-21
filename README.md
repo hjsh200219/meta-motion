@@ -13,7 +13,7 @@ python3 skills/meta-motion/motion.py --local   # SSH 로 붙은 원격 컴퓨터
 ## 목차
 
 - [설치](#설치)
-- [처음 한 번 — Jev 키 저장](#처음-한-번--jev-키-저장)
+- [처음 한 번 — 키 저장](#처음-한-번--키-저장)
 - [빠른 시작](#빠른-시작)
 - [명령 모음](#명령-모음)
 - [들어 있는 자료](#들어-있는-자료)
@@ -32,28 +32,36 @@ claude plugin install meta-motion@meta-motion
 |---|---|---|
 | Python 3.9 이상(표준 라이브러리) | 전부 | 동작 안 함 |
 | 이 repo 협업자(collaborator) 권한 · GitHub 로그인된 git | 설치 | `git ls-remote https://github.com/hjsh200219/meta-motion.git` 로 확인 |
-| Jev(TypeSafe) API 키 | `recommend`(대본 → 장면별 추천) · 색·서체 템플릿 고르기 | 그 둘만 안 됨(템플릿은 분위기 기본값) — [키 저장](#처음-한-번--jev-키-저장) |
-| Node.js · ffmpeg | 영상 렌더(HyperFrames `npx`)·`registry-add`·자르기 | 카드 찾기·요청 문장은 그대로 됨 |
+| Jev(TypeSafe) API 키 | `recommend`(대본 → 장면별 추천) · 색·서체 템플릿 고르기 | 그 둘만 안 됨(템플릿은 분위기 기본값) — [키 저장](#처음-한-번--키-저장) |
+| Fish Audio API 키 | `narrate`(장면별 내레이션 — 영상 기본값은 음성 있음) | 내레이션 없는 영상만 — [키 저장](#처음-한-번--키-저장) |
+| Node.js 18+ · ffmpeg | 영상 렌더(HyperFrames `npx`)·`narrate`·`registry-add`·자르기 | 카드 찾기·요청 문장은 그대로 됨 |
 | fontTools | 2MB 넘는 글꼴을 영상용으로 줄일 때 | `python3 -m pip install --user fonttools` |
 | Tailscale | `--local`(내 PC 에서 화면 보기) | `--local` 만 안 됨 |
 
 - 업데이트: `claude plugin update meta-motion@meta-motion` → 떠 있는 세션은 `/reload-plugins`
 - 플러그인을 켜면 세션 시작 훅이 영상용 무료 서체(SIL OFL 21종)를 사용자 서체 폴더에 설치합니다(macOS `~/Library/Fonts` · Windows `%LOCALAPPDATA%\Microsoft\Windows\Fonts` + 사용자 서체 등록 · Linux `~/.local/share/fonts`, 관리자 권한 불필요).
 
-## 처음 한 번 — Jev 키 저장
+## 처음 한 번 — 키 저장
 
 Claude Code 에서 `/meta-motion:setup`, 또는 터미널에서:
 
 ```bash
-python3 skills/meta-motion/motion.py setup            # 키 입력(화면에 안 보임) → Jev 1회 확인 → 저장
-python3 skills/meta-motion/motion.py setup --check    # 어디서 읽는지만(값은 안 찍음) · --force 바꾸기 · --forget 지우기
+python3 skills/meta-motion/motion.py setup              # Jev·Fish Audio 키를 차례로 입력(화면에 안 보임) → 확인 → 저장
+python3 skills/meta-motion/motion.py setup --check      # 어디서 읽는지만(값은 안 찍음) · --force 바꾸기 · --forget 지우기
+python3 skills/meta-motion/motion.py setup --only fish  # 하나만(jev · fish)
 ```
 
-- 저장 위치: macOS 키체인(서비스 `typesafe-jev`) · Windows 자격 증명 관리자(`typesafe-jev/JEV_API_KEY`) · 그 밖 `~/.config/typesafe-jev/key`(0600).
-- 읽는 순서: 환경변수 `JEV_API_KEY` → 위 저장소 → `~/workspace/.env`. Jev 클라이언트는 repo 에 든 사본(`skills/meta-motion/jev.py`)을 씁니다.
+| 키 | 쓰는 곳 | 확인 방법 | 발급 |
+|---|---|---|---|
+| Jev `JEV_API_KEY` | `recommend`·색·서체 템플릿 | Jev 에 짧은 질문 1번 | https://typesafe.ai |
+| Fish Audio `FISH_AUDIO_API_KEY` | `narrate` 내레이션 | 잔액 조회(과금 없음 · 잔액도 보여 줌) | https://fish.audio → API Keys(API 크레딧은 웹 크레딧과 따로 충전) |
+
+- 저장 위치: macOS 키체인(서비스 `typesafe-jev`·`fish-audio`) · Windows 자격 증명 관리자 · 그 밖 `~/.config/<서비스>/key`(0600).
+- 읽는 순서: 환경변수 → 위 저장소 → `~/workspace/.env`. Jev 클라이언트는 repo 에 든 사본(`skills/meta-motion/jev.py`)을 씁니다.
+- Fish 키는 선택입니다. 비워 두면 건너뛰고, 나중에 `--only fish` 로 넣을 수 있습니다.
 - **meta-slide 와 같은 저장소**라 한 번 저장하면 두 플러그인 모두 씁니다.
 - 키는 채팅에 붙여 넣지 마세요. Claude 가 실행하면 OS 입력 창이 뜹니다. SSH 로 붙어 있으면 창이 원격 화면에 뜨므로 그 SSH 터미널에서 직접 실행하세요.
-- 키 발급: https://typesafe.ai (사내는 관리자에게 받습니다).
+- 사내는 관리자에게 키를 받습니다.
 
 ## 빠른 시작
 
@@ -85,7 +93,8 @@ python3 skills/meta-motion/motion.py setup --check    # 어디서 읽는지만(�
 | 명령 | 하는 일 |
 |---|---|
 | `python3 $M [--local]` | 로컬 화면 띄우기(`--local` 은 내 PC 브라우저용) |
-| `setup [--check]` | Jev 키 저장·확인 |
+| `setup [--check] [--only jev\|fish]` | 키 저장·확인 |
+| `narrate 대본.txt --out vo/ [--dry-run]` | 장면별 내레이션 → `track.wav` · `segments.json` · `--durs`(숫자는 한글 발음으로 · 캐시라 다시 돌리면 과금 0) |
 | `list [분류]` | 분류별 전체 목록(`--cards` 면 요청 카드 152개만) |
 | `search <단어…>` | 이름·영문·설명·업종으로 찾기(여러 단어는 AND) |
 | `fields <코드>` | 채울 칸 보기 |
@@ -106,7 +115,7 @@ python3 $M show I02 title=필첵 --ratio 세로 --color "민트와 흰색"
 python3 $M registry caption karaoke && python3 $M show caption-pill-karaoke -v
 ```
 
-> `recommend` 는 대본 글이 api.typesafe.ai(Jev)로 나갑니다. 먼저 [Jev 키 저장](#처음-한-번--jev-키-저장)을 한 번 하세요.
+> `recommend` 는 대본 글이 api.typesafe.ai(Jev)로, `narrate` 는 대본 글이 api.fish.audio 로 나갑니다. 먼저 [키 저장](#처음-한-번--키-저장)을 한 번 하세요.
 
 ## 들어 있는 자료
 
