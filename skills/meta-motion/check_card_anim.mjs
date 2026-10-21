@@ -3,7 +3,7 @@
 //   node check_card_anim.mjs <port> <list.json [{code,file,len}]> <outdir> [thumbdir]
 // 카드마다 5시점 × 2비율(가로 640x360·세로 360x640) 스크린샷과 검사(애니메이션 수·오류·변화·빈 화면)를 outdir/qa.json 에,
 // thumbdir 를 주면 가로 50% 시점을 480px JPEG(<코드>.jpg)로 쓴다 — preview.html 목록 그림.
-import fs from 'fs'; import crypto from 'crypto';
+import fs from 'fs'; import crypto from 'crypto'; import { pathToFileURL } from 'url';
 const [port, listf, out, thumbs] = process.argv.slice(2);
 const list = JSON.parse(fs.readFileSync(listf, 'utf8'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -19,7 +19,7 @@ for (const it of list) {
   errs = []; const r = { code: it.code, shots: [] };
   for (const [w, h, tag] of [[640, 360, 'w'], [360, 640, 't']]) {
     await send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });
-    await send('Page.navigate', { url: 'file://' + it.file }); await sleep(700);
+    await send('Page.navigate', { url: pathToFileURL(it.file).href }); await sleep(700);
     r.anims = await ev('document.getAnimations().length');
     const hashes = [];
     for (const f of [0.02, 0.25, 0.5, 0.75, 0.98]) {

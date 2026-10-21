@@ -186,13 +186,17 @@ def main(argv):
         import recommend; recommend.main(rest + flags)  # -v/-h 는 위에서 떼었으니 다시 넘긴다(recommend 기본은 세로)
     elif cmd == 'film':  # Claude Motion 검토 필름(첫 묶음·클립 장면·ffmpeg 자르기·계획) — 표준 라이브러리, Jev 안 부름
         import film; film.main(rest + flags)
-    elif not cmd:  # 인자 없음 — KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬에서 띄운다
-        import serve; serve.main(rest)  # 사용법은 help
+    elif not cmd:  # 인자 없음 — KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬에서 띄운다(--local: SSH 로 붙은 내 PC 브라우저용)
+        import serve; sys.exit(serve.main(rest))  # 사용법은 help
+    elif cmd == 'setup':  # Jev API 키 저장(meta-slide 와 같은 저장소) — recommend·pick 이 쓴다
+        import setup; sys.exit(setup.main(rest))
     elif cmd in ('registry', 'registry-add'):  # HyperFrames 공식 레지스트리 — 찾기는 저장 목록, 넣기는 npx
         import hf; hf.main((['add'] if cmd == 'registry-add' else ['search']) + rest)
     else:
         print('''사용법 (python3 motion.py …):
-  (인자 없음) [--port 8765] [--no-open]  KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬에서 띄움 — 브라우저가 열림, 끄기 Ctrl-C
+  (인자 없음) [--port 8765] [--no-open] [--local]  KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬에서 띄움 — 브라우저가 열림, 끄기 Ctrl-C
+                                 --local: SSH 로 붙은 내 PC 브라우저에서 열 주소(같은 Tailscale 계정 기기만 · 2시간 쉬면 꺼짐)
+  setup [--check|--force|--forget]  Jev API 키를 이 PC 에 저장(키체인·자격 증명 관리자 — meta-slide 와 공용). recommend 전에 한 번
   list [카테고리 일부]          카드 목록(코드·이름·길이·설명) — 요청 카드·실전 예시·레지스트리를 분류별로 한 목록(--cards 면 요청 카드만)
   search <단어…>               이름·영문·설명·업종으로 찾기(AND, 같은 범위)
   fields <코드>                채울 칸 보기(요청 카드 코드·실전 예시 id·레지스트리 이름)

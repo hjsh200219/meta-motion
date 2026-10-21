@@ -4,7 +4,7 @@
 묶음마다 Jev choice 로 위쪽 몇 개를 뽑고 ③ 그 결승 후보 중에서 다시 골라 순서를 정한 뒤 ④ 고른 카드마다 Jev noul 로 절대 적합도를 물어 확신 표시에 쓴다.
 분류(16개)를 먼저 고르던 두 단계 방식은 분류를 잘못 고르면 맞는 카드가 후보에서 통째로 빠져 버려서 뺐다(2026-10-17 실측 — 아래 EVAL).
 장면 나누기·비율 거르기·순위 합치기는 코드가, 고르기·적합도는 Jev 가 한다. 스크립트 글은 외부 API(api.typesafe.ai)로 나간다.
-필요: workspace shared/jev.py(또는 같은 폴더의 jev.py)와 JEV_API_KEY(환경변수 또는 workspace .env).
+필요: 같은 폴더의 jev.py(번들 사본)와 Jev API 키 — `python3 setup.py`(Windows 는 python)로 한 번 저장(환경변수 JEV_API_KEY·workspace .env 도 읽음).
 실행: python3 motion.py recommend <스크립트.txt|-> [--top 3] [-v|-h] [--json]"""
 import json, re, sys
 from concurrent.futures import ThreadPoolExecutor
@@ -85,7 +85,7 @@ def run(text, top=3, ratio='세로', workers=4):
     try:
         import jev  # noqa: F401
     except ImportError:
-        sys.exit('Jev 클라이언트(jev.py)를 찾지 못했습니다 — workspace shared/jev.py 를 이 폴더에 복사하거나 workspace 에서 실행하세요')
+        sys.exit('Jev 클라이언트(jev.py)를 찾지 못했습니다 — 플러그인을 다시 설치하세요(skills/meta-motion/jev.py)')
     sc = scenes(text)
     if not sc: sys.exit('스크립트가 비어 있습니다')
     pool = [it for it in items() if fits_ratio(it, ratio)]

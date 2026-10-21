@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -I \"${CLAUDE_PLUGIN_ROOT}/skills/meta-motion/fonts.py\" install >/dev/null 2>&1 || true",
+            "command": "F=\"${CLAUDE_PLUGIN_ROOT}/skills/meta-motion/fonts.py\"; { python3 -I \"$F\" install || python -I \"$F\" install; } >/dev/null 2>&1 || true",
             "timeout": 30
           }
         ]

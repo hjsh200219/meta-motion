@@ -5,7 +5,7 @@
 ③ 머묾 표시 점검: 생성 모델이 «머묾(hold)»으로 표시한 구간이 실제로 화면이 멈춘 구간인지 Jev noul 로 판정해 아니면 표시를 뗀다
    (2026-10-17 실측: 노래방 자막의 단어 강조·숫자 세기처럼 계속 움직이는 구간 86개가 길게 머묾으로 표시됨).
 장면 순서의 초는 항목 HTML 의 GSAP 타임라인 줄과 싱크 지점(registry-item.json)을 근거로 쓴다. 이미 만든 항목(재료가 같으면)은 건너뛴다.
-실행: python3 build_hf_ko.py [--cat-only] [--batch 6] [--workers 4] [--limit N]   · 필요: Jev(workspace shared/jev.py·JEV_API_KEY), ~/.local/bin/edb-p, build_hf.py 캐시 클론"""
+실행: python3 build_hf_ko.py [--cat-only] [--batch 6] [--workers 4] [--limit N]   · 필요: Jev(같은 폴더 jev.py · 키는 setup.py), ~/.local/bin/edb-p, build_hf.py 캐시 클론"""
 import hashlib, json, re, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path

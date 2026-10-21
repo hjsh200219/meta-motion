@@ -118,7 +118,7 @@ def main():
     only = set(a[a.index('--only') + 1].split(',')) if '--only' in a else None
     workers = int(a[a.index('--workers') + 1]) if '--workers' in a else 4
     OUT.mkdir(exist_ok=True)
-    idx = json.loads((OUT / 'index.json').read_text()) if (OUT / 'index.json').exists() else {}
+    idx = json.loads((OUT / 'index.json').read_text(encoding='utf-8')) if (OUT / 'index.json').exists() else {}
     todo = [c for c in CARDS if (not only or c['code'] in only) and (idx.get(c['code']) != sha(c) or not (OUT / f"{c['code']}.html").exists())][:limit]
     print(f'만들 카드 {len(todo)}개 / 전체 {len(CARDS)}', file=sys.stderr)
     fails = {}
@@ -131,7 +131,7 @@ def main():
                 print(f'실패: {ex}', file=sys.stderr); continue
             if err: fails[code] = err
             else: idx[code] = sha(next(c for c in CARDS if c['code'] == code))
-            (OUT / 'index.json').write_text(json.dumps(idx, ensure_ascii=False, indent=1, sort_keys=True))
+            (OUT / 'index.json').write_text(json.dumps(idx, ensure_ascii=False, indent=1, sort_keys=True), encoding='utf-8')
             print(f'{n}/{len(todo)} {code} {"실패 " + err if err else "ok"}', file=sys.stderr)
     missing = [c['code'] for c in todo if c['code'] not in idx]
     print(f'끝: 있음 {len(idx)} · 이번 실패 {len(missing)} {missing[:10]}', file=sys.stderr)

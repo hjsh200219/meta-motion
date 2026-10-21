@@ -4,7 +4,8 @@
 모션 829개를 같은 한국어 카드·같은 분류 16개로 한 목록에 모아 두고, 대본을 주면 장면별로 추천합니다.
 
 ```bash
-python3 skills/meta-motion/motion.py     # 인자 없이 → 사내 KB 모션 메뉴를 로컬 브라우저로 연다
+python3 skills/meta-motion/motion.py           # 인자 없이 → 사내 KB 모션 메뉴를 로컬 브라우저로 연다
+python3 skills/meta-motion/motion.py --local   # SSH 로 붙은 원격 컴퓨터에서 띄우고 내 PC 브라우저로 본다
 ```
 
 > 비공개 repo · 사내 참고용입니다. 수집 자료의 영상·프롬프트 저작권은 만든 사람에게 있습니다.
@@ -12,10 +13,12 @@ python3 skills/meta-motion/motion.py     # 인자 없이 → 사내 KB 모션 �
 ## 목차
 
 - [설치](#설치)
+- [처음 한 번 — Jev 키 저장](#처음-한-번--jev-키-저장)
 - [빠른 시작](#빠른-시작)
 - [명령 모음](#명령-모음)
 - [들어 있는 자료](#들어-있는-자료)
 - [Claude Motion 과 합쳐 쓰기](#claude-motion-과-합쳐-쓰기)
+- [Windows 에서 쓰기](#windows-에서-쓰기)
 - [자료 다시 만들기](#자료-다시-만들기)
 
 ## 설치
@@ -25,10 +28,32 @@ claude plugin marketplace add hjsh200219/meta-motion
 claude plugin install meta-motion@meta-motion
 ```
 
-- 필요한 것: Python 3(표준 라이브러리만), 이 repo 협업자(collaborator) 권한, GitHub 로그인된 git
-- 권한 확인: `git ls-remote https://github.com/hjsh200219/meta-motion.git`
+| 필요한 것 | 어디에 | 없으면 |
+|---|---|---|
+| Python 3.9 이상(표준 라이브러리) | 전부 | 동작 안 함 |
+| 이 repo 협업자(collaborator) 권한 · GitHub 로그인된 git | 설치 | `git ls-remote https://github.com/hjsh200219/meta-motion.git` 로 확인 |
+| Jev(TypeSafe) API 키 | `recommend`(대본 → 장면별 추천) · 색·서체 템플릿 고르기 | 그 둘만 안 됨(템플릿은 분위기 기본값) — [키 저장](#처음-한-번--jev-키-저장) |
+| Node.js · ffmpeg | 영상 렌더(HyperFrames `npx`)·`registry-add`·자르기 | 카드 찾기·요청 문장은 그대로 됨 |
+| fontTools | 2MB 넘는 글꼴을 영상용으로 줄일 때 | `python3 -m pip install --user fonttools` |
+| Tailscale | `--local`(내 PC 에서 화면 보기) | `--local` 만 안 됨 |
+
 - 업데이트: `claude plugin update meta-motion@meta-motion` → 떠 있는 세션은 `/reload-plugins`
-- 플러그인을 켜면 세션 시작 훅이 영상용 무료 서체(SIL OFL 21종)를 `~/Library/Fonts` 에 설치합니다.
+- 플러그인을 켜면 세션 시작 훅이 영상용 무료 서체(SIL OFL 21종)를 사용자 서체 폴더에 설치합니다(macOS `~/Library/Fonts` · Windows `%LOCALAPPDATA%\Microsoft\Windows\Fonts` + 사용자 서체 등록 · Linux `~/.local/share/fonts`, 관리자 권한 불필요).
+
+## 처음 한 번 — Jev 키 저장
+
+Claude Code 에서 `/meta-motion:setup`, 또는 터미널에서:
+
+```bash
+python3 skills/meta-motion/motion.py setup            # 키 입력(화면에 안 보임) → Jev 1회 확인 → 저장
+python3 skills/meta-motion/motion.py setup --check    # 어디서 읽는지만(값은 안 찍음) · --force 바꾸기 · --forget 지우기
+```
+
+- 저장 위치: macOS 키체인(서비스 `typesafe-jev`) · Windows 자격 증명 관리자(`typesafe-jev/JEV_API_KEY`) · 그 밖 `~/.config/typesafe-jev/key`(0600).
+- 읽는 순서: 환경변수 `JEV_API_KEY` → 위 저장소 → `~/workspace/.env`. Jev 클라이언트는 repo 에 든 사본(`skills/meta-motion/jev.py`)을 씁니다.
+- **meta-slide 와 같은 저장소**라 한 번 저장하면 두 플러그인 모두 씁니다.
+- 키는 채팅에 붙여 넣지 마세요. Claude 가 실행하면 OS 입력 창이 뜹니다. SSH 로 붙어 있으면 창이 원격 화면에 뜨므로 그 SSH 터미널에서 직접 실행하세요.
+- 키 발급: https://typesafe.ai (사내는 관리자에게 받습니다).
 
 ## 빠른 시작
 
@@ -48,6 +73,10 @@ claude plugin install meta-motion@meta-motion
 - 끄기 `Ctrl-C` · 다른 포트 `--port 9000` · 브라우저 안 열기 `--no-open`
 - 실행할 때마다 `~/.cache/meta-motion/kb/motion/` 에 페이지를 새로 만들어서, 자료를 고친 직후에도 바로 반영됩니다.
 - 실전 예시 영상은 원본 주소에서 재생하므로 인터넷이 필요합니다.
+- **`--local`**: 원격 컴퓨터에 SSH 로 붙어 쓰는 경우, 그 컴퓨터의 Tailscale 주소(`http://<컴퓨터>.<tailnet>.ts.net:8765/motion/`)에도 띄워 내 PC 브라우저에서 엽니다.
+  - 들어올 수 있는 것은 **같은 Tailscale 계정의 기기**(내 PC·폰)뿐입니다. 같은 tailnet 의 다른 사람 기기는 403 입니다.
+  - 2시간 동안 요청이 없으면 스스로 꺼집니다. 포트를 다른 프로그램이 쓰고 있으면 다음 포트로 옮깁니다.
+  - 마지막 줄 `LOCAL_URL=` 이 열 주소입니다. Claude Code 에서는 Claude 가 내 PC 크롬(claude-in-chrome)에서 열어 줍니다.
 
 ## 명령 모음
 
@@ -55,7 +84,8 @@ claude plugin install meta-motion@meta-motion
 
 | 명령 | 하는 일 |
 |---|---|
-| `python3 $M` | 로컬 화면 띄우기 |
+| `python3 $M [--local]` | 로컬 화면 띄우기(`--local` 은 내 PC 브라우저용) |
+| `setup [--check]` | Jev 키 저장·확인 |
 | `list [분류]` | 분류별 전체 목록(`--cards` 면 요청 카드 152개만) |
 | `search <단어…>` | 이름·영문·설명·업종으로 찾기(여러 단어는 AND) |
 | `fields <코드>` | 채울 칸 보기 |
@@ -76,7 +106,7 @@ python3 $M show I02 title=필첵 --ratio 세로 --color "민트와 흰색"
 python3 $M registry caption karaoke && python3 $M show caption-pill-karaoke -v
 ```
 
-> `recommend` 는 대본 글이 api.typesafe.ai(Jev)로 나갑니다. workspace `shared/jev.py` 와 `JEV_API_KEY` 가 필요합니다.
+> `recommend` 는 대본 글이 api.typesafe.ai(Jev)로 나갑니다. 먼저 [Jev 키 저장](#처음-한-번--jev-키-저장)을 한 번 하세요.
 
 ## 들어 있는 자료
 
@@ -96,6 +126,13 @@ python3 $M registry caption karaoke && python3 $M show caption-pill-karaoke -v
 - 검토: claude.ai «Motion» 필름에 렌더 클립을 장면마다 올려 긁어 보고 시각에 댓글을 답니다.
 - 맞는 카드가 없는 장면(추천 1위 적합도 0.5 미만)만 Motion 안에서 `kit.scene` 으로 그린 뒤 `data/motion_kit.js` 로 HyperFrames 하위 컴포지션에 옮깁니다.
 - 필름 기록: `python3 $M film rec.json --durs … --out film/` (상세는 SKILL.md 「Claude Motion 과 합쳐 쓰기」)
+
+## Windows 에서 쓰기
+
+- 명령은 같고 `python3` 대신 `python`(또는 `py`)을 씁니다. 예: `python skills\meta-motion\motion.py search 자막`.
+- 키는 Windows 자격 증명 관리자에 저장합니다(SSH 로 붙은 세션처럼 자격 증명 관리자를 못 쓰면 `%APPDATA%\typesafe-jev\key`).
+- 세션 시작 훅은 `python3` 가 없으면 `python` 으로 서체를 설치합니다. 콘솔 출력은 UTF-8 로 맞춥니다.
+- `--local` 은 Windows 용 Tailscale(`C:\Program Files\Tailscale\tailscale.exe`)이 있으면 같게 동작합니다.
 
 ## 자료 다시 만들기
 

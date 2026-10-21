@@ -90,7 +90,7 @@ TONE_CRITERIA = {
     "emotional": "감성·에세이·추억·위로 톤. 천천히 읽는 서정적 문장, 사람과 장소의 이야기",
     "playful": "일상·친구·간식·귀여운 톤. 가볍고 유쾌한 말투, 손글씨 느낌이 어울리는 대본",
 }
-JEV_PATH = os.path.expanduser("~/workspace/shared/jev.py")
+JEV_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "jev.py")  # 번들 사본(키는 setup.py 가 저장)
 
 # 색·서체 조합 템플릿 — 조회 수 높은 국내 쇼츠·릴스의 제목 띠·자막을 실측해 만든 것(2026-10-17).
 # 실측: 유튜브 17개 채널 쇼츠 탭 조회 수 상위 3개 + 주제 검색 16개(90초 이하 한국어) 53편의 50% 지점 프레임에서
@@ -229,7 +229,7 @@ def judge_jev(text, exclude=(), history=()):
     """Jev 한 번으로 분위기(tone)와 템플릿(template)을 함께 고른다. {"tone": (값, 확신), "template": (값, 확신)} 또는 None.
     exclude 에 든 템플릿은 후보에서 뺀다(사용자가 고른 수동 제외).
     history(이력 레코드 목록)가 있으면 같은 호출에 「비슷한 이전 콘텐츠」 문항을 더해 {"similar": (slug|"none", 확신)} 도 돌려준다.
-    API 키는 jev.py 가 환경변수·workspace .env 에서 스스로 읽는다(이 파일은 키를 다루지 않는다)."""
+    API 키는 jev.py 가 환경변수 → setup.py 저장소 → workspace .env 순서로 스스로 읽는다(이 파일은 키를 다루지 않는다)."""
     try:
         jev = load_jev()
         options = {k: v["criteria"] for k, v in TEMPLATES.items() if k not in exclude}
@@ -269,7 +269,23 @@ def judge_tone(text):
     return winners[0], scores
 
 
-USER_FONT_DIR = os.path.expanduser("~/Library/Fonts")
+# 사용자 서체 폴더 — macOS ~/Library/Fonts · Windows %LOCALAPPDATA%\Microsoft\Windows\Fonts(+ HKCU 등록) · Linux ~/.local/share/fonts
+if os.name == "nt":
+    USER_FONT_DIR = os.path.join(os.environ.get("LOCALAPPDATA") or os.path.expanduser(r"~\AppData\Local"), "Microsoft", "Windows", "Fonts")
+elif sys.platform == "darwin":
+    USER_FONT_DIR = os.path.expanduser("~/Library/Fonts")
+else:
+    USER_FONT_DIR = os.path.expanduser("~/.local/share/fonts")
+
+
+def _register_windows_font(path):
+    """Windows 사용자 서체는 폴더에 복사만 하면 앱(Chromium·HyperFrames)이 못 본다 — HKCU 서체 목록에 등록한다(관리자 권한 불필요)."""
+    import winreg
+    name = os.path.splitext(os.path.basename(path))[0] + (" (OpenType)" if path.lower().endswith(".otf") else " (TrueType)")
+    with winreg.CreateKey(winreg.HKEY_CURRENT_USER, r"Software\Microsoft\Windows NT\CurrentVersion\Fonts") as k:
+        winreg.SetValueEx(k, name, 0, winreg.REG_SZ, path)
+
+
 HF_INLINE_LIMIT = 2 * 1024 * 1024  # HyperFrames 는 2MB 넘는 글꼴을 묶음에 넣지 않아 기본 서체로 대체된다(2026-10-16 실측)
 SUBSET_BASE = "0123456789.,:;!?()[]-~·•✓%/+& ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
@@ -293,7 +309,7 @@ def subset_font(src, dst, text):
 
 
 def ensure_installed(files=None):
-    """data/fonts 의 서체를 ~/Library/Fonts 에 설치한다(없거나 크기가 다르면 복사). 설치한 파일 목록을 돌려준다."""
+    """data/fonts 의 서체를 사용자 서체 폴더(USER_FONT_DIR)에 설치한다(없거나 크기가 다르면 복사 · Windows 는 등록까지). 설치한 파일 목록을 돌려준다."""
     names = files or sorted({f["file"] for f in FONTS.values()} | {f["file"] for f in CATALOG.values()})
     os.makedirs(USER_FONT_DIR, exist_ok=True)
     installed = []
@@ -305,6 +321,8 @@ def ensure_installed(files=None):
         if not os.path.exists(dst) or os.path.getsize(dst) != os.path.getsize(src):
             shutil.copyfile(src, dst)
             installed.append(name)
+        if os.name == "nt":
+            _register_windows_font(dst)
     return installed
 
 

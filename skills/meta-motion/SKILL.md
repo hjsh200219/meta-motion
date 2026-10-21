@@ -39,6 +39,9 @@ python3 $M registry-add caption-pill-karaoke --dir <프로젝트> --start 0 --tr
 ```
 
 - **`/meta-motion` 을 인자 없이 부르면** `python3 $M` 을 백그라운드로 실행해(서버가 계속 떠 있어야 한다) 찍힌 주소를 사용자에게 알린다. 페이지는 `export_kb.py` 로 KB 와 같게 만들어 `~/.cache/meta-motion/kb/motion/` 에서 보여 준다(원본 영상 모드라 실전 예시 영상은 인터넷이 필요하다).
+- **`--local`**(사용자가 SSH 로 이 컴퓨터에 붙어 쓸 때 — 「내 PC 에서」·「로컬로」): `python3 $M --local` 을 백그라운드로 띄우면 127.0.0.1 과 이 컴퓨터의 Tailscale 주소에 함께 연다(같은 Tailscale 계정 기기만 · Host 머리글 검사 · 2시간 쉬면 꺼짐 · 포트를 다른 프로그램이 쓰면 다음 포트). 출력 끝의 `LOCAL_URL=` 을 사용자 PC 크롬에서 연다 — claude-in-chrome `navigate(LOCAL_URL)`, 여러 브라우저면 `LOCAL_BROWSER=` 로 `select_browser`. 그 브라우저가 연결돼 있지 않으면 다른 브라우저에 열지 말고 `LOCAL_URL` 을 링크로 답한다. 관문 코드는 `localnet.py`(meta-slide 와 같은 사본).
+- **Jev 키**: `recommend`·`fonts.py pick` 은 Jev API 키가 필요하다. `JEV_API_KEY 없음` 이면 `/meta-motion:setup`(= `python3 $M setup`)을 안내·실행한다. 키를 채팅으로 받지 않는다(`setup.py` 가 화면에 안 찍히는 입력·OS 입력 창으로 받고 Jev 1회로 확인 뒤 macOS 키체인 · Windows 자격 증명 관리자 · 그 밖 0600 파일에 저장). meta-slide 와 같은 저장소다. SSH 로 붙어 있으면 사용자가 SSH 터미널에서 직접 `python3 <스킬 폴더>/setup.py`. Jev 클라이언트는 번들 사본 `jev.py` 만 쓴다(PC 마다 같게).
+- Windows 는 `python3` 대신 `python`. 세션 시작 훅이 서체를 `%LOCALAPPDATA%\Microsoft\Windows\Fonts` 에 복사하고 HKCU 서체 목록에 등록한다(관리자 권한 불필요 · Linux 는 `~/.local/share/fonts`).
 - 비운 필수 칸은 사이트 예시값이, 비운 선택 칸은 그 구절이 통째로 빠진다.
 - `--tool auto|claude|codex` → 문장 머리 `하이퍼프레임(HyperFrames)으로` / `/hyperframes 로` / `$hyperframes 로`.
 - `--ratio` 기본 가로 16:9(사이트 기본값). 쇼츠면 `세로`. 줄임 `-v` = 세로 9:16, `-h` = 가로 16:9(명령 앞뒤 어디에 와도 된다).
@@ -140,4 +143,5 @@ HyperFrames 레지스트리는 세 단계 — ① `python3 build_hf.py`(catalog 
 - `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사·이력(`pick`·`list`·`install`·`record`·`history`·`templates`) · `test_fonts.py` — 템플릿 대비·서체·라이선스·이력 검사
   - `python3 fonts.py templates` 는 템플릿·서체(절대 경로) JSON 을 부수 효과 없이 낸다 — 다른 렌더러가 같은 템플릿을 쓰는 통로다. 발행 릴스(`SHC/shconsulting/scripts/instagram/motion/theme.mjs`)가 이것과 `pick`·`record` 를 부른다. 키를 바꾸면 그쪽 `node --test scripts/instagram/motion/theme.test.mjs` 도 돌린다.
 - `film.py` — Claude Motion 검토 필름 기록·클립 장면·split.sh·계획(`motion.py film`) · `test_film.py` · `data/motion_kit.js` — Motion 장면(kit.scene)을 HyperFrames·Playwright 호스트에서 돌리는 kit 부분집합 · `test_motion_kit.mjs`
+- `jev.py` — Jev 클라이언트 번들 사본(meta-slide 와 같음) · `setup.py` — Jev 키 저장(`motion.py setup`) · `localnet.py` — `--local` 관문(Tailscale 같은 계정 기기만) · `serve.py` — 로컬 KB 화면 · `test_setup_local.py` — 키 저장·관문 검사
 - `motion.py` — CLI(Python 3, 의존성 없음) · `build.py` — 카드 재수집·대조 · `build_pm.py` — 예시 재수집 · `build_pm_ko.py` — 예시를 한국어 요청 카드 모양으로 정리(data/prompt_motion_ko.json) · `fetch_posters.py` — 예시 대표 그림 받기(`--clips` 는 Artifact 용 줄인 영상) · `build_card_anim.py` — 요청 카드 샘플 애니메이션 만들기(data/anim) · `check_card_anim.mjs` — 샘플 검사·목록 그림(data/anim/thumb) · `export_kb.py` — 사내 KB 용 페이지 내보내기 · `recommend.py` — 스크립트 → 장면별 카드 추천(Jev, `motion.py recommend` — 비율 거르기 → 후보 전체 묶음별 결승 → 고른 카드마다 적합도) · `eval_recommend.py` — 추천 품질 재기(게시된 릴스 대본 장면 → recommend → edb-p 심판 1~5점 → 지표, 고친 뒤 비교용) · `preview.html` — 카드·예시를 한 화면에서 고르는 페이지
