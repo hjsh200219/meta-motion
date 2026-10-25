@@ -240,7 +240,7 @@ def judge_jev(text, exclude=(), history=()):
                                    options),
         }
         if history:
-            past = {h["slug"]: f'{h.get("title") or ""} — {h.get("summary") or ""}'[:300] for h in history}
+            past = similar_options(history)
             past[NO_SIMILAR] = "비슷한 이전 콘텐츠 없음 — 주제·시리즈·형식이 다른 새 콘텐츠"
             questions["similar"] = jev.choice(
                 "이 영상 대본과 주제·시리즈·형식이 같은 이전 영상이 있으면 그 영상을, 없으면 none 을 고른다. 단어 몇 개가 겹치는 정도로는 같다고 보지 않는다.",
@@ -332,6 +332,25 @@ def ensure_installed(files=None):
 HISTORY_PATH = os.environ.get("META_MOTION_HISTORY") or os.path.expanduser("~/.local/share/meta-motion/template-history.jsonl")
 HISTORY_LIMIT = 200  # Jev choice 옵션 상한 255 안
 NO_SIMILAR = "none"
+
+
+SIMILAR_BUDGET = 12000  # 「비슷한 이전 영상」 보기 글자 상한 — 이력 200건 × 300자(44,808자)에서 Jev 가 HTTP 400 max_tokens_exceeded (2026-10-25 실측)
+
+
+def similar_options(history, budget=SIMILAR_BUDGET, n=160):
+    """Jev 「비슷한 이전 영상」 보기. 시리즈는 최신 한 편만(같은 시리즈 영상은 템플릿이 같다), 최신부터 글자 상한까지."""
+    seen, out, used = set(), {}, 0
+    for h in reversed(history):
+        key = h.get("series") or h["slug"]
+        if key in seen:
+            continue
+        seen.add(key)
+        label = f'{h.get("title") or ""} — {h.get("summary") or ""}'[:n]
+        if used + len(label) > budget:
+            break
+        out[h["slug"]] = label
+        used += len(label)
+    return dict(reversed(list(out.items())))
 
 
 def summarize(text, n=200):

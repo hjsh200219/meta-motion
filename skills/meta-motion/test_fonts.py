@@ -81,6 +81,14 @@ assert series_template("ai-daily", h) == ("ai-daily-1", "navy-lime") and series_
 r = pick("오늘의 AI 소식 둘째", use_jev=False, series="ai-daily")      # 시리즈 일치는 Jev 없이 정해진다
 assert r["template"] == "navy-lime" and r["template_how"] == "series:ai-daily-1"
 
+# similar_options: 이력이 커도 Jev 보기 글자 상한 안 · 시리즈는 최신 한 편만
+from fonts import similar_options, SIMILAR_BUDGET
+big = [{"slug": f"s{i}", "title": f"제목{i}", "summary": "가" * 400, "series": "recipe" if i % 2 else None} for i in range(200)]
+o = similar_options(big)
+assert sum(len(v) for v in o.values()) <= SIMILAR_BUDGET
+assert [k for k in o if k.startswith("s") and int(k[1:]) % 2] == ["s199"]          # 시리즈 recipe 는 최신 한 편
+assert list(o)[-1] == "s199" and "s198" in o                                        # 최신부터 담고 순서는 오래된 것 → 최신
+
 # templates: 다른 렌더러가 읽는 JSON — 템플릿 전부와 서체 절대 경로
 import contextlib, io, json
 from fonts import main
