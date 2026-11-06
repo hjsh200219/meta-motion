@@ -57,4 +57,20 @@ assert official.is_official('https://support.google.com/googleplay/answer/342265
 assert official.is_official('https://cs.kakao.com/helps?service=8')
 assert not official.is_official('https://blog.naver.com/someone/123')
 
+# 안전: http(s) 만, 내부망·루프백·링크 로컬 호스트는 거절(페이지가 file:·내부 주소를 심어도 받지 않는다)
+evil = '<img src="file:///etc/passwd.png" alt="a"><img src="ftp://x.com/a.png" alt="b"><img src="https://ok.example.com/a.png" alt="c">'
+assert [i['url'] for i in official.parse_images(evil, PAGE)] == ['https://ok.example.com/a.png']
+resolve = {'cdsassets.apple.com': ['17.253.1.1'], 'evil.test': ['127.0.0.1'], 'meta.test': ['169.254.169.254'],
+           'lan.test': ['10.0.0.5'], 'mixed.test': ['17.1.1.1', '192.168.0.2']}.get
+assert official.safe_url('https://cdsassets.apple.com/a.png', resolve=resolve)
+for bad in ('http://evil.test/a.png', 'http://meta.test/latest', 'https://lan.test/a.png', 'https://mixed.test/a.png',
+            'file:///etc/passwd', 'http://127.0.0.1/a.png', 'http://[::1]/a.png', 'https://unknown.test/a.png'):
+    assert not official.safe_url(bad, resolve=resolve), bad
+# 너무 큰 응답은 자른 채 쓰지 않고 실패
+try:
+    official.read_capped(__import__('io').BytesIO(b'x' * 11), limit=10); raise SystemExit('cap 실패')
+except ValueError:
+    pass
+assert official.read_capped(__import__('io').BytesIO(b'x' * 10), limit=10) == b'x' * 10
+
 print('test_official OK')
