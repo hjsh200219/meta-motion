@@ -5,7 +5,7 @@
 `official.json`(페이지·받은 날·이미지마다 url·alt·kind·file)에 남긴다. alt 는 그 화면이 무엇인지 공식 문서가 적은 설명이라
 장면 배치와 보고의 출처로 쓴다. 표준 라이브러리만 쓴다.
 """
-import datetime, html as htmlmod, ipaddress, json, os, re, socket, sys, urllib.parse, urllib.request
+import datetime, html as htmlmod, http.client, ipaddress, json, os, re, socket, sys, urllib.parse, urllib.request
 
 UA = 'Mozilla/5.0 (Macintosh) meta-motion-official/1'
 # 서비스 회사가 직접 운영하는 지원·도움말 도메인(끝이 일치하면 공식) — 아니면 경고만 하고 받는다
@@ -96,11 +96,43 @@ class _SafeRedirect(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
+def _check_peer(sock):
+    """실제로 붙은 상대 주소가 공인 주소인지 — 검사와 접속 사이 DNS 가 바뀌는 재바인딩을 막는다."""
+    addr = sock.getpeername()[0]
+    if not ipaddress.ip_address(addr.split('%')[0]).is_global:
+        sock.close()
+        raise ValueError('공인 주소가 아닌 상대에 접속됨: %s' % addr)
+
+
+class _HTTPConn(http.client.HTTPConnection):
+    def connect(self):
+        super().connect(); _check_peer(self.sock)
+
+
+class _HTTPSConn(http.client.HTTPSConnection):
+    def connect(self):
+        super().connect(); _check_peer(self.sock)
+
+
+class _HTTPHandler(urllib.request.HTTPHandler):
+    def http_open(self, req):
+        return self.do_open(_HTTPConn, req)
+
+
+class _HTTPSHandler(urllib.request.HTTPSHandler):
+    def https_open(self, req):
+        return self.do_open(_HTTPSConn, req, context=self._context)
+
+
+def _opener():
+    return urllib.request.build_opener(_HTTPHandler, _HTTPSHandler, _SafeRedirect)
+
+
 def _get(url):
     if not safe_url(url):
         raise ValueError('받지 않음(공인 http(s) 주소 아님): %s' % url)
     req = urllib.request.Request(url, headers={'User-Agent': UA})
-    with urllib.request.build_opener(_SafeRedirect).open(req, timeout=30) as r:
+    with _opener().open(req, timeout=30) as r:
         return read_capped(r)
 
 

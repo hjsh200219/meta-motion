@@ -73,4 +73,16 @@ except ValueError:
     pass
 assert official.read_capped(__import__('io').BytesIO(b'x' * 10), limit=10) == b'x' * 10
 
+# DNS 재바인딩: 검사 뒤 이름이 내부 주소로 바뀌어도, 실제로 붙은 상대 주소를 다시 봐서 끊는다 — 로컬 서버로 확인
+import http.server, threading
+srv = http.server.HTTPServer(('127.0.0.1', 0), http.server.SimpleHTTPRequestHandler)
+threading.Thread(target=srv.serve_forever, daemon=True).start()
+try:
+    official._opener().open('http://127.0.0.1:%d/' % srv.server_address[1], timeout=5)
+    raise SystemExit('루프백 상대에 붙었는데 끊지 않음')
+except Exception as e:
+    assert '공인' in str(e), e
+finally:
+    srv.shutdown()
+
 print('test_official OK')
