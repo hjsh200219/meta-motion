@@ -8,7 +8,7 @@ python3 skills/meta-motion/motion.py           # 인자 없이 → 사내 KB 모
 python3 skills/meta-motion/motion.py --local   # SSH 로 붙은 원격 컴퓨터에서 띄우고 내 PC 브라우저로 본다
 ```
 
-> 비공개 repo · 사내 참고용입니다. 수집 자료의 영상·프롬프트 저작권은 만든 사람에게 있습니다.
+> 공개 repo입니다(2026-11-10 공개 전환). 수집 자료의 영상·프롬프트 저작권은 만든 사람에게 있습니다.
 
 ## 목차
 
@@ -31,7 +31,7 @@ claude plugin install meta-motion@meta-motion
 | 필요한 것 | 어디에 | 없으면 |
 |---|---|---|
 | Python 3.9 이상(표준 라이브러리) | 전부 | 동작 안 함 |
-| 이 repo 협업자(collaborator) 권한 · GitHub 로그인된 git | 설치 | `git ls-remote https://github.com/hjsh200219/meta-motion.git` 로 확인 |
+| git(공개 repo라 GitHub 로그인·협업자 권한 불필요) | 설치 | `git ls-remote https://github.com/hjsh200219/meta-motion.git` 로 확인 |
 | Jev(TypeSafe) API 키 | `recommend`(대본 → 장면별 추천) · 색·서체 템플릿 고르기 | 그 둘만 안 됨(템플릿은 분위기 기본값) — [키 저장](#처음-한-번--키-저장) |
 | Fish Audio API 키 | `narrate`(장면별 내레이션 — 영상 기본값은 음성 있음) | 내레이션 없는 영상만 — [키 저장](#처음-한-번--키-저장) |
 | Node.js 18+ · ffmpeg | 영상 렌더(HyperFrames `npx`)·`narrate`·`registry-add`·자르기 | 카드 찾기·요청 문장은 그대로 됨 |
