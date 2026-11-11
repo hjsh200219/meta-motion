@@ -208,7 +208,7 @@ const poster = (it) => it.hf ? `${BASE}hf_thumb/${esc(it.code)}.jpg` : !it.pm?.p
 // 레지스트리 영상은 공식 미리보기가 있는 항목만, 외부 영상을 여는 곳(KB)에서만 — 없으면 직접 렌더한 그림 위에서 진행표를 넘긴다
 const clip = (it) => it.hf ? (ORIGIN && it.hf.preview?.video ? url(it.hf.preview.video) : '') : ORIGIN ? url(it.pm.video) : `${BASE}clips/${esc(it.code)}.mp4`;
 const media = (it) => it.pm || it.hf;
-const HF_CMD = (it) => `python3 motion.py registry-add ${it.code} --dir <프로젝트>`;
+const HF_CMD = (it) => `python3 motion.py add ${it.code} --dir <프로젝트>`;
 const BRAND = new Set(['instagram', 'tiktok', 'spotify', 'slack', 'heygen', 'chatgpt', 'claude', 'youtube', 'apple', 'google', 'figma', 'github', 'x', 'twitter', 'linkedin']);
 const isBrand = (it) => !!it.hf && (it.code.split('-').some((w) => BRAND.has(w)) || /@\w/.test(it.hf.description)); // hf.py is_brand 와 같은 규칙
 // 영상이 읽혔으면 영상 시각이 재생 기준, 없거나 못 읽으면 포스터 위에서 타이머로 넘긴다

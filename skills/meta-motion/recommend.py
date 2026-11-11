@@ -115,7 +115,7 @@ def main(args):
             if not r['picks'] or r['picks'][0]['fit'] < LOW else ''
         print(f"\n## 장면 {i}: {r['scene'][:80]}{'…' if len(r['scene']) > 80 else ''}\n{low}", end='')
         for it in r['picks']:
-            add = f"\n         넣기 python3 motion.py registry-add {it['code']} --dir <프로젝트>" if it['src'] == 'hf' else ''
+            add = f"\n         넣기 python3 motion.py add {it['code']} --dir <프로젝트>" if it['src'] == 'hf' else ''
             print(f"   적합도 {it['fit']:.2f}  {it['code']}\t{it['name']}\t[{it['cat']} · {src_name[it['src']]}]\n"
                   f"         자세히 python3 motion.py {it['how']}{' -h' if ratio == '가로' else ' -v'}\n         보기 {KB}{it['code']}{add}")
 

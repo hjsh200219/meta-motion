@@ -122,7 +122,7 @@ def credit(c):
     if c.get('src') == 'hf':
         import hf
         warn = '\n⚠브랜드 흉내 — 남의 제품 화면·로고·실제 @계정을 흉내 낸 항목. 그 회사·그 사람 영상이 아니면 쓰지 않는다' if hf.brand_of(c['code']) else ''
-        return f"\n[출발점] HyperFrames 레지스트리 {c['code']} ({hf.license_of(c['code'])}) — python3 motion.py registry-add {c['code']} --dir <프로젝트> 로 받아 이 사양대로 고친다{warn}"
+        return f"\n[출발점] HyperFrames 레지스트리 {c['code']} ({hf.license_of(c['code'])}) — python3 motion.py add {c['code']} --dir <프로젝트> 로 받아 이 사양대로 고친다{warn}"
     return ''
 
 
@@ -141,7 +141,7 @@ def main(argv):
     flags = [a for a in argv if a in FLAG_RATIO]; argv = [a for a in argv if a not in FLAG_RATIO]
     cmd, rest = (argv[0] if argv else ''), argv[1:]
     if cmd.startswith('--'): cmd, rest = '', argv   # 인자 없이 옵션만(--port·--no-open) — KB 화면 띄우기
-    opt = {'tool': 'auto', 'ratio': FLAG_RATIO[flags[-1]] if flags else '가로', 'color': '', 'file': '', 'simple': False}; vals, args = {}, []
+    opt = {'tool': 'auto', 'ratio': FLAG_RATIO[flags[-1]] if flags else '가로', 'color': '', 'file': '', 'simple': False, 'template': '', 'kind': ''}; vals, args = {}, []
     it = iter(rest)
     for a in it:
         if a == '--simple': opt['simple'] = True
@@ -149,32 +149,54 @@ def main(argv):
         elif a.startswith('--'): opt[a[2:]] = next(it, '')
         elif re.match(r'^\w+=', a): k, v = a.split('=', 1); vals[k] = v
         else: args.append(a)
-    g = {'ratio': RATIO.get(opt['ratio'], opt['ratio']), 'color': opt['color'], 'file': opt['file']}
+    theme = None
+    if opt['template']:  # 색·서체는 한곳(fonts.resolve_theme)에서 — 사용자 색 문장 > 템플릿
+        import fonts; theme = fonts.resolve_theme(opt['template'], opt['color'] or None)
+    g = {'ratio': RATIO.get(opt['ratio'], opt['ratio']), 'color': theme['color'] if theme else opt['color'], 'file': opt['file']}
+    tokens = (lambda th: f"\n[색 토큰] 템플릿 {th['template']}({th['name']}) — " + ' · '.join(f"{k} {v}" for k, v in th['tokens'].items() if v not in (None, False))
+              + f" · 제목 서체 {th['title_font']['name']} {th['title_font']['weight']} · 자막 서체 {th['caption_font']['name']} {th['caption_font']['weight']}"
+              + " (카드 사양의 배경·글자 hex 보다 이 값이 우선 · 구성·움직임은 카드대로)")(theme) if theme else ''
     pre = TOOLS.get(opt['tool'], TOOLS['auto'])
     line = lambda c: f"{c['code']}\t{c['name']} ({c['en']})\t{c['len']}\t{c['plain']}{where(c)}"
     pool = CARDS if '--cards' in rest else everything()  # --cards: 요청 카드 152개만
-    if cmd == 'list':
+    if cmd == 'list':  # 한 목록 — 모션 분류 16개, 이어서 표현 기법·색·서체 템플릿(--cards 면 요청 카드만)
         q, cat = ' '.join(args), None
         for c in pool:
             if q and q not in c['cat']: continue
             if c['cat'] != cat: cat = c['cat']; print(f'\n## {cat}')
             print(line(c))
+        if '--cards' not in rest:
+            import catalog
+            for kind, head in (('technique', '표현 기법'), ('theme', '색·서체 템플릿')):
+                hit = [i for i in catalog.items(kind) if not q or q in i['category'] or q in head]
+                if hit: print(f'\n## {head}\n' + '\n'.join(map(catalog.line, hit)))
     elif cmd == 'search':
         qs = [s.lower() for s in args]
         hit = [c for c in pool if all(q in ' '.join([c['code'], c['name'], c['en'], c['plain'], c['when'], c['cat'], *c['inds']]).lower() for q in qs)]
-        print('\n'.join(map(line, hit)) if hit else '찾은 카드 없음 — list 로 전체 보기')
+        more = []
+        if '--cards' not in rest:
+            import catalog; more = [i for i in catalog.search(qs) if i['kind'] != 'motion']
+        if opt['kind']: hit, more = (hit if opt['kind'] == 'motion' else []), [i for i in more if i['kind'] == opt['kind']]
+        print('\n'.join([*map(line, hit), *(catalog.line(i) for i in more)]) if hit or more else '찾은 항목 없음 — list 로 전체 보기')
     elif cmd == 'fields':
         c = card(args[0]); print(f"{c['code']} {c['name']} · {c['len']} · 이럴 때: {c['when']}")
         for f in c['fields']: print(f"  {f['k']}=…\t{f['label']}{' (선택)' if f['opt'] else ''}\t예: {f['ex']}")
-    elif cmd == 'show':
-        c = card(args[0])
-        print((simple(pre, c, vals, g) if opt['simple'] or not c['dx'] else detail(pre, c, vals, g)) + credit(c))
+    elif cmd == 'show':  # 모션·기법·템플릿 어느 id 든 — 모션은 요청 문장, 기법은 노트 전문, 템플릿은 색·서체 토큰
+        key = args[0] if args else ''
+        if not (BY.get(key.upper()) or MORE_BY.get(key)):
+            import catalog; it = catalog.find(key)
+            if it and it['kind'] == 'technique':
+                import cokac; idx = cokac.load(); return cokac.show(idx, cokac.pick(idx, it['id']))
+            if it and it['kind'] == 'theme':
+                import fonts, json; return print(json.dumps(fonts.resolve_theme(it['id'], opt['color'] or None), ensure_ascii=False, indent=1))
+        c = card(key)
+        print((simple(pre, c, vals, g) if opt['simple'] or not c['dx'] else detail(pre, c, vals, g)) + credit(c) + tokens)
     elif cmd == 'order':  # 사이트 «주문서» — 여러 카드를 한 요청으로(간단 문장, 공통 칸은 맨 앞에 한 번)
         cs = [card(a) for a in args]
         only = lambda k: (g.get(k) or '').strip() or None
         out = [f'{pre} 아래 그래픽 {len(cs)}개를 순서대로 만들어줘.' + compose(TAIL, only) + compose('[[ 넣을 영상: {file}.]]', only)]
         out += [f"{i}) [{c['code']} {c['name']}] " + compose(c['tpl'], resolver(c['fields'], vals, g, no_file=True)) + credit(c).replace('\n', ' ') for i, c in enumerate(cs, 1)]
-        print('\n'.join(out))
+        print('\n'.join(out) + tokens)
     elif cmd == 'examples':  # prompt-motion.com — Claude 로 실제 만든 영상과 그 프롬프트(영어)
         qs = [q.lower() for q in args]
         hit = [e for e in EXAMPLES if all(q in ' '.join([e['id'], e['title'], e['type'], e['creator'], e['prompt'], *e['tags']]).lower() for q in qs)]
@@ -197,6 +219,12 @@ def main(argv):
         import setup; sys.exit(setup.main(rest))
     elif cmd == 'narrate':  # 대본 → 장면별 Fish 내레이션 track.wav + 장면 길이(--durs) — Node·ffmpeg
         import narrate; sys.exit(narrate.main(rest))
+    elif cmd == 'add':  # 받을 수 있는 항목(레지스트리) 넣기 — registry-add 와 같다
+        import hf; hf.main(['add'] + rest)
+    elif cmd == 'theme':  # 색·서체 템플릿 — 인자 없으면 목록, id 를 주면 최종 토큰(fonts.resolve_theme)
+        import catalog, fonts, json
+        if args: print(json.dumps(fonts.resolve_theme(args[0], opt['color'] or None), ensure_ascii=False, indent=1))
+        else: print('\n'.join(map(catalog.line, catalog.items('theme'))))
     elif cmd in ('registry', 'registry-add'):  # HyperFrames 공식 레지스트리 — 찾기는 저장 목록, 넣기는 npx
         import hf; hf.main((['add'] if cmd == 'registry-add' else ['search']) + rest)
     elif cmd == 'official':  # 사용법 안내 영상의 실제 앱 화면 = 공식 지원 문서 이미지(미러링·화면 녹화 대신)
@@ -211,19 +239,20 @@ def main(argv):
                                  --local: SSH 로 붙은 내 PC 브라우저에서 열 주소(같은 Tailscale 계정 기기만 · 2시간 쉬면 꺼짐)
   setup [--check|--force|--forget|--only jev|fish]  API 키 저장 — Jev(recommend·템플릿)·Fish Audio(내레이션). 키체인·자격 증명 관리자, meta-slide 와 공용
   narrate <대본.txt> --out <폴더> [--dry-run] [--force]  장면별 내레이션(Fish 기본 보이스) → track.wav · segments.json · --durs
-  list [카테고리 일부]          카드 목록(코드·이름·길이·설명) — 요청 카드·실전 예시·레지스트리를 분류별로 한 목록(--cards 면 요청 카드만)
-  search <단어…>               이름·영문·설명·업종으로 찾기(AND, 같은 범위)
+  list [분류 일부]             한 목록 — 모션 분류 16개(요청 카드·실전 예시·레지스트리), 이어서 표현 기법·색·서체 템플릿(--cards 면 요청 카드만)
+  search <단어…> [--kind motion|technique|theme]  모든 종류를 한 번에 찾기(AND) — 줄 끝 [종류 · 출처] 꼬리표
   fields <코드>                채울 칸 보기(요청 카드 코드·실전 예시 id·레지스트리 이름)
-  show <코드> [칸=값…] [옵션]   요청 문장(기본 🔍자세히, --simple 이면 간단) — 실전 예시는 만든 사람, 레지스트리는 받는 명령을 끝에 붙임
+  show <id> [칸=값…] [옵션]     어느 종류든 자세히 — 모션은 요청 문장(--simple 간단 · --template <id> 색·서체 토큰), 기법은 노트 전문, 템플릿은 최종 토큰
   order <코드…> [칸=값…] [옵션] 여러 카드를 한 요청으로(주문서)
   examples [단어…]             prompt-motion.com 실전 예시 찾기(제목·태그·프롬프트·만든 사람, AND · 영어)
   example <id>                 예시 프롬프트 전문 + 만든 사람·원문·영상 링크
   recommend <스크립트.txt|-> [--top 3] [-v|-h] [--json]  스크립트를 장면별로 나눠 어울리는 모션 추천(Jev — 글이 api.typesafe.ai 로 나감, 기본 세로)
   registry [단어…] [--type block|component] [--portrait]  HyperFrames 공식 레지스트리 444개 찾기(영어 · 이름·설명·태그 AND)
-  registry-add <이름> --dir <프로젝트> [--start 0] [--track 1]  항목 넣기(npx) + lint 통과 host 조각 · 비율·서체 고칠 곳
+  add <id> --dir <프로젝트> [--start 0] [--track 1]  받을 수 있는 항목 넣기(npx) + lint 통과 host 조각 · 비율·서체 고칠 곳 (registry-add 와 같음)
+  theme [<id>] [--color 문장]   색·서체 템플릿 목록 / 최종 토큰
   official <공식 안내 페이지 URL> --out <폴더> [--screens-only]  공식 지원 문서의 화면 이미지를 alt 와 함께 받기(official.json) — 사용법 영상의 실제 화면
   check <프로젝트> [--no-zone] [--strict] [--top 240] [--top-error 120] [--bottom 480] [--bottom-error 320] [--right 120] [--json]  렌더 전 검사 — lint 가 놓치는 비결정 코드 + 세로 영상 쇼츠 UI 띠의 글자
-  technique [단어…|번호] [--group 분류]  표현 기법 참고서 cokacmotion 166편 찾기·노트 전문(⛔ 기술만 가져간다 · MIT kstost)
+  technique [단어…|번호] [--group 분류]  (옛 명령) 표현 기법만 찾기·노트 전문 — search·show 와 같은 자료(⛔ 기술만 가져간다 · MIT kstost)
   film <recommend.json|-> --durs 3.2,5.1,… [--template <id>] [-v|-h] [--out 폴더]  Claude Motion 검토 필름 기록(scenes.json·base.css·클립 장면·split.sh·plan) — 렌더는 HyperFrames, 검토·댓글은 Motion
 옵션: -v 세로 9:16 · -h 가로 16:9 · --ratio 가로|세로|정사각|없음 (기본 가로) · --color "남색과 노랑" · --file video.mp4 · --tool auto|claude|codex''')
 

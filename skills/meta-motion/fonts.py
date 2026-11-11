@@ -214,6 +214,21 @@ TEMPLATES = {
                          "criteria": "일상·반려동물·간식·친구 이야기, 귀엽고 가벼운 말투",
                          "color": "연분홍 파스텔 바탕에 진보라 회색 글자, 강조는 민트"},
 }
+TOKEN_KEYS = ("band", "bg", "text", "sub", "accent", "accent_shape", "on_accent", "stroke", "chip", "title_scale", "photo")
+
+
+def resolve_theme(template_id, color=None):
+    """템플릿 하나 → 영상에 거는 최종 색·서체(카드 «자세히»·미리보기·Motion 필름·HyperFrames 컴포지션이 같은 값을 쓴다).
+    우선순위: 사용자 색 문장(color) > 로고·브랜드 색(호출 쪽이 color 로 넘긴다) > 템플릿. 사용자 문장은 해석해 hex 를 덮지 않고 그대로 넘긴다 —
+    토큰은 템플릿 값, 문장은 사용자 것이 이긴다. 카드 사양의 배경·글자 hex 보다 이 값이 우선이고 구성·움직임은 카드대로."""
+    if template_id not in TEMPLATES:
+        raise SystemExit(f"알 수 없는 템플릿: {template_id} (python3 motion.py search 템플릿 또는 fonts.py list)")
+    t = TEMPLATES[template_id]
+    face = lambda fid: {"id": fid, "name": CATALOG[fid]["name"], "family": CATALOG[fid]["family"], "file": CATALOG[fid]["file"], "weight": CATALOG[fid]["weight"]}
+    return {"template": template_id, "name": t["name"], "tone": t["tone"], "color": color or t["color"], "color_how": "user" if color else "template",
+            "tokens": {k: t.get(k) for k in TOKEN_KEYS}, "title_font": face(t["font"]), "caption_font": face(t["caption_font"])}
+
+
 TONE_TEMPLATE = {"info": "light-teal", "casual": "yellow-black", "emotional": "beige-terracotta", "playful": "pastel-pink-mint"}
 
 

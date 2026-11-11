@@ -26,21 +26,20 @@ description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com �
 ```bash
 M="<이 스킬 폴더>/motion.py"   # 스킬을 부르면 표시되는 Base directory (개인 설치는 ~/.claude/skills/meta-motion)
 python3 $M                            # 인자 없음 — KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬 127.0.0.1:8765/motion/ 에 띄우고 브라우저를 연다(끄기 Ctrl-C · --port · --no-open · 사용법은 help)
-python3 $M search 로고                 # 찾기(이름·영문·설명·업종, 여러 단어는 AND)
-python3 $M list 자막                   # 분류별 목록 — 요청 카드·실전 예시·레지스트리를 한 목록으로(인자 없으면 16개 전체 829개, --cards 면 요청 카드만)
-python3 $M fields I02                  # 채울 칸
-python3 $M show I02 img=a.jpg title=필첵 --ratio 세로 --color "민트와 흰색"   # 🔍자세히(기본)
+# 카탈로그 하나 — 모션 829(요청 카드·실전 예시·HyperFrames 레지스트리) · 표현 기법 166(cokacmotion) · 색·서체 템플릿 18 을 출처 구분 없이 같은 명령으로
+python3 $M search 잉크                 # 찾기(이름·설명·쓸 때·태그·만든 사람, 여러 단어 AND) — 모든 종류가 한 목록에, 줄 끝 [종류 · 출처] 꼬리표 · --kind motion|technique|theme
+python3 $M list 자막                   # 분류별 목록 — 모션 분류 16개, 이어서 표현 기법·색·서체 템플릿(--cards 면 요청 카드 152개만)
+python3 $M show <id>                  # 어느 종류든 자세히 — 모션은 «자세히» 요청 문장(끝에 만든 사람·라이선스·받는 명령), 기법은 노트 전문·소스 경로, 템플릿은 최종 색·서체 토큰
+python3 $M show I02 img=a.jpg title=필첵 -v --template navy-lime   # 모션 + 템플릿 색·서체를 한 번에(--color "민트와 흰색" 은 사용자 색 문장 — 템플릿보다 우선)
 python3 $M show I02 --simple           # 간단
-python3 $M show caption-pill-karaoke -v # 실전 예시 id·레지스트리 이름도 같은 «자세히» 사양 — 끝에 만든 사람 / 받는 명령이 붙는다
-python3 $M order T01 I02 --ratio 세로   # 여러 카드를 한 요청으로(사이트 «주문서»)
-python3 $M examples chart          # prompt-motion.com 실전 예시 찾기(영어 · 태그 product-ui·kinetic-type·charts 등)
-python3 $M recommend script.txt    # 스크립트(빈 줄 = 장면)를 장면별로 나눠 어울리는 카드 3개씩 추천(세 출처 섞어서, 기본 세로 — 가로는 -h, 기계용 --json) — Jev, 글이 api.typesafe.ai 로 나감
-python3 $M example emollick-8661a8 # 예시 프롬프트 전문 + 만든 사람·원문·영상 링크
-python3 $M registry caption karaoke  # HyperFrames 공식 레지스트리 444개 찾기(영어 · --type block|component · --portrait)
-python3 $M registry-add caption-pill-karaoke --dir <프로젝트> --start 0 --track 2   # 받기 + host 조각 + 고칠 곳
+python3 $M fields I02                  # 채울 칸
+python3 $M order T01 I02 -v --template navy-lime   # 여러 모션을 한 요청으로(주문서)
+python3 $M add caption-pill-karaoke --dir <프로젝트> --start 0 --track 2   # 받을 수 있는 항목(레지스트리) 넣기 + host 조각 + 고칠 곳
+python3 $M recommend script.txt    # 대본(빈 줄 = 장면)을 장면별로 나눠 어울리는 모션 3개씩 추천(기본 세로 — 가로는 -h, 기계용 --json) — Jev, 글이 api.typesafe.ai 로 나감
+python3 $M theme [<id>]            # 색·서체 템플릿 목록 / 최종 토큰(fonts.resolve_theme — 카드·미리보기·필름·컴포지션이 같은 값을 쓴다)
 python3 $M check <프로젝트>         # 렌더 전 — lint 가 놓치는 비결정 코드 + 세로 영상 쇼츠 UI 띠의 글자(오류 위 120·아래 320·오른쪽 버튼 열 120 · 경고 위 240·아래 480)
-python3 $M technique 잉크          # 표현 기법 참고서 cokacmotion 166편 찾기(번호를 주면 노트 전문·소스 경로) — ⛔ 기술만 가져간다
 ```
+옛 명령은 그대로 동작한다(출력 같음): `examples`·`example <id>`(실전 예시 찾기·원문 — 원문 보기는 `example` 만), `registry`(레지스트리 영어 찾기·`--type`·`--portrait`), `registry-add`(= `add`), `technique [단어|번호]`(= 기법 `search`·`show`).
 
 - **`/meta-motion` 을 인자 없이 부르면** `python3 $M` 을 백그라운드로 실행해(서버가 계속 떠 있어야 한다) 찍힌 주소를 사용자에게 알린다. 페이지는 `export_kb.py` 로 KB 와 같게 만들어 `~/.cache/meta-motion/kb/motion/` 에서 보여 준다(원본 영상 모드라 실전 예시 영상은 인터넷이 필요하다).
 - **`--local`**(사용자가 SSH 로 이 컴퓨터에 붙어 쓸 때 — 「내 PC 에서」·「로컬로」): `python3 $M --local` 을 백그라운드로 띄우면 127.0.0.1 과 이 컴퓨터의 Tailscale 주소에 함께 연다(같은 Tailscale 계정 기기만 · Host 머리글 검사 · 2시간 쉬면 꺼짐 · 포트를 다른 프로그램이 쓰면 다음 포트). 출력 끝의 `LOCAL_URL=` 을 사용자 PC 크롬에서 연다 — claude-in-chrome `navigate(LOCAL_URL)`, 여러 브라우저면 `LOCAL_BROWSER=` 로 `select_browser`. 그 브라우저가 연결돼 있지 않으면 다른 브라우저에 열지 말고 `LOCAL_URL` 을 링크로 답한다. 관문 코드는 `localnet.py`(meta-slide 와 같은 사본).
@@ -63,8 +62,8 @@ python3 $M technique 잉크          # 표현 기법 참고서 cokacmotion 166�
 1. 영상을 장면 단위로 나눈다 — 첫 장면은 인트로, 마지막 장면은 아웃트로로 고정하고 그 사이를 본문(설명·데이터·전환·자막 등)으로 나눈다.
    **대본은 `narrate`·`recommend` 에 넘기기 전에 점검한다**(2026-11-11 추가 — `references/script-check.md`): 줄마다 다섯 가지(누가·무엇을이 줄 안에 · 알려 주지 않은 이름 없음 · 지시어가 바로 앞 줄을 가리킴 · 소리만으로 통함 · 근거 있음), 주제가 바뀌는 곳마다 한 구절 이어 주는 말, 내부 이름 목록, 프로젝트를 모르는 별도 에이전트의 처음 듣는 사람 검토. 길이 때문에 필요한 설명을 빼지 않는다(길면 다루는 내용을 줄인다).
 2. 장면마다 맞는 카드를 1개씩 고른다 — 스크립트·대본이 있으면 먼저 `recommend`(장면 = 빈 줄로 나눈 문단, stdin 은 `-`)로 후보를 받고(세로 영상이면 가로 고정 레지스트리 항목은 후보에서 빠지고, 영상 비율 깃발 `-v`/`-h` 를 그대로 넘긴다 · 카드마다 «적합도» = Jev 가 «이 장면을 이 모션으로 잘 보여 주나»에 답한 예 확률), 1위 적합도 0.5 미만 «확신 낮음» 장면이나 Jev 를 못 쓰면(키·클라이언트 없음) `python3 $M list <분류>`·`search` 로 고른다(전체 829줄은 길다 — 분류로 좁힌다). 외부로 보내면 안 되는 대본(개인정보·미공개 내용)은 `recommend` 에 넣지 않는다. 맞는 카드가 없으면 그 장면은 건너뛴다(억지로 끼우지 않는다).
-   추천·목록의 코드는 세 가지다 — 요청 카드(`I02`), 실전 예시(`emollick-8661a8`, 만든 사람 표기 필수), 레지스트리(`caption-pill-karaoke`, `registry-add` 로 원본 컴포지션을 받아 출발점으로). 셋 다 `fields`·`show` 가 같은 꼴로 동작한다.
-3. 고른 카드마다 `fields` 로 칸을 보고 실제 값(제목·파일·숫자·길이)과 영상 비율(`--ratio`)·색(`--color` — 사용자 기본값 7번 템플릿의 `palette.color`)으로 `show`(자세히)를 뽑는다.
+   추천·목록의 id 는 출처와 상관없이 `fields`·`show` 가 같은 꼴로 동작한다. 줄 끝 꼬리표가 표기를 알려 준다 — 「실전 예시 · 만든 사람」이면 만든 사람을 밝히고, 「레지스트리 · 라이선스」면 `add` 로 원본 컴포지션을 받아 출발점으로 쓴다, 「⚠브랜드 흉내」면 그 회사 영상이 아니면 쓰지 않는다.
+3. 고른 카드마다 `fields` 로 칸을 보고 실제 값(제목·파일·숫자·길이)과 영상 비율(`-v`/`-h`)·템플릿(`--template <id>` — 사용자 기본값 7번 `fonts.py pick` 이 고른 템플릿, 사용자 색 지정은 `--color`)으로 `show`(자세히)를 뽑는다. 끝의 `[색 토큰]` 줄(band·bg·text·accent·서체)이 카드 사양의 색 hex 보다 우선이다.
 4. 그 문장을 장면 사양으로 삼아 구현한다 — `[장면 순서]` 타이밍·`[볼거리 한 번]`·`[하지 말 것]` 을 지킨다. 대상이 HyperFrames 가 아니면(Remotion·HTML 등) 첫 줄 도구 이름만 무시하고 본문을 따른다. 자막 스타일·하단 자막·전환·숫자 세기·차트·글리치·필름 그레인처럼 이름 붙은 효과는 손으로 처음부터 짜기 전에 아래 「HyperFrames 레지스트리」에서 같은 효과를 찾아 출발점으로 쓴다(사양은 여전히 카드가 기준). 레지스트리에도 없는 효과(잉크·수채·판화·유리·유체·입자·글자 깨짐 등)는 `technique <단어>`(cokacmotion)에서 기법 노트·소스를 읽고 지금 장면의 소재로 다시 짠다 — 데모의 소재·장면·구도·문구·색·9:16 틀은 옮기지 않는다(데모를 본 사람이 영상에서 그 데모를 알아보면 실패). 라이브러리(three.js·PixiJS 등)가 필요한 기법은 HyperFrames 가 GSAP 본체만 부르므로 원리만 가져와 Canvas 2D·SVG·WebGL 로 쓴다.
    **렌더 전 검사**: `npx --yes hyperframes@0.8.162 lint` · `check` 에 더해 `python3 $M check <프로젝트>` 를 통과시킨다. lint 는 컴포지션 HTML 의 Math.random·Date.now 등은 잡지만 setTimeout/setInterval·gsap.ticker·gsap.delayedCall·scrambleText 는 놓치고 `<script src>` 외부 JS 는 보지 않는다(2026-11-11 실측) — 그 빈칸을 채운다. 세로 영상은 쇼츠·릴스·틱톡 UI 띠를 본다(2026-11-11 사용자 위임으로 정함 · 1080x1920 기준, 다른 크기는 비율로 늘림). **오류** = 일반 게시물에서 늘 가려지는 곳: 위 120px(상태바·탭) · 아래 320px(계정 이름·설명·음악) · 오른쪽 버튼 열 120px × 세로 45~83%(좋아요·댓글·공유 — Claude Motion 안전 영역 오른쪽 120 과 같음). **경고** = 여유 기준: 위 240px(TikTok 광고 템플릿 위 240) · 아래 480px(설명이 길어지거나 광고 CTA 가 붙는 경우). `--strict` 면 경고도 실패. 근거: 플랫폼이 일반 게시물 수치를 공식으로 내지 않고, 광고 기준(위 240~288·아래 660~672·오른쪽 120~192)은 제3자 측정이라 넓게 잡혀 있다 — 늘 가리는 UI 는 오류로, 광고 기준 쪽은 경고로 나눴다. 이 스킬의 자막 규칙(아래 350·380px)은 오류 띠 밖이다. 단 자막 줄의 오른쪽 끝이 x 960 을 넘으면(TikTok 식 폭 90% = x 1026, caption-pill-karaoke 폭 920 = x 1000) 버튼 열 오류가 되므로 긴 줄은 폭 80%(x 960) 안에서 줄을 나눈다. 2026-11-11 기존 세로 영상 68개 실측: 오류가 하나라도 있는 영상 38개(아래 320 안 자막 33개 — 화면 아래 154~200px · 버튼 열 22개, 그중 자막 4개 · 위 120 안 1개), 경고만 위 240 안 제목 65개·아래 480 안 63개. `hyperframes check --caption-zone` 은 글자를 담은 상자로 걸어서(폭 100% 상자 안 가운데 글자도 오른쪽 띠에 걸림 — 실측) 글자 실제 좌표로 다시 거른다(68개에서 상자만 걸린 오른쪽 435건·위 164건을 걸러냄). 루트 아래 클립마다 가운데 시각을 보며(caption-zone 의 seek 는 전체 길이 비율이라 기본 0.5 면 영상 가운데 한 곳만 본다 — 실측), 띠 하나에 `hyperframes check` 한 번(약 8초)이라 세로 영상 검사는 약 25초다.
    **첫 렌더 뒤 미술감독 채점**(단독 HyperFrames 영상만 — 릴스 무인 잡은 제외 · `references/art-director.md`): `hyperframes snapshot` 정지 화면을 별도 에이전트가 장면마다 연출·그래픽 디자인·모션 1~5점으로 매기고 고칠 것을 순위로 낸다. 모든 장면 세 축 4점 이상 또는 3라운드까지 다시 만들고, 보고에 점수를 처음 → 마지막으로 적는다.
@@ -149,6 +148,7 @@ HyperFrames 레지스트리는 세 단계 — ① `python3 build_hf.py`(catalog 
 - `hf.py` — 레지스트리 찾기·넣기(`motion.py registry`·`registry-add`) · `build_hf.py` — 목록 다시 받기 · `build_hf_ko.py` — 분류·한국어 카드 · `build_hf_thumbs.py` — 그림 렌더 · `test_hf.py` — 목록·제외·host 조각·고칠 곳 검사
 - `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사·이력(`pick`·`list`·`install`·`record`·`history`·`templates`) · `test_fonts.py` — 템플릿 대비·서체·라이선스·이력 검사
   - `python3 fonts.py templates` 는 템플릿·서체(절대 경로) JSON 을 부수 효과 없이 낸다 — 다른 렌더러가 같은 템플릿을 쓰는 통로다. 발행 릴스(`SHC/shconsulting/scripts/instagram/motion/theme.mjs`)가 이것과 `pick`·`record` 를 부른다. 키를 바꾸면 그쪽 `node --test scripts/instagram/motion/theme.test.mjs` 도 돌린다.
+- `catalog.py` — 카탈로그 하나(모션·기법·템플릿을 같은 꼴 항목으로: id·aliases·kind·title·summary·when·tags·category·actions·provenance·brand·size). `search`·`list`·`show`·`theme` 이 쓴다. 원본 자료 파일은 출처별로 그대로 · `test_catalog.py`(수·겹침·출처·라이선스·브랜드·제외 항목·옛 명령 출력) · 색·서체 해석은 `fonts.resolve_theme` 한곳 · `test_review_fixes.py` — 2026-11-11 Astra(EDB) 지적 회귀 시험
 - `check.py` — 렌더 전 검사(`motion.py check` · 비결정 코드 + 세로 영상 안전 영역 띠마다 `hyperframes check --caption-zone`) · `test_check.py`
 - `cokac.py` — 표현 기법 참고서 찾기·읽기(`motion.py technique`) · `build_cokac.py` — 목록 다시 받기(`data/cokac.json` 166편, 노트·소스·그림은 캐시 클론 `~/.cache/meta-motion/cokacmotion` 에서 읽고 repo 에 싣지 않는다 · 150편 미만이면 중단) · `test_cokac.py`
 - `references/script-check.md` — 대본 점검(처음 듣는 사람 기준) · `references/art-director.md` — 미술감독 채점. 두 문서와 `check.py` 는 script-to-motion(https://github.com/kstost/script-to-motion, MIT © 2026 kstost, 커밋 b791213)의 script-writing.md §0b·elevate.md·check.mjs·snapshot.mjs --safezone 에서 착안해 이 스킬에 맞게 다시 썼다(코드는 옮기지 않음). 기법 목록은 cokacmotion(https://github.com/kstost/cokacmotion, MIT © 2026 kstost, 커밋 c417b16). 라이선스 원문은 `licenses/MIT-script-to-motion.txt`·`licenses/MIT-cokacmotion.txt`

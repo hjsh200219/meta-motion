@@ -95,14 +95,15 @@ python3 skills/meta-motion/motion.py setup --only fish  # 하나만(jev · fish)
 | `python3 $M [--local]` | 로컬 화면 띄우기(`--local` 은 내 PC 브라우저용) |
 | `setup [--check] [--only jev\|fish]` | 키 저장·확인 |
 | `narrate 대본.txt --out vo/ [--dry-run]` | 장면별 내레이션 → `track.wav` · `segments.json` · `--durs`(숫자는 한글 발음으로 · 캐시라 다시 돌리면 과금 0) |
-| `list [분류]` | 분류별 전체 목록(`--cards` 면 요청 카드 152개만) |
-| `search <단어…>` | 이름·영문·설명·업종으로 찾기(여러 단어는 AND) |
-| `fields <코드>` | 채울 칸 보기 |
-| `show <코드> [칸=값…]` | 요청 문장(기본 «자세히», `--simple` 이면 간단) |
-| `order <코드…>` | 여러 카드를 한 요청으로(주문서) |
+| `list [분류]` | 한 목록 — 모션 분류 16개, 이어서 표현 기법·색·서체 템플릿(`--cards` 면 요청 카드 152개만) |
+| `search <단어…> [--kind …]` | 모든 종류를 한 번에 찾기(여러 단어는 AND) — 줄 끝 꼬리표가 종류·출처·라이선스·만든 사람 |
+| `show <id> [칸=값…] [--template <id>]` | 어느 종류든 자세히 — 모션은 요청 문장(+ 템플릿 색·서체 토큰), 기법은 노트 전문, 템플릿은 최종 토큰 |
+| `fields <id>` | 채울 칸 보기 |
+| `order <id…>` | 여러 모션을 한 요청으로(주문서) |
+| `add <id> --dir <프로젝트>` | 받을 수 있는 항목(레지스트리) 프로젝트에 넣기(npx) |
+| `theme [<id>]` | 색·서체 템플릿 목록 / 최종 토큰 |
 | `recommend <대본.txt>` | 장면별 추천 3개씩과 적합도(Jev) |
-| `examples <영어 단어>` → `example <id>` | prompt-motion.com 실전 예시 찾기 → 프롬프트 전문 |
-| `registry <단어>` → `registry-add <이름> --dir <프로젝트>` | HyperFrames 레지스트리 찾기 → 프로젝트에 넣기(npx) |
+| 옛 명령 `examples`·`example`·`registry`·`registry-add`·`technique` | 그대로 동작(실전 예시 원문은 `example <id>`) |
 | `film <recommend.json> --durs …` | Claude Motion 검토 필름 기록 |
 | `check <프로젝트>` | 렌더 전 검사 — lint 가 놓치는 비결정 코드 + 세로 영상 쇼츠 UI 띠의 글자 |
 | `technique <단어>` → `technique <번호>` | 표현 기법 참고서(cokacmotion) 찾기 → 노트 전문·소스 경로(기술만 가져간다) |
@@ -129,7 +130,7 @@ python3 $M registry caption karaoke && python3 $M show caption-pill-karaoke -v
 | 표현 기법 참고서 | 166 | [cokacmotion](https://github.com/kstost/cokacmotion)(MIT © 2026 kstost) — 기법 하나당 데모 하나. 목록만 싣고 노트·소스는 쓸 때 캐시로 받음 | `data/cokac.json` |
 | 색·서체 템플릿 | 18 | 조회 수 높은 국내 쇼츠·릴스 실측 조합 | `fonts.py`, 서체 `data/fonts/` |
 
-- 세 출처를 나누지 않고 같은 분류 16개·같은 모양의 한국어 카드로 섞어 `list`·`search`·`show`·`recommend`·화면에서 한 목록으로 씁니다.
+- 출처를 나누지 않습니다. 모션 829·기법 166·템플릿 18 을 `catalog.py` 가 같은 꼴의 항목(id·종류·분류·출처·라이선스·브랜드 흉내·크기)으로 맞춰 `list`·`search`·`show`·`recommend`·화면에서 한 목록으로 씁니다. 원본 자료 파일은 출처별로 그대로 두어 갱신·라이선스·KB 내보내기가 바뀌지 않습니다.
 - 대본 점검(`references/script-check.md`)·미술감독 채점(`references/art-director.md`)·`check.py` 는 [script-to-motion](https://github.com/kstost/script-to-motion)(MIT © 2026 kstost)에서 착안해 다시 썼습니다.
 - 실전 예시를 참고했으면 예시 id 와 만든 사람을 밝힙니다. 프롬프트 문장을 그대로 베끼지 않습니다.
 
