@@ -19,4 +19,9 @@ with tempfile.TemporaryDirectory() as d:   # 로컬 보기(serve.py · motion.py
     build(Path(d), back=False)
     html = (Path(d) / 'index.html').read_text(encoding='utf-8')
     assert "window.MOTION_MEDIA = 'origin'" in html and '← PillDocKb' not in html and '/static/' not in html and html.count('<h1>') == 1
+# 옵션처럼 생긴 인자(--help·-h)는 출력 폴더로 받지 않는다 — 2026-11-11 `export_kb.py --help` 가 「--help」 폴더를 만들었다
+import os, subprocess, sys
+with tempfile.TemporaryDirectory() as d:
+    r = subprocess.run([sys.executable, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'export_kb.py'), '--help'], cwd=d, capture_output=True, text=True)
+    assert r.returncode != 0 and not os.path.exists(os.path.join(d, '--help')), (r.returncode, os.listdir(d))
 print('ok')

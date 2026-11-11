@@ -55,6 +55,6 @@ def build(out: Path, back: bool = True) -> None:  # back=False: 로컬 보기(se
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2: sys.exit(__doc__)
+    if len(sys.argv) != 2 or sys.argv[1].startswith('-'): sys.exit(__doc__)  # --help 를 폴더 이름으로 받지 않는다
     build(Path(sys.argv[1]))
     print(f'내보냄 → {sys.argv[1]}', file=sys.stderr)
