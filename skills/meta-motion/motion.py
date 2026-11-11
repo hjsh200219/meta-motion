@@ -196,6 +196,10 @@ def main(argv):
         import hf; hf.main((['add'] if cmd == 'registry-add' else ['search']) + rest)
     elif cmd == 'official':  # 사용법 안내 영상의 실제 앱 화면 = 공식 지원 문서 이미지(미러링·화면 녹화 대신)
         import official; official.main(rest)
+    elif cmd == 'check':  # 렌더 전 — hyperframes lint 가 놓치는 비결정 코드 + 쇼츠 안전 영역(세로)
+        import check; check.main(rest)
+    elif cmd == 'technique':  # cokacmotion 표현 기법 참고서 166편 — 효과를 «어떻게 짜는지»(기술만 가져간다)
+        import cokac; cokac.main(rest)
     else:
         print('''사용법 (python3 motion.py …):
   (인자 없음) [--port 8765] [--no-open] [--local]  KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬에서 띄움 — 브라우저가 열림, 끄기 Ctrl-C
@@ -213,6 +217,8 @@ def main(argv):
   registry [단어…] [--type block|component] [--portrait]  HyperFrames 공식 레지스트리 444개 찾기(영어 · 이름·설명·태그 AND)
   registry-add <이름> --dir <프로젝트> [--start 0] [--track 1]  항목 넣기(npx) + lint 통과 host 조각 · 비율·서체 고칠 곳
   official <공식 안내 페이지 URL> --out <폴더> [--screens-only]  공식 지원 문서의 화면 이미지를 alt 와 함께 받기(official.json) — 사용법 영상의 실제 화면
+  check <프로젝트> [--no-zone] [--strict] [--top 250] [--bottom 350] [--right 50] [--json]  렌더 전 검사 — lint 가 놓치는 비결정 코드 + 세로 영상 쇼츠 UI 띠의 글자
+  technique [단어…|번호] [--group 분류]  표현 기법 참고서 cokacmotion 166편 찾기·노트 전문(⛔ 기술만 가져간다 · MIT kstost)
   film <recommend.json|-> --durs 3.2,5.1,… [--template <id>] [-v|-h] [--out 폴더]  Claude Motion 검토 필름 기록(scenes.json·base.css·클립 장면·split.sh·plan) — 렌더는 HyperFrames, 검토·댓글은 Motion
 옵션: -v 세로 9:16 · -h 가로 16:9 · --ratio 가로|세로|정사각|없음 (기본 가로) · --color "남색과 노랑" · --file video.mp4 · --tool auto|claude|codex''')
 

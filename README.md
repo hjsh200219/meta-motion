@@ -104,6 +104,8 @@ python3 skills/meta-motion/motion.py setup --only fish  # 하나만(jev · fish)
 | `examples <영어 단어>` → `example <id>` | prompt-motion.com 실전 예시 찾기 → 프롬프트 전문 |
 | `registry <단어>` → `registry-add <이름> --dir <프로젝트>` | HyperFrames 레지스트리 찾기 → 프로젝트에 넣기(npx) |
 | `film <recommend.json> --durs …` | Claude Motion 검토 필름 기록 |
+| `check <프로젝트>` | 렌더 전 검사 — lint 가 놓치는 비결정 코드 + 세로 영상 쇼츠 UI 띠의 글자 |
+| `technique <단어>` → `technique <번호>` | 표현 기법 참고서(cokacmotion) 찾기 → 노트 전문·소스 경로(기술만 가져간다) |
 
 공통 옵션: `-v` 세로 · `-h` 가로 · `--ratio 가로|세로|정사각|없음` · `--color "남색과 노랑"` · `--file video.mp4` · `--tool auto|claude|codex`
 
@@ -124,9 +126,11 @@ python3 $M registry caption karaoke && python3 $M show caption-pill-karaoke -v
 | 요청 카드 | 152 | [모션그래픽 주문 사전](https://nondev-thinking.web.app/motion/)(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 | `data/motion.json` |
 | 실전 예시 | 233 | [prompt-motion.com](https://prompt-motion.com) — Claude 로 만든 영상의 프롬프트(영어, 만든 사람·원문 링크 포함), 2026-10-11 수집 | `data/prompt_motion.json`, 한국어 카드 `prompt_motion_ko.json` |
 | HyperFrames 레지스트리 | 444 | heygen-com/hyperframes 공식 블록·컴포넌트(Apache-2.0). 출처 미확인 자산이 든 3개는 뺐음 | `data/hf_registry.json`, 한국어 카드 `hf_registry_ko.json`, 그림 `data/hf_thumb/` |
+| 표현 기법 참고서 | 166 | [cokacmotion](https://github.com/kstost/cokacmotion)(MIT © 2026 kstost) — 기법 하나당 데모 하나. 목록만 싣고 노트·소스는 쓸 때 캐시로 받음 | `data/cokac.json` |
 | 색·서체 템플릿 | 18 | 조회 수 높은 국내 쇼츠·릴스 실측 조합 | `fonts.py`, 서체 `data/fonts/` |
 
 - 세 출처를 나누지 않고 같은 분류 16개·같은 모양의 한국어 카드로 섞어 `list`·`search`·`show`·`recommend`·화면에서 한 목록으로 씁니다.
+- 대본 점검(`references/script-check.md`)·미술감독 채점(`references/art-director.md`)·`check.py` 는 [script-to-motion](https://github.com/kstost/script-to-motion)(MIT © 2026 kstost)에서 착안해 다시 썼습니다.
 - 실전 예시를 참고했으면 예시 id 와 만든 사람을 밝힙니다. 프롬프트 문장을 그대로 베끼지 않습니다.
 
 ## Claude Motion 과 합쳐 쓰기
@@ -153,6 +157,7 @@ python3 $M registry caption karaoke && python3 $M show caption-pill-karaoke -v
 | 예시 대표 그림·Artifact 용 영상 | `fetch_posters.py`, `fetch_posters.py --clips`(둘 다 git 제외) |
 | 사내 KB 페이지 | `export_kb.py <PillDocKb>/site/motion` |
 | 추천 품질 다시 재기 | `eval_recommend.py` |
+| 표현 기법 참고서 | `build_cokac.py` |
 
 - 화면 정본은 `skills/meta-motion/preview.html` 하나입니다. KB 페이지와 로컬 화면은 `export_kb.py` 가 여기서 만듭니다.
 - Artifact 로 올릴 때는 `data/` 의 자료 파일과 `posters/` 를 페이지 옆에 함께 올립니다(Artifact CSP 가 외부 영상을 막음).
