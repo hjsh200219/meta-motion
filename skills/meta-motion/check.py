@@ -6,8 +6,9 @@
    놓치고 <script src> 로 부른 외부 JS 파일은 아예 보지 않는다. 그래서 HTML 에는 놓치는 것만, JS 파일에는 전부 알린다.
 2) 쇼츠 안전 영역(세로만): 쇼츠·릴스·틱톡 UI 가 덮는 위·아래·오른쪽 띠에 글자가 들어가는지. `hyperframes check --caption-zone` 이
    띠 하나만 받으므로(여러 번 넘기면 마지막만 쓴다 — 실측) 띠마다 한 번씩 돌린다. 루트 아래 클립마다 가운데 시각을 본다(seeks()).
-   띠 침범은 기본 경고(종료 코드 0), --strict 면 오류. 비결정 코드 오류·검사 실패는 늘 종료 코드 1.
-실행: python3 motion.py check <프로젝트> [--no-zone] [--strict] [--top 250] [--bottom 350] [--right 50] [--json]"""
+   caption-zone 은 글자를 담은 상자로 걸므로 글자 rect 로 다시 거른다(classify()). 띠 두께는 LIMITS — 늘 가려지는 곳은 오류, 여유 기준은 경고.
+   종료 코드 1 = 비결정 코드 오류·안전 영역 오류·검사 실패(--strict 면 경고도).
+실행: python3 motion.py check <프로젝트> [--no-zone] [--strict] [--top 240] [--top-error 120] [--bottom 480] [--bottom-error 320] [--right 120] [--json]"""
 import json, re, subprocess, sys
 from pathlib import Path
 
@@ -96,16 +97,40 @@ def seeks(html):
     return ','.join(f'{x:g}' for x in fr) or '0.5'
 
 
-def zones(w, h, top=250, bottom=350, right=50, seek='0.5'):
-    """세로(9:16 등) 영상의 플랫폼 UI 띠 → caption-zone 문자열. 기본값의 근거(SKILL.md 「쇼츠 안전 영역」):
-    위 250 = Claude Motion film-api 안전 영역 위 · 아래 350 = TikTok 식 자막 규칙(화면 아래 350px 위 — 이보다 크게 잡으면 이 스킬의 자막이 매번 걸린다)
-    · 오른쪽 50 = 자막 폭 90%(오른쪽 끝 x=1026) 를 막지 않는 한도. 실제 플랫폼 버튼 열(약 120~180px)은 이보다 넓다 — --right 로 올려 본다."""
+# 쇼츠·릴스·틱톡 UI 띠(1080x1920 기준 px, 2026-11-11 정함 — 근거 SKILL.md 「렌더 전 검사」):
+# 오류 = 일반 게시물에서 늘 가려지는 곳(위 상태바·탭 120 · 아래 계정·설명·음악 320 · 오른쪽 좋아요·댓글·공유 버튼 열 120px×세로 45~83% — Claude Motion 안전 영역 오른쪽 120·TikTok 광고 템플릿 좌우 120 과 같음)
+# 경고 = 광고·여유 기준(위 240 — TikTok 광고 템플릿 위 240 · 아래 480 — 광고 CTA·설명이 길어진 경우)
+LIMITS = {'top': 240, 'top_error': 120, 'bottom': 480, 'bottom_error': 320, 'right': 120, 'right_y': (0.45, 0.83)}
+
+
+def zones(w, h, top=None, bottom=None, right=None, seek='0.5'):
+    """세로 영상의 띠 → caption-zone 문자열. 위·아래는 경고 두께로 한 번 돌리고 classify() 가 글자 깊이로 오류/경고를 가른다
+    (띠당 hyperframes check 한 번 · 약 8초). 0 을 주면 그 띠를 뺀다."""
     if h <= w: return []
+    top, bottom, right = (LIMITS[k] if v is None else v for k, v in (('top', top), ('bottom', bottom), ('right', right)))
+    y0, y1 = LIMITS['right_y']
     out = []
     if top: out.append(('top', f'x0=0;y0=0;x1=1;y1={_f(top / h)};severity=warning;seek={seek}'))
     if bottom: out.append(('bottom', f'x0=0;y0={_f(1 - bottom / h)};x1=1;y1=1;severity=warning;seek={seek}'))
-    if right: out.append(('right', f'x0={_f(1 - right / w)};y0=0;x1=1;y1=1;severity=warning;seek={seek}'))
+    if right: out.append(('right', f'x0={_f(1 - right / w)};y0={_f(y0)};x1=1;y1={_f(y1)};severity=warning;seek={seek}'))
     return out
+
+
+def classify(side, finding, w, h, lim):
+    """글자 rect 로 오류·경고·해당 없음(None)을 가른다. caption-zone 은 글자를 담은 상자로 걸어서(폭 100% div 안 가운데 글자도
+    오른쪽 띠에 걸림 — 2026-11-11 실측) 그대로 쓰면 오탐이 난다. 스케일 1080x1920 기준 값을 프로젝트 크기에 맞춰 늘린다."""
+    r, sx, sy = finding.get('rect') or {}, w / 1080, h / 1920
+    if not r: return 'warning'
+    if side == 'top':
+        if r['top'] >= lim['top'] * sy: return None
+        return 'error' if r['top'] < lim['top_error'] * sy else 'warning'
+    if side == 'bottom':
+        gap = h - r['bottom']
+        if gap >= lim['bottom'] * sy: return None
+        return 'error' if gap < lim['bottom_error'] * sy else 'warning'
+    y0, y1 = lim['right_y']
+    inside = r['right'] > w - lim['right'] * sx and r['bottom'] > y0 * h and r['top'] < y1 * h
+    return 'error' if inside else None
 
 
 def run_zone(proj, spec):
@@ -121,17 +146,23 @@ def run_zone(proj, spec):
 def main(args):
     if not args or args[0].startswith('--'): sys.exit(__doc__.split('실행: ')[1])
     proj = Path(args[0]).resolve()
-    opt = {args[i][2:]: args[i + 1] for i in range(1, len(args) - 1) if args[i] in ('--top', '--bottom', '--right')}
+    keys = ('--top', '--top-error', '--bottom', '--bottom-error', '--right')
+    opt = {args[i][2:].replace('-', '_'): args[i + 1] for i in range(1, len(args) - 1) if args[i] in keys}
     res = {'determinism': scan(proj), 'skipped': skipped(proj), 'zones': {}}
     errors = sum(f['severity'] == 'error' for f in res['determinism'])
     wh = size(proj)
     if '--no-zone' not in args and wh:
         seek = seeks((proj / 'index.html').read_text(encoding='utf-8'))
-        for name, spec in zones(*wh, seek=seek, **{k: int(v) for k, v in opt.items()}):
+        lim = dict(LIMITS, **{k: int(v) for k, v in opt.items()})
+        for name, spec in zones(*wh, seek=seek, **{k: lim[k] for k in ('top', 'bottom', 'right')}):
             found, err = run_zone(proj, spec)
-            res['zones'][name] = {'spec': spec, 'findings': found, 'error': err}
-            # 띠 침범은 기본 경고 — 2026-11-11 기존 세로 영상 68개 중 65개가 위 250px 에 제목을 둬서(사용자가 써 온 배치) 오류로 막지 않는다. --strict 면 실패
-            errors += (len(found or []) if '--strict' in args else 0) + (1 if err else 0)
+            kept = []
+            for f in found or []:
+                sev = classify(name, f, *wh, lim)
+                if sev: kept.append(dict(f, severity='error' if '--strict' in args else sev))
+            res['zones'][name] = {'spec': spec, 'findings': kept, 'boxes_only': len(found or []) - len(kept), 'error': err}
+            # 오류 띠(늘 가려지는 곳)만 실패. 경고 띠는 --strict 일 때만
+            errors += sum(f['severity'] == 'error' for f in kept) + (1 if err else 0)
     if '--json' in args:
         print(json.dumps(res, ensure_ascii=False, indent=1))
     else:
@@ -141,8 +172,10 @@ def main(args):
         for name, z in res['zones'].items():
             if z['error']: print(f'error\t안전 영역 {name}\t검사 실패: {z["error"]}')
             for f in z['findings'] or []:
-                print(f"{'error' if '--strict' in args else 'warning'}\t안전 영역 {name}\t{f.get('time', '?')}초 {f.get('selector', '')} — {f.get('message', '')[:120]}")
-        zs = ', '.join(f"{n} {len(z['findings'] or [])}건" for n, z in res['zones'].items()) or ('가로라 안 봄' if wh and wh[1] <= wh[0] else '안 봄')
+                r = f.get('rect') or {}
+                where = f"위에서 {r.get('top', 0):.0f}px" if name == 'top' else f"아래에서 {wh[1] - r.get('bottom', 0):.0f}px" if name == 'bottom' else f"오른쪽 끝 x={r.get('right', 0):.0f}"
+                print(f"{f['severity']}\t안전 영역 {name}\t{f.get('time', '?')}초 {f.get('selector', '')} 「{f.get('text', '')[:30]}」 {where}")
+        zs = ', '.join(f"{n} 오류 {sum(f['severity'] == 'error' for f in z['findings'])}·경고 {sum(f['severity'] == 'warning' for f in z['findings'])}" for n, z in res['zones'].items()) or ('가로라 안 봄' if wh and wh[1] <= wh[0] else '안 봄')
         print(f"\n비결정 코드 {len(res['determinism'])}건(오류 {sum(f['severity'] == 'error' for f in res['determinism'])}) · 안전 영역 {zs} · "
               f"lint·대비·겹침은 npx --yes {HF} check 로 따로", file=sys.stderr)
     sys.exit(1 if errors else 0)

@@ -39,12 +39,26 @@ with tempfile.TemporaryDirectory() as td:
     sev = {f['code']: f['severity'] for f in check.scan(p)}
     assert sev['timer'] == 'warning' and sev['math_random'] == 'error' and sev['gsap_delayed_call'] == 'warning', sev
 
-# 안전 영역 띠: 9:16 기본은 위 250·아래 350·오른쪽 50px — caption-zone 비율 문자열로 바꾼다
+# 안전 영역 띠(2026-11-11 기준): 위·아래는 경고 두께(위 240·아래 480)로 한 번 돌리고 글자 깊이로 오류(위 120·아래 320)를 가른다
+# 오른쪽은 좋아요·댓글 버튼 열 — 폭 120px, 세로 화면 45%~83% 만
 z = check.zones(1080, 1920, seek='0.2,0.7')
 assert [n for n, _ in z] == ['top', 'bottom', 'right'], z
-assert z[0][1] == 'x0=0;y0=0;x1=1;y1=0.1302;severity=warning;seek=0.2,0.7', z[0]
-assert z[1][1] == 'x0=0;y0=0.8177;x1=1;y1=1;severity=warning;seek=0.2,0.7', z[1]
-assert z[2][1] == 'x0=0.9537;y0=0;x1=1;y1=1;severity=warning;seek=0.2,0.7', z[2]
+assert z[0][1] == 'x0=0;y0=0;x1=1;y1=0.125;severity=warning;seek=0.2,0.7', z[0]
+assert z[1][1] == 'x0=0;y0=0.75;x1=1;y1=1;severity=warning;seek=0.2,0.7', z[1]
+assert z[2][1] == 'x0=0.8889;y0=0.45;x1=1;y1=0.83;severity=warning;seek=0.2,0.7', z[2]
+
+# 판정은 HyperFrames 가 준 상자가 아니라 글자 rect 로 한다 — caption-zone 은 글자를 담은 상자(폭 100% div)로 걸어서
+# 가운데 글자도 오른쪽 띠에 걸린다(2026-11-11 실측: x 354~726 글자가 오른쪽 50px 띠 위반으로 나옴)
+R = lambda l, t, r, b: {'rect': {'left': l, 'top': t, 'right': r, 'bottom': b}}
+L = check.LIMITS
+assert check.classify('top', R(100, 100, 500, 160), 1080, 1920, L) == 'error'      # 위 120 안
+assert check.classify('top', R(100, 150, 500, 210), 1080, 1920, L) == 'warning'    # 120~240
+assert check.classify('top', R(100, 250, 500, 300), 1080, 1920, L) is None         # 띠 밖(상자만 걸림)
+assert check.classify('bottom', R(100, 1640, 900, 1700), 1080, 1920, L) == 'error'    # 아래에서 220 — 320 안
+assert check.classify('bottom', R(100, 1400, 900, 1500), 1080, 1920, L) == 'warning'  # 아래에서 420 — 320~480
+assert check.classify('right', R(354, 1000, 726, 1100), 1080, 1920, L) is None        # 가운데 글자 — 오탐 제거
+assert check.classify('right', R(500, 1000, 980, 1100), 1080, 1920, L) == 'error'     # 버튼 열에 들어감
+assert check.classify('right', R(500, 300, 1050, 400), 1080, 1920, L) is None         # 버튼 열 위(세로 45% 전)
 
 # seek 는 영상 전체 길이에 대한 비율이다(실측: seek=.5 = 73.04초 영상의 36.52초 한 곳뿐) — 루트 아래 클립마다 가운데 시각을 비율로
 ROOT = ('<div id="root" data-composition-id="main" data-start="0" data-duration="10" data-width="1080" data-height="1920">'
@@ -56,7 +70,7 @@ assert check.seeks('<div data-composition-id="main" data-width="1080" data-heigh
 # 가로 영상은 플랫폼 UI 가 덮지 않으니 띠 없음 · 값을 0 으로 주면 그 띠를 뺀다
 assert check.zones(1920, 1080) == []
 assert [n for n, _ in check.zones(1080, 1920, top=0)] == ['bottom', 'right']
-assert check.zones(1080, 1920, top=240, bottom=480, right=180)[2][1].startswith('x0=0.8333;')
+assert check.zones(1080, 1920, right=180)[2][1].startswith('x0=0.8333;')
 
 # 프로젝트 크기는 루트 index.html 의 data-width/height
 with tempfile.TemporaryDirectory() as td:
