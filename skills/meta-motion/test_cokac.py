@@ -45,4 +45,21 @@ with tempfile.TemporaryDirectory() as td:
     out = buf.getvalue()
     assert out.index('기술만 가져간다') < out.index('## 기법과 원리'), out
     assert str(demo / 'main.js') in out and 'MIT' in out and 'c417b16' in out, out
+# 캐시 맞추기: 고정 커밋을 못 받으면 최신 main 으로 넘어가지 않고 멈춘다(검토하지 않은 원본이 에이전트 입력으로 들어오지 않게)
+import subprocess
+with tempfile.TemporaryDirectory() as td:
+    src = Path(td) / 'src'
+    src.mkdir()
+    g = lambda *a: subprocess.run(['git', *a], cwd=src, capture_output=True, text=True, check=True).stdout.strip()
+    g('init', '-q', '-b', 'main'); g('config', 'user.email', 't@t'); g('config', 'user.name', 't')
+    (src / 'a.txt').write_text('1'); g('add', '.'); g('commit', '-qm', '1'); first = g('rev-parse', 'HEAD')
+    (src / 'a.txt').write_text('2'); g('commit', '-qam', '2'); second = g('rev-parse', 'HEAD')
+    g('config', 'uploadpack.allowAnySHA1InWant', 'true')
+    repo = 'file://' + str(src)
+    assert build_cokac.sync_repo(first, cache=Path(td) / 'c1', repo=repo) == first      # 새 캐시에서 옛 커밋 고정
+    assert build_cokac.sync_repo(None, cache=Path(td) / 'c1', repo=repo) == second      # 커밋 없이 = 최신 main(build_cokac.py 갱신용)
+    try:
+        build_cokac.sync_repo('0' * 40, cache=Path(td) / 'c2', repo=repo); raise AssertionError('없는 커밋인데 통과')
+    except SystemExit as e:
+        assert '0000000' in str(e), e
 print('test_cokac: ok')
