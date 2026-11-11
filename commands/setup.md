@@ -11,8 +11,9 @@ allowed-tools: Bash(python3:*), Bash(python:*)
 사전 점검 없이 아래 명령 하나를 바로 실행한다(인자를 받았으면 그대로 붙인다). Bash `timeout` 은 **600000** — 사람이 입력하는 동안 끊기지 않게.
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT}/skills/meta-motion/setup.py" $ARGUMENTS || python "${CLAUDE_PLUGIN_ROOT}/skills/meta-motion/setup.py" $ARGUMENTS
+python3 "${CLAUDE_PLUGIN_ROOT}/skills/meta-motion/setup.py" $ARGUMENTS
 ```
+`python3` 이 없다는 오류(command not found — Windows 등)일 때만 같은 인자로 `python "${CLAUDE_PLUGIN_ROOT}/skills/meta-motion/setup.py" $ARGUMENTS` 를 한 번 더 실행한다. 입력 취소·키 검증 실패로 끝났으면 다시 실행하지 않는다(`python3 … || python …` 로 이으면 그때도 두 번째 창이 떠서 2026-11-11 바꿨다).
 
 실행 직전에 한 줄만 말한다:
 > 화면에 「meta-slide · meta-motion」 입력 창이 뜨면 Jev API 키, 이어서 Fish Audio API 키(없으면 비워 두기)를 넣어 주세요. 키는 이 대화에 남지 않고 이 PC 에만 저장됩니다. (이미 등록돼 있으면 창 없이 끝납니다)

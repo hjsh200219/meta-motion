@@ -137,6 +137,7 @@ def main():
     for name in {p.stem for p in OUT.glob('*.jpg')} - {it['name'] for it in REG['items']}: (OUT / f'{name}.jpg').unlink()  # 목록에서 빠진 항목
     bad = {k: v for k, v in res.items() if not v.startswith('ok')}
     print(f'끝: ok {len(res) - len(bad)} · 문제 {len(bad)} {bad}', file=sys.stderr)
+    sys.exit(1 if bad else 0)
 
 
 if __name__ == '__main__':

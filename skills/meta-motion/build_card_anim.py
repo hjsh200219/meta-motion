@@ -112,6 +112,11 @@ def make(c):
     return c['code'], note
 
 
+def unfinished(todo, ok):
+    """이번 실행에서 성공하지 못한 카드 — 색인에 옛 해시가 남아 있어도 이번 재생성이 실패했으면 실패로 센다."""
+    return [c for c in todo if c not in ok]
+
+
 def main():
     a = sys.argv[1:]
     limit = int(a[a.index('--limit') + 1]) if '--limit' in a else None
@@ -121,7 +126,7 @@ def main():
     idx = json.loads((OUT / 'index.json').read_text(encoding='utf-8')) if (OUT / 'index.json').exists() else {}
     todo = [c for c in CARDS if (not only or c['code'] in only) and (idx.get(c['code']) != sha(c) or not (OUT / f"{c['code']}.html").exists())][:limit]
     print(f'만들 카드 {len(todo)}개 / 전체 {len(CARDS)}', file=sys.stderr)
-    fails = {}
+    fails, ok = {}, set()
     with ThreadPoolExecutor(workers) as pool:
         futs = [pool.submit(make, c) for c in todo]
         for n, f in enumerate(as_completed(futs), 1):
@@ -130,10 +135,10 @@ def main():
             except (ValueError, subprocess.TimeoutExpired) as ex:
                 print(f'실패: {ex}', file=sys.stderr); continue
             if err: fails[code] = err
-            else: idx[code] = sha(next(c for c in CARDS if c['code'] == code))
+            else: idx[code] = sha(next(c for c in CARDS if c['code'] == code)); ok.add(code)
             (OUT / 'index.json').write_text(json.dumps(idx, ensure_ascii=False, indent=1, sort_keys=True), encoding='utf-8')
             print(f'{n}/{len(todo)} {code} {"실패 " + err if err else "ok"}', file=sys.stderr)
-    missing = [c['code'] for c in todo if c['code'] not in idx]
+    missing = unfinished([c['code'] for c in todo], ok)
     print(f'끝: 있음 {len(idx)} · 이번 실패 {len(missing)} {missing[:10]}', file=sys.stderr)
     sys.exit(1 if missing else 0)
 

@@ -45,6 +45,16 @@ def parse(slug, page):
     }
 
 
+def validate(rows, slugs, old_count, bad=()):
+    """기존 파일을 덮기 전 검사 — 빈 수집(sitemap 이 비었거나 주소 꼴이 바뀜)·파싱 90% 미만·기존보다 20% 넘게 줄면 멈춘다(기존 파일 보존)."""
+    if not rows or not slugs:
+        sys.exit(f'수집 0건(주소 {len(slugs)}개) — sitemap·주소 꼴이 바뀌었는지 확인. 기존 파일은 그대로 둔다')
+    if len(rows) < 0.9 * len(slugs):
+        sys.exit(f'파싱 {len(rows)}/{len(slugs)} — 사이트 구조가 바뀌었는지 확인: {list(bad)[:5]}')
+    if old_count and len(rows) < 0.8 * old_count:
+        sys.exit(f'항목 {len(rows)}개 — 기존 {old_count}개보다 20% 넘게 줄었다. 사이트에서 정말 지워졌는지 확인한 뒤 손으로 교체')
+
+
 def main():
     urls = [html.unescape(u) for u in re.findall(r'<loc>([^<]+)</loc>', get(BASE + '/sitemap.xml'))]
     slugs = [u.rstrip('/').rsplit('/', 1)[1] for u in urls if u.count('/') == 3 and u.rstrip('/') != BASE]
@@ -58,7 +68,7 @@ def main():
             bad.append(f'{s}: {e}')
         if i % 25 == 0: print(f'{i}/{len(slugs)}', file=sys.stderr)
         time.sleep(1)
-    assert len(rows) >= 0.9 * len(slugs), f'파싱 {len(rows)}/{len(slugs)} — 사이트 구조가 바뀌었는지 확인: {bad[:5]}'
+    validate(rows, slugs, len(json.loads(OUT.read_text(encoding='utf-8'))) if OUT.exists() else 0, bad)
     rows.sort(key=lambda r: (r['posted'], r['id']), reverse=True)
     OUT.write_text(json.dumps(rows, ensure_ascii=False, indent=1), encoding='utf-8')
     print(f'항목 {len(rows)}개 (본문 없음·실패 {len(bad)}개 {bad[:5]}) → {OUT}', file=sys.stderr)

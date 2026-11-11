@@ -32,9 +32,9 @@ PICK_Q = 'scene 의 내용을 화면으로 보여 주기에 가장 알맞은 모
 
 def items():
     """요청 카드·실전 예시·레지스트리(한국어 카드)를 한 목록으로 — motion.py·preview.html 처럼 출처를 나누지 않는다."""
-    import motion
+    import motion, hf
     return [{'code': c['code'], 'name': c['name'], 'plain': c['plain'], 'when': c['when'], 'cat': c['cat'], 'src': c.get('src', 'card'),
-             'how': f"show {c['code']}"} for c in motion.everything()]
+             'how': f"show {c['code']}", 'brand': c.get('src') == 'hf' and hf.brand_of(c['code'])} for c in motion.everything()]
 
 
 def fits_ratio(it, ratio):

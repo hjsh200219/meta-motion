@@ -105,14 +105,15 @@ LIMITS = {'top': 240, 'top_error': 120, 'bottom': 480, 'bottom_error': 320, 'rig
 
 def zones(w, h, top=None, bottom=None, right=None, seek='0.5'):
     """세로 영상의 띠 → caption-zone 문자열. 위·아래는 경고 두께로 한 번 돌리고 classify() 가 글자 깊이로 오류/경고를 가른다
-    (띠당 hyperframes check 한 번 · 약 8초). 0 을 주면 그 띠를 뺀다."""
+    (띠당 hyperframes check 한 번 · 약 8초). 0 을 주면 그 띠를 뺀다. 값은 1080x1920 기준 px 라 비율은 1920·1080 으로 나눈다 —
+    classify() 가 같은 배율(w/1080·h/1920)로 판정해야 4K 세로에서 요청 띠와 판정 띠가 어긋나지 않는다."""
     if h <= w: return []
     top, bottom, right = (LIMITS[k] if v is None else v for k, v in (('top', top), ('bottom', bottom), ('right', right)))
     y0, y1 = LIMITS['right_y']
     out = []
-    if top: out.append(('top', f'x0=0;y0=0;x1=1;y1={_f(top / h)};severity=warning;seek={seek}'))
-    if bottom: out.append(('bottom', f'x0=0;y0={_f(1 - bottom / h)};x1=1;y1=1;severity=warning;seek={seek}'))
-    if right: out.append(('right', f'x0={_f(1 - right / w)};y0={_f(y0)};x1=1;y1={_f(y1)};severity=warning;seek={seek}'))
+    if top: out.append(('top', f'x0=0;y0=0;x1=1;y1={_f(top / 1920)};severity=warning;seek={seek}'))
+    if bottom: out.append(('bottom', f'x0=0;y0={_f(1 - bottom / 1920)};x1=1;y1=1;severity=warning;seek={seek}'))
+    if right: out.append(('right', f'x0={_f(1 - right / 1080)};y0={_f(y0)};x1=1;y1={_f(y1)};severity=warning;seek={seek}'))
     return out
 
 
@@ -149,7 +150,7 @@ def main(args):
     keys = ('--top', '--top-error', '--bottom', '--bottom-error', '--right')
     opt = {args[i][2:].replace('-', '_'): args[i + 1] for i in range(1, len(args) - 1) if args[i] in keys}
     res = {'determinism': scan(proj), 'skipped': skipped(proj), 'zones': {}}
-    errors = sum(f['severity'] == 'error' for f in res['determinism'])
+    errors = sum(f['severity'] == 'error' or '--strict' in args for f in res['determinism'])  # --strict 면 비결정 코드 경고도 실패
     wh = size(proj)
     if '--no-zone' not in args and wh:
         seek = seeks((proj / 'index.html').read_text(encoding='utf-8'))

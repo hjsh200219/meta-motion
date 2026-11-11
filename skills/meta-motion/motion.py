@@ -120,13 +120,18 @@ def credit(c):
     if c.get('src') == 'pm':
         e = _EX[c['code']]; return f"\n[참고한 실전 예시] {c['code']} — {e['creator']} ({e['url']}) · 참고만 하고 그대로 베끼지 않음"
     if c.get('src') == 'hf':
-        return f"\n[출발점] HyperFrames 레지스트리 {c['code']} (Apache-2.0) — python3 motion.py registry-add {c['code']} --dir <프로젝트> 로 받아 이 사양대로 고친다"
+        import hf
+        warn = '\n⚠브랜드 흉내 — 남의 제품 화면·로고·실제 @계정을 흉내 낸 항목. 그 회사·그 사람 영상이 아니면 쓰지 않는다' if hf.brand_of(c['code']) else ''
+        return f"\n[출발점] HyperFrames 레지스트리 {c['code']} ({hf.license_of(c['code'])}) — python3 motion.py registry-add {c['code']} --dir <프로젝트> 로 받아 이 사양대로 고친다{warn}"
     return ''
 
 
 def where(c):
     if c.get('src') == 'pm': return f"\t[실전 예시 · {_EX[c['code']]['creator']}]"
-    return '\t[레지스트리]' if c.get('src') == 'hf' else ''
+    if c.get('src') == 'hf':
+        import hf
+        return '\t[레지스트리 · ⚠브랜드 흉내]' if hf.brand_of(c['code']) else '\t[레지스트리]'
+    return ''
 
 
 FLAG_RATIO = {'-v': '세로', '-h': '가로'}  # /meta-motion -v = 세로 9:16 · -h = 가로 16:9 (어느 자리에 와도 된다)

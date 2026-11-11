@@ -410,9 +410,13 @@ def choose_template(template_id, jev_tpl, jev_conf, tone, exclude=(), series_hit
     if similar and (similar[2] or 0) >= TEMPLATE_MIN_CONF and similar[1] not in exclude:
         return similar[1], f"similar:{similar[0]}"
     fallback = TONE_TEMPLATE[tone]
-    if jev_tpl and (jev_conf or 0) >= TEMPLATE_MIN_CONF:
+    if jev_tpl and fallback in exclude:  # 대체할 기본 템플릿이 빠졌으면 Jev 답을 그대로(기존 규칙)
         return jev_tpl, "jev"
-    if jev_tpl and fallback in exclude:
+    if fallback in exclude:  # 분위기 기본이 빠졌으면 같은 분위기의 다른 템플릿, 없으면 아무 남은 템플릿 — 다 빠졌으면 멈춘다
+        rest = [k for k, t in TEMPLATES.items() if k not in exclude]
+        if not rest: raise SystemExit("모든 템플릿이 --exclude 로 빠졌다 — 하나 이상 남긴다")
+        fallback = next((k for k in rest if TEMPLATES[k]["tone"] == tone), rest[0])
+    if jev_tpl and (jev_conf or 0) >= TEMPLATE_MIN_CONF:
         return jev_tpl, "jev"
     if jev_tpl:
         return fallback, "low-confidence"
@@ -437,7 +441,8 @@ def pick(text, tone=None, copy_to=None, font_id=None, use_jev=True, template_id=
     history = load_history(history_path)
     series_hit = series_template(series, history) if not template_id else None
     ask_similar = history if not series_hit else ()
-    jev_result = judge_jev(text, exclude, ask_similar) if use_jev and not tone and not template_id else None
+    by_series = bool(series_hit and series_hit[1] not in exclude)  # 같은 시리즈면 템플릿이 이미 정해졌다 — Jev(대본 전송)를 부르지 않는다
+    jev_result = judge_jev(text, exclude, ask_similar) if use_jev and not tone and not template_id and not by_series else None
     similar = None
     if jev_result:
         auto_tone, confidence = jev_result["tone"]

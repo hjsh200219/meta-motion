@@ -214,7 +214,8 @@ const isBrand = (it) => !!it.hf && (it.code.split('-').some((w) => BRAND.has(w))
 // 영상이 읽혔으면 영상 시각이 재생 기준, 없거나 못 읽으면 포스터 위에서 타이머로 넘긴다
 const vid = () => { const v = $('#vid'); return v && !v.error && v.readyState >= 1 ? v : null; };
 const credit = (it) => it.pm ? `\n[참고한 실전 예시] ${it.code} — ${it.pm.creator} (${it.pm.url}) · 참고만 하고 그대로 베끼지 않음`
-  : it.hf ? `\n[출발점] HyperFrames 레지스트리 ${it.code} (Apache-2.0) — ${HF_CMD(it)} 로 받아 이 사양대로 고친다` : '';
+  : it.hf ? `\n[출발점] HyperFrames 레지스트리 ${it.code} (${it.hf.license || 'Apache-2.0'}) — ${HF_CMD(it)} 로 받아 이 사양대로 고친다`
+    + (isBrand(it) ? '\n⚠브랜드 흉내 — 남의 제품 화면·로고·실제 @계정을 흉내 낸 항목. 그 회사·그 사람 영상이 아니면 쓰지 않는다' : '') : ''; // 항목 라이선스 우선(hf.py license_of)
 const aspectOf = (it) => {
   if (it.hf) { const d = it.hf.dimensions; return d ? `${d.width} / ${d.height}` : '16 / 9'; }
   const m = it.pm?.size?.match(/^(\d+)x(\d+)$/);

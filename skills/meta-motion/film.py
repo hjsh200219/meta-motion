@@ -14,7 +14,7 @@ Jev 를 부르지 않는다 — 입력은 `motion.py recommend --json` 결과(�
 Motion 타입 규약(2026-10-18 설명서 실측): id `[a-z][a-z0-9-]{0,31}` · name 48자 이하 · dur 1초 이상 · 합계 300초 이하 · 장면 24개 이하 ·
 한글 필름은 fonts 를 비우고 서체 파일을 자산으로 올린다 · 클립은 무음(내레이션은 안 들린다) · 자산 15MB/파일, 96개 이하.
 """
-import json, os, re, sys
+import json, shlex, os, re, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -50,15 +50,18 @@ def clip_module(sid, name):
             f"  render(t) {{}},\n}});")
 
 
-def base_css(pal, font_stems=()):
-    """템플릿 색을 Motion 의 네 변수로: ground=bg · main=band · second=text · accent=accent. 서체 파일을 올렸으면 파일 이름(stem)으로 앞에 둔다."""
-    face = ''.join(f'"{s}", ' for s in font_stems)
+def base_css(pal, title=None, caption=None):
+    """템플릿 색을 Motion 의 네 변수로: ground=bg · main=band · second=text · accent=accent.
+    title·caption = (서체 파일 stem, 굵기) — 제목(.line)과 자막(.sub·기본 글자)에 따로 건다. 한 목록으로 합치면 자막도 제목용 장식 서체를 먼저 집는다."""
+    face = lambda f: f'"{f[0]}", ' if f else ''
+    tw, cw = (title or (None, 800))[1], (caption or (None, 400))[1]
     return (f"#stage {{ --ground:{pal['bg']}; --main:{pal['band'] or pal['bg']}; --second:{pal['text']}; --accent:{pal['accent']}; "
-            f"color:var(--second); font-family:{face}var(--sans, system-ui, sans-serif) }}\n"
+            f"color:var(--second); font-family:{face(caption)}var(--sans, system-ui, sans-serif) }}\n"
             ".ground { position:absolute; inset:0; background:var(--ground) }\n"
             ".clipbox { position:absolute; inset:0; width:100%; height:100%; object-fit:contain }\n"
             ".words { position:absolute; margin:0; display:flex; flex-direction:column; gap:24px } .words > * { margin:0 }\n"
-            f".line {{ font-family:{face}var(--display, var(--sans, system-ui, sans-serif)); font-size:84px; line-height:1.15; font-weight:800; word-break:keep-all }} .sub {{ font-size:36px }}")
+            f".line {{ font-family:{face(title)}var(--display, var(--sans, system-ui, sans-serif)); font-size:84px; line-height:1.15; font-weight:{tw}; word-break:keep-all }} "
+            f".sub {{ font-family:{face(caption)}var(--sans, system-ui, sans-serif); font-size:36px; font-weight:{cw} }}")
 
 
 def build(rec, durs, template=None, ratio='세로', title='검토 필름', intro=2.5, outro=3.0, source='reel.mp4', low=None):
@@ -106,15 +109,16 @@ def build(rec, durs, template=None, ratio='세로', title='검토 필름', intro
                    'width': w, 'height': h, 'fps': FPS, 'background': pal['bg'],
                    'scenes': [{'id': p['id'], 'name': p['name'], 'dur': p['dur'], 'desc': p['desc']} for p in plan]}
     # 한글 필름: fonts 는 비운다(설명서) — 서체는 파일 자산. 제목·자막 서체 파일(템플릿)을 올리면 stem 으로 등록된다
-    font_files = sorted({fonts.CATALOG[pal['font']]['file'], fonts.CATALOG[pal['caption_font']]['file']})
-    stems = [Path(f).stem for f in font_files]
+    tf, cf = fonts.CATALOG[pal['font']], fonts.CATALOG[pal['caption_font']]
+    font_files = sorted({tf['file'], cf['file']})
+    title_face, caption_face = (Path(tf['file']).stem, tf['weight']), (Path(cf['file']).stem, cf['weight'])
     writes = [{'op': 'set', 'collection': 'film', 'doc_id': 'meta', 'data': {'v': 1, 'title': title, 'updatedAt': '<now ISO8601>'}}]
     writes += [{'op': 'set', 'collection': 'assets', 'doc_id': p['clip'], 'data': {'ref': '<upload ref>', 'mime': 'video/mp4', 'w': w, 'h': h}} for p in clips]
     writes += [{'op': 'set', 'collection': 'assets', 'doc_id': f, 'data': {'ref': '<upload ref>', 'mime': 'font/otf' if f.endswith('.otf') else 'font/ttf'}} for f in font_files]
     writes += [{'op': 'set', 'collection': 'modules', 'doc_id': 'scenes.json', 'data': {'kind': 'json', 'text': json.dumps(scenes_json, ensure_ascii=False)}},
-               {'op': 'set', 'collection': 'modules', 'doc_id': 'base.css', 'data': {'kind': 'css', 'text': base_css(pal, stems)}},
+               {'op': 'set', 'collection': 'modules', 'doc_id': 'base.css', 'data': {'kind': 'css', 'text': base_css(pal, title_face, caption_face)}},
                {'op': 'set', 'collection': 'film', 'doc_id': 'script', 'data': {'code': SCRIPT}}]
-    ffmpeg = [f'ffmpeg -y -loglevel error -ss {p["start"]} -t {p["dur"]} -i {source} -an -c:v libx264 -crf 23 -pix_fmt yuv420p {p["clip"]}' for p in clips]
+    ffmpeg = [f'ffmpeg -y -loglevel error -ss {p["start"]} -t {p["dur"]} -i {shlex.quote(source)} -an -c:v libx264 -crf 23 -pix_fmt yuv420p {shlex.quote(p["clip"])}' for p in clips]
     modules = {f"scene-{p['id']}.js": clip_module(p['id'], p['clip']) for p in clips}
     return {'template': tid, 'ratio': ratio, 'size': [w, h], 'total': round(total, 3), 'stage': stage, 'plan': plan, 'writes': writes,
             'modules': modules, 'ffmpeg': ffmpeg, 'fonts': [os.path.join(fonts.FONT_DIR, f) for f in font_files], 'low': low}

@@ -36,4 +36,4 @@ for (const it of list) {
   r.ok = r.anims > 0 && r.errors.length === 0 && r.distinct_w >= 2 && r.distinct_t >= 2 && r.minKB >= 3;
   res.push(r); console.error(r.code, r.ok ? 'ok' : 'NG', `anims=${r.anims} distinct=${r.distinct_w}/${r.distinct_t} minKB=${r.minKB} err=${r.errors.length}`);
 }
-fs.writeFileSync(`${out}/qa.json`, JSON.stringify(res, null, 1)); ws.close(); process.exit(0);
+fs.writeFileSync(`${out}/qa.json`, JSON.stringify(res, null, 1)); ws.close(); process.exit(res.every((r) => r.ok) ? 0 : 1);

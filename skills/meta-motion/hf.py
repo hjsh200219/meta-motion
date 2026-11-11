@@ -22,6 +22,15 @@ def is_brand(it):
     return bool(BRAND & set(it['name'].split('-'))) or bool(re.search(r'@\w', it['description']))
 
 
+def license_of(name):
+    """항목 라이선스 — 저장소는 Apache-2.0 이지만 항목마다 다를 수 있다(MIT AND OFL-1.1·OFL-1.1 등 39개). 항목 값이 우선."""
+    return (ITEMS.get(name) or {}).get('license') or REG['license']
+
+
+def brand_of(name):
+    return bool(ITEMS.get(name)) and is_brand(ITEMS[name])
+
+
 def dims(it):
     d = it.get('dimensions') or {}
     return f"{d['width']}x{d['height']}" if d else '크기 미표기'  # 컴포넌트는 목록에 크기가 없다 — 장면 컴포지션인지 조각인지는 add 가 파일을 보고 알려 준다
@@ -101,7 +110,8 @@ def add(args):
     pics = [f for f in assets if f.suffix.lower() in ('.jpg', '.jpeg', '.png', '.webp', '.gif')]
     if pics:  # 캐러셀 25종 등은 실제 가수·앨범 사진을 견본으로 받아 온다(2026-10-17 실측) — 그대로 내보내지 않는다
         print(f"- 견본 그림 {len(pics)}개({pics[0].relative_to(proj).parent.as_posix()}/…) — 원본 저장소의 예시(실제 인물·앨범 사진 포함)다. 영상에는 우리 사진으로 바꿔 넣는다.")
-    print(f"출처: {REG['source']} ({REG['license']}) · 넣은 뒤 npx --yes {REG['cli']} check")
+    print(f"출처: {REG['source']}/{name} ({license_of(name)}) · 넣은 뒤 npx --yes {REG['cli']} check")
+    if brand_of(name): print('⚠브랜드 흉내 — 남의 제품 화면·로고·실제 @계정을 흉내 낸 항목이다. 그 회사·그 사람 영상이 아니면 쓰지 않는다')
 
 
 def main(args):
