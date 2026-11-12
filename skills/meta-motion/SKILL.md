@@ -1,6 +1,6 @@
 ---
 name: meta-motion
-description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com 실전 예시(Claude 로 만든 영상의 프롬프트 230여 개) + HyperFrames 공식 레지스트리(블록·컴포넌트 444개) — 셋을 같은 한국어 카드·같은 분류 16개로 한 목록에서 찾고 추천받고 넣는다. 영상·쇼츠·인트로·광고·안내 영상을 만들거나 고칠 때 장면마다 맞는 카드(자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩)를 찾아 그 «자세히» 문장(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 장면 사양으로 쓴다. 렌더 전 검사(`check` — lint 가 놓치는 비결정 코드·쇼츠 UI 안전 영역), narrate 전 대본 점검, 첫 렌더 뒤 미술감독 채점, 효과 구현법은 표현 기법 참고서(`technique` — cokacmotion 166편). HyperFrames·Remotion·HTML 애니메이션 어느 도구든 적용. 트리거 — "/meta-motion", "meta-motion", "motion-prompt"(옛 이름), "모션그래픽", "모션 그래픽", "모션 템플릿", "영상 만들어", "영상 제작", "영상 만들기", "쇼츠 만들어", "숏폼", "인트로 영상", "로고 인트로", "오프닝 타이틀", "엔딩 화면", "구독 버튼", "자막 애니메이션", "자막 효과", "키네틱 타이포", "장면 전환", "트랜지션", "켄 번스", "하이퍼프레임", "hyperframes", "hyperframes registry", "하이퍼프레임 레지스트리", "자막 스타일", "하단 자막", "lower third", "remotion", "리모션", "nondev motion", "prompt-motion", "prompt motion", "모션 프롬프트 예시", "클로드 모션", "claude motion", "검토 필름", "모션 댓글", "cokacmotion", "aimotion", "표현 기법", "안전 영역", "세이프존", "미술감독", "대본 점검".
+description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com 실전 예시(Claude 로 만든 영상의 프롬프트 230여 개) + HyperFrames 공식 레지스트리(블록·컴포넌트 444개) + 애니메이션 스킬 6개(claude-animation-skills — 그래프·3D 지도 경로·3D 분해도·라인 아트·막대 인간·3D 만화 설명) — 넷을 같은 한국어 카드·같은 분류 16개로 한 목록에서 찾고 추천받고 넣는다. 영상·쇼츠·인트로·광고·안내 영상을 만들거나 고칠 때 장면마다 맞는 카드(자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩)를 찾아 그 «자세히» 문장(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 장면 사양으로 쓴다. 렌더 전 검사(`check` — lint 가 놓치는 비결정 코드·쇼츠 UI 안전 영역), narrate 전 대본 점검, 첫 렌더 뒤 미술감독 채점, 효과 구현법은 표현 기법 참고서(`technique` — cokacmotion 166편). HyperFrames·Remotion·HTML 애니메이션 어느 도구든 적용. 트리거 — "/meta-motion", "meta-motion", "motion-prompt"(옛 이름), "모션그래픽", "모션 그래픽", "모션 템플릿", "영상 만들어", "영상 제작", "영상 만들기", "쇼츠 만들어", "숏폼", "인트로 영상", "로고 인트로", "오프닝 타이틀", "엔딩 화면", "구독 버튼", "자막 애니메이션", "자막 효과", "키네틱 타이포", "장면 전환", "트랜지션", "켄 번스", "하이퍼프레임", "hyperframes", "hyperframes registry", "하이퍼프레임 레지스트리", "애니메이션 스킬", "claude-animation-skills", "map-route", "3D 지도", "분해도", "exploded view", "막대 인간", "stick figure", "자막 스타일", "하단 자막", "lower third", "remotion", "리모션", "nondev motion", "prompt-motion", "prompt motion", "모션 프롬프트 예시", "클로드 모션", "claude motion", "검토 필름", "모션 댓글", "cokacmotion", "aimotion", "표현 기법", "안전 영역", "세이프존", "미술감독", "대본 점검".
 ---
 
 # meta-motion
@@ -26,7 +26,7 @@ description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com �
 ```bash
 M="<이 스킬 폴더>/motion.py"   # 스킬을 부르면 표시되는 Base directory (개인 설치는 ~/.claude/skills/meta-motion)
 python3 $M                            # 인자 없음 — KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬 127.0.0.1:8765/motion/ 에 띄우고 브라우저를 연다(끄기 Ctrl-C · --port · --no-open · 사용법은 help)
-# 카탈로그 하나 — 모션 829(요청 카드·실전 예시·HyperFrames 레지스트리) · 표현 기법 166(cokacmotion) · 색·서체 템플릿 18 을 출처 구분 없이 같은 명령으로
+# 카탈로그 하나 — 모션 835(요청 카드·실전 예시·HyperFrames 레지스트리·애니메이션 스킬) · 표현 기법 166(cokacmotion) · 색·서체 템플릿 18 을 출처 구분 없이 같은 명령으로
 python3 $M search 잉크                 # 찾기(이름·설명·쓸 때·태그·만든 사람, 여러 단어 AND) — 모든 종류가 한 목록에, 줄 끝 [종류 · 출처] 꼬리표 · --kind motion|technique|theme
 python3 $M list 자막                   # 분류별 목록 — 모션 분류 16개, 이어서 표현 기법·색·서체 템플릿(--cards 면 요청 카드 152개만)
 python3 $M show <id>                  # 어느 종류든 자세히 — 모션은 «자세히» 요청 문장(끝에 만든 사람·라이선스·받는 명령), 기법은 노트 전문·소스 경로, 템플릿은 최종 색·서체 토큰
@@ -88,6 +88,16 @@ python3 $M check <프로젝트>         # 렌더 전 — lint 가 놓치는 비�
 
 참고로 읽을 것(설치하지 않는다 — 읽기만): 공식 스킬 21개 https://github.com/heygen-com/hyperframes/tree/main/skills (embedded-captions·motion-graphics·remotion-to-hyperframes 등) · GSAP 공식 스킬 https://github.com/greensock/gsap-skills (MIT) · https://github.com/iart-ai/motion-skills (MIT, 키네틱 타이포·데이터 시각화·쇼츠 스킬 50개).
 
+## 애니메이션 스킬 6개 (2026-11-13 추가)
+
+출처 https://github.com/artemnovitckii/claude-animation-skills (MIT © 2026 Artem Novitckii, 커밋 `5dbea55` 고정 · 라이선스 원문 `licenses/MIT-claude-animation-skills.txt`). 사용자가 소개 쇼츠(youtube.com/shorts/0fwqV4t-6dg)를 주며 «meta-motion에 6개 모션 추가» 지시.
+- 카드: `as-graph`(미니멀 선 그래프) · `as-map-route`(3D 지도 경로) · `as-breakdown`(3D 분해도) · `as-line-art`(흑백 라인 아트 계단) · `as-stick-figure`(막대 인간 설명 릴스) · `as-3d-cartoon`(3D 만화 「만약에」 설명 쇼츠). 같은 카드 꼴·같은 16분류, `list`·`search`·`show`·`recommend`·화면에 함께 나온다. 모두 1080x1920 고정이라 가로 영상 추천에서는 빠진다.
+- 카드 문장은 원본 SKILL.md 사양·`build.py` DEFAULTS·template.html 타이밍 상수를 우리 말로 옮긴 것(손으로 씀, `data/anim_skills.json`). 렌더는 원본 템플릿을 고치지 않고 그대로 쓴다 — repo 에 싣지 않고 고정 커밋 캐시 `~/.cache/meta-motion/claude-animation-skills`(`python3 animskills.py sync`)에서 실행한다. `show as-…` 가 사양 예·명령·주의를 낸다.
+- 빠른 4개: 사양 JSON → `python3 <캐시>/skills/<스킬>/build.py spec.json` → mp4 + 안전 영역 시트(2D 약 10초, 3D 약 1분 30초 — 2026-11-13 실측 그래프 6.5초·지도 1분 36초). 처음 한 번 `bash <캐시>/kit/setup.sh`.
+- 엔진 2개(막대 인간·3D 만화)는 장면이 아니라 음성이 붙는 한 편짜리 작업 — 원본 엔진을 복사해 대본·음성·장면 코드를 새로 쓴다. 무료 음성·단어 시각 모델은 영어라 한국어는 `narrate`·직접 녹음을 쓴다(`setup.sh --voice` 약 1GB).
+- 한글: 원본 서체가 라틴 전용이라 한글은 시스템 글꼴로 대체 렌더된다(실측). 지도 시간 카드 문구(`9 min`·`to go`·`Arrived`)는 template.html 에 영어 고정 — 한국어로 하려면 사본을 고쳐 spec 에 `"template"` 을 준다.
+- 원본 `install.sh` 는 쓰지 않는다(`~/.claude/skills/graph` 등으로 링크해 다른 스킬 이름과 겹친다). 원본 예시(해적 릴스·갑옷 쇼츠)의 장면·문구는 그대로 쓰지 않는다. `zach-d-films` 는 특정 크리에이터 형식 이름이라 카드 제목에 쓰지 않았다.
+
 ## Claude Motion 과 합쳐 쓰기 — 렌더는 HyperFrames, 검토·댓글은 Motion, 카드 없는 장면은 Motion 에서 (2026-10-18)
 
 Claude Motion = claude.ai Artifact «Motion» 타입(Team 이상 · 이 계정 타입 목록에 있음 · `Artifact list scope=types` 로 type_url 확인). 필름은 ArtifactData 저장소 문서(`film/meta`·`modules/scenes.json`·`modules/base.css`·`film/script`·장면마다 `modules/scene-<id>.js`·자산 `assets/<이름>`)로 이뤄지고, 장면은 `kit.scene(id, {init, render(t)})` 순수 함수다. 타입 설명서(`SKILL.md`·`rough-cut.md`·`finalize.md`·`film-api.md`·`motion.md`)는 필름을 만드는 Artifact 호출 결과와 `Artifact read url=<type_url> path=artifact-type/reference/<이름>.md` 로 읽는다 — 그 규칙(한 장면 한 set·`if_version`·id 규약)을 따르고 여기 되풀이하지 않는다.
@@ -136,6 +146,7 @@ MotionKit.hyperframes('s2', { compId: 's2', duration: 5 });   // __timelines.s2 
 사이트가 바뀌면 `python3 <이 스킬 폴더>/build.py` — data/motion.json·compose.mjs 를 다시 받는다.
 실전 예시는 `python3 <이 스킬 폴더>/build_pm.py` — sitemap 의 항목 페이지를 1초 간격으로 읽어 data/prompt_motion.json 을 다시 만든다(약 4분, 90% 미만 파싱이면 중단).
 HyperFrames 레지스트리는 세 단계 — ① `python3 build_hf.py`(catalog --json + repo 캐시 클론 `~/.cache/meta-motion/hyperframes` → data/hf_registry.json, 400개 미만이면 중단) ② `python3 build_hf_ko.py`(분류 Jev + 한국어 카드 edb-p, 재료가 바뀐 항목만 · `--cat-only` 는 분류만) ③ `python3 build_hf_thumbs.py`(없는 그림만 렌더, `--force` 전부). 그 뒤 `test_recommend.py`·`test_hf.py` 를 돌리고 KB 는 `export_kb.py` 로 다시 내보낸다. 렌더 고정 버전을 올리면 `build_hf.py` 의 `HF` 도 같이 올린다.
+애니메이션 스킬은 원본 repo 가 바뀌면 바뀐 SKILL.md·DEFAULTS·템플릿 타이밍을 읽고 `data/anim_skills.json` 의 카드와 `commit` 을 손으로 고친 뒤 `python3 animskills.py thumbs`(목록 그림 `data/as_thumb/`) · `test_animskills.py`.
 카드 150개 미만이면 중단하고, 조립 규칙이 바뀌었거나 간단 문장이 사이트와 다르면 경고한다(그때는 motion.py 를 compose.mjs 에 맞춰 고친다).
 
 ## 파일
@@ -145,6 +156,7 @@ HyperFrames 레지스트리는 세 단계 — ① `python3 build_hf.py`(catalog 
 - `data/prompt_motion.json` — prompt-motion.com 예시: id·title·type(Prompt/Skill)·tags·prompt·creator·source·model·effort·iterations·posted·url·video
 - `data/hf_registry.json` — HyperFrames 공식 레지스트리 목록 444개: name·type·title·description·tags·dimensions·duration + 출처·라이선스·받은 날·제외 항목
 - `data/hf_registry_ko.json` — 레지스트리 이름별 분류(`cat`·`cat_p` Jev 확률)와 한국어 카드(name·plain·when·len·fields·tpl·dx) · `data/hf_thumb/` — 렌더 그림 444장(가로 480px)
+- `data/anim_skills.json` — 애니메이션 스킬 6개 한국어 카드(+ skill·engine·render·spec·notes, 출처·커밋) · `data/as_thumb/` — 목록 그림 6장 · `animskills.py` — 고정 커밋 캐시·만드는 법(`credit`)·그림 · `test_animskills.py`
 - `hf.py` — 레지스트리 찾기·넣기(`motion.py registry`·`registry-add`) · `build_hf.py` — 목록 다시 받기 · `build_hf_ko.py` — 분류·한국어 카드 · `build_hf_thumbs.py` — 그림 렌더 · `test_hf.py` — 목록·제외·host 조각·고칠 곳 검사
 - `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사·이력(`pick`·`list`·`install`·`record`·`history`·`templates`) · `test_fonts.py` — 템플릿 대비·서체·라이선스·이력 검사
   - `python3 fonts.py templates` 는 템플릿·서체(절대 경로) JSON 을 부수 효과 없이 낸다 — 다른 렌더러가 같은 템플릿을 쓰는 통로다. 발행 릴스(`SHC/shconsulting/scripts/instagram/motion/theme.mjs`)가 이것과 `pick`·`record` 를 부른다. 키를 바꾸면 그쪽 `node --test scripts/instagram/motion/theme.test.mjs` 도 돌린다.

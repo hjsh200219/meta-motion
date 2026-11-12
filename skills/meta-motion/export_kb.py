@@ -2,7 +2,7 @@
 """preview.html 을 사내 KB(kb.pilldoc.co.kr/motion/)용 페이지로 내보낸다 — preview.html 이 정본, 내보낸 파일은 고치지 않는다.
 KB 에는 외부 영상을 막는 CSP 가 없어 원본 영상·그림을 바로 쓴다(window.MOTION_MEDIA='origin'). 접근은 KB 로그인(kb 역할)이 막는다.
 실행: python3 export_kb.py <PillDocKb>/site/motion   → index.html + motion.json·prompt_motion.json·prompt_motion_ko.json·hf_registry.json·hf_registry_ko.json
-                                                     + anim/(요청 카드 샘플) + hf_thumb/(레지스트리 렌더 그림)"""
+                                                     + anim_skills.json + anim/(요청 카드 샘플) + hf_thumb/(레지스트리 렌더 그림) + as_thumb/(애니메이션 스킬 그림)"""
 import json, shutil, sys
 from pathlib import Path
 
@@ -20,7 +20,7 @@ HEAD = """<!doctype html>
 # 만들 때만 쓰는 키(재료 해시·repo 커밋·카드 재료인 변수·싱크 지점)를 빼고 내보내는 파일과 그 꼴.
 # KB PR 의 AI 리뷰는 diff 50만 자 상한이 있다(2026-10-17 #284 초과) — 한 줄로 줄여 파일 하나가 한 PR 에 들어가게 한다.
 # prompt_motion_ko.json 은 KB 에 이미 있는 그대로 둔다(해시를 빼면 233줄이 바뀌어 diff 16만 자가 더 붙는다).
-KO = {'hf_registry_ko.json': None, 'hf_registry.json': None}
+KO = {'hf_registry_ko.json': None, 'hf_registry.json': None, 'anim_skills.json': None}
 BUILD_KEYS = {'src_sha', 'cat_src', 'cat_p', 'hold_checked', 'commit', 'variables', 'sync'}
 
 
@@ -30,7 +30,7 @@ def strip_build(v):
     return v
 
 
-DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_registry.json', 'hf_registry_ko.json')
+DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_registry.json', 'hf_registry_ko.json', 'anim_skills.json')
 BACK = '<a href="/" style="color:inherit;opacity:.7;font-size:13px;text-decoration:none">← PillDocKb</a>\n    <h1>'
 
 
@@ -52,6 +52,8 @@ def build(out: Path, back: bool = True) -> None:  # back=False: 로컬 보기(se
     shutil.copytree(HERE / 'data' / 'anim', out / 'anim', ignore=shutil.ignore_patterns('index.json'))
     shutil.rmtree(out / 'hf_thumb', ignore_errors=True)
     shutil.copytree(HERE / 'data' / 'hf_thumb', out / 'hf_thumb')
+    shutil.rmtree(out / 'as_thumb', ignore_errors=True)
+    shutil.copytree(HERE / 'data' / 'as_thumb', out / 'as_thumb')
 
 
 if __name__ == '__main__':

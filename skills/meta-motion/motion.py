@@ -12,7 +12,8 @@ EXAMPLES = _load('prompt_motion.json', [])  # prompt-motion.com 실전 예시(bu
 _EX = {e['id']: e for e in EXAMPLES}
 _HF = {it['name']: it for it in _load('hf_registry.json', {}).get('items', [])}
 MORE = ([{**c, 'code': k, 'en': _EX[k]['title'], 'inds': _EX[k]['tags'], 'src': 'pm'} for k, c in _load('prompt_motion_ko.json', {}).items() if k in _EX]
-        + [{**c, 'code': k, 'en': _HF[k]['title'], 'inds': _HF[k]['tags'], 'src': 'hf'} for k, c in _load('hf_registry_ko.json', {}).items() if c.get('tpl') and k in _HF])
+        + [{**c, 'code': k, 'en': _HF[k]['title'], 'inds': _HF[k]['tags'], 'src': 'hf'} for k, c in _load('hf_registry_ko.json', {}).items() if c.get('tpl') and k in _HF]
+        + [{**c, 'code': k, 'src': 'as'} for k, c in _load('anim_skills.json', {'items': {}})['items'].items()])  # 애니메이션 스킬 6개(animskills.py)
 MORE_BY = {c['code']: c for c in MORE}
 TOOLS = {'auto': '하이퍼프레임(HyperFrames)으로', 'claude': '/hyperframes 로', 'codex': '$hyperframes 로'}
 RATIO = {'가로': '가로 16:9', '세로': '세로 9:16', '정사각': '정사각 1:1', '없음': ''}
@@ -99,7 +100,8 @@ def detail(pre, c, vals, g):
     elif (g.get('color') or '').strip():
         out.append('\n[모양] ' + compose('색·분위기: {color}.', r))
     out.append('\n[움직임] ' + MOVE.get(dx['kind'], MOVE['scene']))
-    out.append('\n[하지 말 것] ' + AVOID + (' · ' + compose(dx['avoid'], r) if dx.get('avoid') else ''))
+    avoid = AVOID.replace('내레이션·음악·효과음 없음 · ', '') if c.get('engine') else AVOID  # 음성이 붙는 한 편짜리 엔진(애니메이션 스킬)
+    out.append('\n[하지 말 것] ' + avoid + (' · ' + compose(dx['avoid'], r) if dx.get('avoid') else ''))
     return ''.join(out)
 
 
@@ -123,6 +125,8 @@ def credit(c):
         import hf
         warn = '\n⚠브랜드 흉내 — 남의 제품 화면·로고·실제 @계정을 흉내 낸 항목. 그 회사·그 사람 영상이 아니면 쓰지 않는다' if hf.brand_of(c['code']) else ''
         return f"\n[출발점] HyperFrames 레지스트리 {c['code']} ({hf.license_of(c['code'])}) — python3 motion.py add {c['code']} --dir <프로젝트> 로 받아 이 사양대로 고친다{warn}"
+    if c.get('src') == 'as':
+        import animskills; return animskills.credit(c['code'])
     return ''
 
 
@@ -131,6 +135,7 @@ def where(c):
     if c.get('src') == 'hf':
         import hf
         return '\t[레지스트리 · ⚠브랜드 흉내]' if hf.brand_of(c['code']) else '\t[레지스트리]'
+    if c.get('src') == 'as': return '\t[애니메이션 스킬 · MIT Artem Novitckii]'
     return ''
 
 

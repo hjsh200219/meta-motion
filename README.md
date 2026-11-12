@@ -1,7 +1,7 @@
 # meta-motion
 
 영상·쇼츠·인트로를 만들 때 장면마다 맞는 모션그래픽을 골라 주는 Claude Code 플러그인입니다.
-모션 829개를 같은 한국어 카드·같은 분류 16개로 한 목록에 모아 두고, 대본을 주면 장면별로 추천합니다.
+모션 835개를 같은 한국어 카드·같은 분류 16개로 한 목록에 모아 두고, 대본을 주면 장면별로 추천합니다.
 
 ```bash
 python3 skills/meta-motion/motion.py           # 인자 없이 → 사내 KB 모션 메뉴를 로컬 브라우저로 연다
@@ -127,10 +127,11 @@ python3 $M registry caption karaoke && python3 $M show caption-pill-karaoke -v
 | 요청 카드 | 152 | [모션그래픽 주문 사전](https://nondev-thinking.web.app/motion/)(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 | `data/motion.json` |
 | 실전 예시 | 233 | [prompt-motion.com](https://prompt-motion.com) — Claude 로 만든 영상의 프롬프트(영어, 만든 사람·원문 링크 포함), 2026-10-11 수집 | `data/prompt_motion.json`, 한국어 카드 `prompt_motion_ko.json` |
 | HyperFrames 레지스트리 | 444 | heygen-com/hyperframes 공식 블록·컴포넌트(Apache-2.0). 출처 미확인 자산이 든 3개는 뺐음 | `data/hf_registry.json`, 한국어 카드 `hf_registry_ko.json`, 그림 `data/hf_thumb/` |
+| 애니메이션 스킬 | 6 | [claude-animation-skills](https://github.com/artemnovitckii/claude-animation-skills)(MIT © 2026 Artem Novitckii, 커밋 `5dbea55`) — 그래프·3D 지도 경로·3D 분해도·라인 아트·막대 인간·3D 만화 설명. 카드만 싣고 원본 템플릿은 쓸 때 캐시로 받아 그대로 렌더 | `data/anim_skills.json`, 그림 `data/as_thumb/` |
 | 표현 기법 참고서 | 166 | [cokacmotion](https://github.com/kstost/cokacmotion)(MIT © 2026 kstost) — 기법 하나당 데모 하나. 목록만 싣고 노트·소스는 쓸 때 캐시로 받음 | `data/cokac.json` |
 | 색·서체 템플릿 | 18 | 조회 수 높은 국내 쇼츠·릴스 실측 조합 | `fonts.py`, 서체 `data/fonts/` |
 
-- 출처를 나누지 않습니다. 모션 829·기법 166·템플릿 18 을 `catalog.py` 가 같은 꼴의 항목(id·종류·분류·출처·라이선스·브랜드 흉내·크기)으로 맞춰 `list`·`search`·`show`·`recommend`·화면에서 한 목록으로 씁니다. 원본 자료 파일은 출처별로 그대로 두어 갱신·라이선스·KB 내보내기가 바뀌지 않습니다.
+- 출처를 나누지 않습니다. 모션 835·기법 166·템플릿 18 을 `catalog.py` 가 같은 꼴의 항목(id·종류·분류·출처·라이선스·브랜드 흉내·크기)으로 맞춰 `list`·`search`·`show`·`recommend`·화면에서 한 목록으로 씁니다. 원본 자료 파일은 출처별로 그대로 두어 갱신·라이선스·KB 내보내기가 바뀌지 않습니다.
 - 대본 점검(`references/script-check.md`)·미술감독 채점(`references/art-director.md`)·`check.py` 는 [script-to-motion](https://github.com/kstost/script-to-motion)(MIT © 2026 kstost)에서 착안해 다시 썼습니다.
 - 실전 예시를 참고했으면 예시 id 와 만든 사람을 밝힙니다. 프롬프트 문장을 그대로 베끼지 않습니다.
 
@@ -159,6 +160,7 @@ python3 $M registry caption karaoke && python3 $M show caption-pill-karaoke -v
 | 사내 KB 페이지 | `export_kb.py <PillDocKb>/site/motion` |
 | 추천 품질 다시 재기 | `eval_recommend.py` |
 | 표현 기법 참고서 | `build_cokac.py` |
+| 애니메이션 스킬 그림 | `animskills.py thumbs`(카드는 원본을 읽고 손으로 고침) |
 
 - 화면 정본은 `skills/meta-motion/preview.html` 하나입니다. KB 페이지와 로컬 화면은 `export_kb.py` 가 여기서 만듭니다.
 - Artifact 로 올릴 때는 `data/` 의 자료 파일과 `posters/` 를 페이지 옆에 함께 올립니다(Artifact CSP 가 외부 영상을 막음).

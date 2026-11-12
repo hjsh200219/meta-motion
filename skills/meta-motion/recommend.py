@@ -40,9 +40,12 @@ def items():
 def fits_ratio(it, ratio):
     """레지스트리 항목은 크기가 고정이다 — 세로 영상에 가로 고정(블록 192·컴포넌트 29개), 가로 영상에 세로 고정 항목을 넣으면 화면 밖으로 넘친다.
     요청 카드·실전 예시는 비율을 요청 문장으로 정하고, 크기 미표기 컴포넌트는 조각이라 남긴다."""
-    if it['src'] != 'hf' or not ratio: return True
-    import hf
-    d = hf.ITEMS.get(it['code'], {}).get('dimensions')
+    if it['src'] not in ('hf', 'as') or not ratio: return True
+    if it['src'] == 'as':  # 애니메이션 스킬은 1080x1920 고정
+        import animskills; w, h = animskills.load()['size']; d = {'width': w, 'height': h}
+    else:
+        import hf
+        d = hf.ITEMS.get(it['code'], {}).get('dimensions')
     if not d: return True
     return d['width'] <= d['height'] if ratio == '세로' else d['width'] >= d['height']
 
@@ -107,7 +110,7 @@ def main(args):
                                                                  'picks': [{k: it[k] for k in keep} for it in r['picks']]} for r in res]},
                          ensure_ascii=False, indent=1))
         return
-    src_name = {'card': '요청 카드', 'pm': '실전 예시', 'hf': '레지스트리'}
+    src_name = {'card': '요청 카드', 'pm': '실전 예시', 'hf': '레지스트리', 'as': '애니메이션 스킬'}
     print(f'비율 {ratio} · 순서 = Jev 가 후보 전체에서 고른 순 · 적합도 = «이 장면을 이 모션으로 잘 보여 주나»에 Jev 가 답한 예 확률'
           f'(0~1, 후보 수와 무관) · 1위 적합도 {LOW} 미만이면 확신 낮음')
     for i, r in enumerate(res, 1):

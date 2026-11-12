@@ -6,10 +6,10 @@
 actions(할 수 있는 동작: show·fields·order·add·recommend·theme) · provenance(source·url·creator·license·commit) ·
 brand(남의 제품·계정 흉내) · size(고정 크기, 없으면 None) · search(찾기용 소문자 글)."""
 import functools
-import cokac, fonts, hf, motion
+import animskills, cokac, fonts, hf, motion
 
 KIND_NAME = {'motion': '모션', 'technique': '기법', 'theme': '템플릿'}
-SOURCE_NAME = {'card': '요청 카드', 'prompt-motion': '실전 예시', 'hyperframes': '레지스트리', 'cokacmotion': '기법', 'templates': '템플릿'}
+SOURCE_NAME = {'card': '요청 카드', 'prompt-motion': '실전 예시', 'hyperframes': '레지스트리', 'animation-skills': '애니메이션 스킬', 'cokacmotion': '기법', 'templates': '템플릿'}
 
 
 def _search(*parts):
@@ -28,6 +28,10 @@ def _motion(c):
         prov = {'source': 'hyperframes', 'url': f"{hf.REG['source']}/{c['code']}", 'creator': 'HeyGen', 'license': hf.license_of(c['code'])}
         d = it.get('dimensions')
         size, brand, actions = ((d['width'], d['height']) if d else None), hf.brand_of(c['code']), actions + ['add']
+    elif src == 'as':  # 원본 스킬이 1080x1920 고정으로 렌더한다
+        idx = animskills.load()
+        prov = {'source': 'animation-skills', 'url': f"{idx['source']}/tree/{idx['commit'][:7]}/skills/{c['skill']}", 'creator': idx['creator'], 'license': idx['license'], 'commit': idx['commit']}
+        size = tuple(idx['size'])
     return {'id': c['code'], 'aliases': [], 'kind': 'motion', 'title': c['name'], 'summary': c['plain'], 'when': c['when'],
             'tags': list(c.get('inds') or []), 'category': c['cat'], 'actions': actions, 'provenance': prov, 'brand': brand, 'size': size,
             'search': _search(c['code'], c['name'], c.get('en'), c['plain'], c['when'], c['cat'], *(c.get('inds') or []), prov['creator']), 'src': src}
@@ -75,7 +79,7 @@ def find(key):
 def label(i):
     """한 줄 꼬리표 — 목록·찾기에서 종류와 출처를 보인다(사용자는 출처를 몰라도 되지만 표기는 남긴다)."""
     p = i['provenance']
-    tail = {'prompt-motion': f" · {p['creator']}", 'hyperframes': f" · {p['license']}"}.get(p['source'], '')
+    tail = {'prompt-motion': f" · {p['creator']}", 'hyperframes': f" · {p['license']}", 'animation-skills': ' · MIT'}.get(p['source'], '')
     return f"[{KIND_NAME[i['kind']]} · {SOURCE_NAME[p['source']]}{tail}{' · ⚠브랜드 흉내' if i['brand'] else ''}]"
 
 
