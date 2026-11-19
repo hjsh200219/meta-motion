@@ -4,8 +4,8 @@
 게시된 인스타 릴스 카드(SHC/shconsulting scripts/instagram/cards, 게시 목록 published-instagram.json)에서 만드는 명령이 `set` 이다.
 
   python3 eval_recommend.py set <instagram 폴더> set.json [--n 10] [--offset 0] [--skip 이전set.json]
-  python3 eval_recommend.py run set.json run.json [-h]
-  python3 eval_recommend.py judge set.json judge.json run.json [run2.json …]   (이미 매긴 장면·카드는 다시 묻지 않는다)
+  python3 eval_recommend.py run set.json run.json [-h] [--criteria 기준.txt] [--src card,pm,hf] [--no-brand]
+  python3 eval_recommend.py judge set.json judge.json run.json [run2.json …] [--criteria 기준.txt]   (이미 매긴 장면·카드는 다시 묻지 않는다 — 기준을 준 채점은 다른 judge 파일로)
   python3 eval_recommend.py report judge.json run.json [run2.json …]
 
 2026-10-17 기록(recommend.py 머리의 EVAL): 평가 64장면 · 검증 75장면(겹치지 않는 대본 10편) — 검증에서 예전 두 단계 1위 평균 2.84 → 지금 4.00."""
@@ -46,8 +46,9 @@ def make_set(ig, out, n=10, offset=0, skip=None):
     print(f"{len(data)}편 {sum(len(s['scenes']) for s in data)}장면 → {out}")
 
 
-def run(set_path, out, ratio='세로', workers=6):
-    pool = [it for it in items() if fits_ratio(it, ratio)]
+def run(set_path, out, ratio='세로', workers=6, criteria='', srcs=None, no_brand=False):
+    # criteria·srcs·no_brand: 호출자(발행 릴스)와 같은 조건으로 재려고(2026-11-20) — recommend --criteria·--src·--no-brand 와 같다
+    pool = [it for it in items() if fits_ratio(it, ratio) and recommend.pool_ok(it, srcs, no_brand)]
     jobs = [(s['slug'], s['scenes'], i) for s in json.loads(Path(set_path).read_text(encoding='utf-8')) for i in range(len(s['scenes']))]
 
     def one(job):
@@ -55,17 +56,17 @@ def run(set_path, out, ratio='세로', workers=6):
         t = time.time()
         for _ in range(3):
             try:
-                r = recommend.recommend_scene(sc, i, pool, 3, ratio); break
+                r = recommend.recommend_scene(sc, i, pool, 3, ratio, criteria); break
             except Exception as e:  # noqa: BLE001 — 기록하고 다음 장면으로
                 r = {'error': str(e)[:200]}; time.sleep(2)
         return {'slug': slug, 'i': i, 'picks': [{k: p[k] for k in ('code', 'p', 'fit')} for p in r.get('picks', [])],
                 **({'error': r['error']} if 'error' in r else {}), 'sec': round(time.time() - t, 2)}
     with ThreadPoolExecutor(workers) as ex: rows = list(ex.map(one, jobs))
-    Path(out).write_text(json.dumps({'ratio': ratio, 'pool': len(pool), 'rows': rows}, ensure_ascii=False, indent=1), encoding='utf-8')
+    Path(out).write_text(json.dumps({'ratio': ratio, 'pool': len(pool), 'criteria': bool(criteria), 'rows': rows}, ensure_ascii=False, indent=1), encoding='utf-8')
     print(f"{len(rows)}장면 · 오류 {sum('error' in r for r in rows)} → {out}")
 
 
-def judge(set_path, out, runs):
+def judge(set_path, out, runs, criteria=''):
     es = {s['slug']: s for s in json.loads(Path(set_path).read_text(encoding='utf-8'))}
     code = {it['code']: it for it in items()}
     done = json.loads(Path(out).read_text(encoding='utf-8')) if Path(out).exists() else {}
@@ -74,6 +75,7 @@ def judge(set_path, out, runs):
     ratio = data[0].get('ratio', '세로')
     assert all(d.get('ratio', '세로') == ratio for d in data), '비율이 다른 실행은 따로 채점한다'
     guide = GUIDE.replace('{ratio}', '세로 숏폼(인스타 릴스 4:5·9:16)' if ratio == '세로' else '가로(16:9)')
+    if criteria: guide += f'\n판단 기준(점수에 반영):\n{criteria}\n'  # 기준을 준 채점은 다른 judge 파일에 남긴다(이미 매긴 점수를 재사용하므로)
     todo = []
     for slug, s in es.items():
         for i, sc in enumerate(s['scenes']):
@@ -130,8 +132,10 @@ def report(judge_path, runs):
 if __name__ == '__main__':
     a = sys.argv[1:]
     opt = lambda k, d=None: a[a.index(k) + 1] if k in a else d
+    crit = Path(opt('--criteria')).read_text(encoding='utf-8').strip() if opt('--criteria') else ''  # 2026-11-20 — run 은 추천 질문에, judge 는 채점 지시에 덧붙인다
+    pos = [x for k, x in enumerate(a) if not x.startswith('-') and (k == 0 or a[k - 1] not in ('--criteria', '--src', '--n', '--offset', '--skip'))]
     if a[:1] == ['set']: make_set(a[1], a[2], int(opt('--n', 10)), int(opt('--offset', 0)), opt('--skip'))
-    elif a[:1] == ['run']: run(a[1], a[2], '가로' if '-h' in a else '세로')
-    elif a[:1] == ['judge']: judge(a[1], a[2], a[3:])
+    elif a[:1] == ['run']: run(pos[1], pos[2], '가로' if '-h' in a else '세로', criteria=crit, srcs=set(opt('--src').split(',')) if opt('--src') else None, no_brand='--no-brand' in a)
+    elif a[:1] == ['judge']: judge(pos[1], pos[2], pos[3:], crit)
     elif a[:1] == ['report']: report(a[1], a[2:])
     else: sys.exit(__doc__)
