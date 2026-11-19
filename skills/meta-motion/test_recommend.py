@@ -52,4 +52,12 @@ r = recommend.recommend_scene(['인사', '숫자 38%', '끝'], 1, v, 3, '세로'
 assert calls['choice'] == len(chunks(v)) + 1 and calls['noul'] == 3, calls   # 묶음 결승 + 최종 + 적합도 한 요청(고른 3개)
 assert [p['code'] for p in r['picks']] == last[:3] and [p['fit'] for p in r['picks']] == [0.2, 0.95, 0.2]   # 순서는 choice, 적합도는 따로
 assert all(set(p) >= {'code', 'fit', 'p', 'src', 'cat'} for p in r['picks']) and 0 < LOW < 1
+# 후보 거르기(2026-11-20) — 출처 집합과 «브랜드 흉내» 빼기
+all_items = recommend.items()
+brand = [it for it in all_items if it.get('brand')]
+assert brand, '브랜드 흉내 항목이 목록에 있어야 거르기를 시험할 수 있다'
+assert not any(recommend.pool_ok(it, None, True) for it in brand)
+assert all(recommend.pool_ok(it, None, False) for it in brand)
+assert not any(recommend.pool_ok(it, {'card', 'pm', 'hf'}, True) for it in all_items if it['src'] == 'as')
+assert any(recommend.pool_ok(it, {'card'}, True) for it in all_items if it['src'] == 'card')
 print('ok')

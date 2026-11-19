@@ -5,7 +5,7 @@
 분류(16개)를 먼저 고르던 두 단계 방식은 분류를 잘못 고르면 맞는 카드가 후보에서 통째로 빠져 버려서 뺐다(2026-10-17 실측 — 아래 EVAL).
 장면 나누기·비율 거르기·순위 합치기는 코드가, 고르기·적합도는 Jev 가 한다. 스크립트 글은 외부 API(api.typesafe.ai)로 나간다.
 필요: 같은 폴더의 jev.py(번들 사본)와 Jev API 키 — `python3 setup.py`(Windows 는 python)로 한 번 저장(환경변수 JEV_API_KEY·workspace .env 도 읽음).
-실행: python3 motion.py recommend <스크립트.txt|-> [--top 3] [-v|-h] [--json]"""
+실행: python3 motion.py recommend <스크립트.txt|-> [--top 3] [-v|-h] [--json] [--src card,pm,hf] [--no-brand]"""
 import json, re, sys
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -50,6 +50,12 @@ def fits_ratio(it, ratio):
     return d['width'] <= d['height'] if ratio == '세로' else d['width'] >= d['height']
 
 
+def pool_ok(it, srcs=None, no_brand=False):
+    """후보 거르기(2026-11-20 — 발행 릴스가 전체 카탈로그에서 고르면서 추가). srcs: 쓸 출처 집합(card·pm·hf·as), None 이면 전부.
+    no_brand: «⚠브랜드 흉내» 레지스트리 항목(남의 제품 화면·로고·@계정)을 뺀다 — SKILL.md 「그 회사 영상이 아니면 쓰지 않는다」."""
+    return (not srcs or it['src'] in srcs) and not (no_brand and it.get('brand'))
+
+
 def chunks(cand, size=MAX_OPTIONS):
     """후보를 size 이하 묶음으로 고르게 나눈다 — 앞뒤로 자르면 한 묶음에 한 분류·출처만 몰리므로 번갈아 담는다."""
     k = -(-len(cand) // size)
@@ -84,14 +90,14 @@ def recommend_scene(sc, i, pool, top, ratio='세로'):
     return {'scene': sc[i], 'picks': [{**it, 'p': round(p, 3), 'fit': round(jev.noul_of(a, f'f{j}', 0.0), 3)} for j, (it, p) in enumerate(head)]}
 
 
-def run(text, top=3, ratio='세로', workers=4):
+def run(text, top=3, ratio='세로', workers=4, srcs=None, no_brand=False):
     try:
         import jev  # noqa: F401
     except ImportError:
         sys.exit('Jev 클라이언트(jev.py)를 찾지 못했습니다 — 플러그인을 다시 설치하세요(skills/meta-motion/jev.py)')
     sc = scenes(text)
     if not sc: sys.exit('스크립트가 비어 있습니다')
-    pool = [it for it in items() if fits_ratio(it, ratio)]
+    pool = [it for it in items() if fits_ratio(it, ratio) and pool_ok(it, srcs, no_brand)]
     with ThreadPoolExecutor(workers) as ex:
         return list(ex.map(lambda i: recommend_scene(sc, i, pool, top, ratio), range(len(sc))))
 
@@ -100,12 +106,13 @@ def main(args):
     top = int(args[args.index('--top') + 1]) if '--top' in args else 3
     given = args[args.index('--ratio') + 1] if '--ratio' in args[:-1] else ''
     ratio = '가로' if '-h' in args or given == '가로' else '세로'  # 기본 세로 9:16(SKILL.md) — -h·--ratio 가로일 때만 가로
-    rest = [a for i, a in enumerate(args) if a not in ('--top', '--ratio', '-v', '-h', '--json') and (i == 0 or args[i - 1] not in ('--top', '--ratio'))]
+    srcs = set(args[args.index('--src') + 1].split(',')) if '--src' in args[:-1] else None  # 예: --src card,pm,hf
+    rest = [a for i, a in enumerate(args) if a not in ('--top', '--ratio', '--src', '-v', '-h', '--json', '--no-brand') and (i == 0 or args[i - 1] not in ('--top', '--ratio', '--src'))]
     src = rest[0] if rest else '-'
     text = sys.stdin.read() if src == '-' else Path(src).read_text(encoding='utf-8')
-    res = run(text, top, ratio)
+    res = run(text, top, ratio, srcs=srcs, no_brand='--no-brand' in args)
     if '--json' in args:
-        keep = ('code', 'name', 'cat', 'src', 'fit', 'p')
+        keep = ('code', 'name', 'cat', 'src', 'fit', 'p', 'brand')
         print(json.dumps({'ratio': ratio, 'low': LOW, 'scenes': [{'scene': r['scene'], 'low': not r['picks'] or r['picks'][0]['fit'] < LOW,
                                                                  'picks': [{k: it[k] for k in keep} for it in r['picks']]} for r in res]},
                          ensure_ascii=False, indent=1))
