@@ -52,6 +52,15 @@ r = recommend.recommend_scene(['인사', '숫자 38%', '끝'], 1, v, 3, '세로'
 assert calls['choice'] == len(chunks(v)) + 1 and calls['noul'] == 3, calls   # 묶음 결승 + 최종 + 적합도 한 요청(고른 3개)
 assert [p['code'] for p in r['picks']] == last[:3] and [p['fit'] for p in r['picks']] == [0.2, 0.95, 0.2]   # 순서는 choice, 적합도는 따로
 assert all(set(p) >= {'code', 'fit', 'p', 'src', 'cat'} for p in r['picks']) and 0 < LOW < 1
+# 판단 기준 덧붙이기(2026-11-20) — 호출자가 준 기준 글이 고르기·적합도 질문 둘 다에 들어간다
+seen = []
+fake.choice = lambda i, c: (seen.append(i), {'type': 'choice', 'instructions': i, 'criteria': c})[1]
+fake.noul = lambda i: (seen.append(i), {'type': 'noul', 'instructions': i})[1]
+recommend.recommend_scene(['인사', '숫자 38%', '끝'], 1, v, 3, '세로', criteria='항목은 하나씩 차례로')
+assert seen and all('항목은 하나씩 차례로' in s for s in seen), seen[:2]
+seen.clear(); recommend.recommend_scene(['인사', '숫자 38%', '끝'], 1, v, 3, '세로')
+assert not any('판단 기준' in s for s in seen)
+
 # 후보 거르기(2026-11-20) — 출처 집합과 «브랜드 흉내» 빼기
 all_items = recommend.items()
 brand = [it for it in all_items if it.get('brand')]
