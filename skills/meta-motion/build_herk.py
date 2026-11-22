@@ -437,6 +437,9 @@ def polish(fields, card=None):
     keys = {x['k'] for x in out}
     for lo, hi in (('minLabel', 'maxLabel'), ('axisStart', 'axisEnd'), ('min', 'max')):
         if lo in keys and hi in keys: rng = {'lo': lo, 'hi': hi}
+    for f in out:  # 범위 비율로 계산하는 카드의 양 끝값은 필수 — 비우면 만점을 알 수 없다(#540 6차)
+        if rng and f['k'] in rng.values() and f.get('opt'):
+            f['opt'] = False; f['label'] = re.sub(r'\s*\(선택\)\s*$', '', f['label'])
     texts = sorted((x for x in out if not x['k'].startswith('n_') and re.search(r'\d', str(x.get('ex', '')))), key=lambda x: not x['k'].startswith('stat'))  # 수치 칸(stat…)을 먼저 — 제목 속 연도에 잘못 붙지 않게
     for f in out:
         if not f['k'].startswith('n_'): continue
