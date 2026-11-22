@@ -40,7 +40,9 @@ if items:
     by = {hk.code_of(c): c for c in cards}
     for k, it in items.items():
         c = by[k]
-        slots = {el['data-slot'] for el in BeautifulSoup((hk.LIB / c['file']).read_text(encoding='utf-8'), 'html.parser').select('[data-slot]')} - {''}  # 빈 data-slot 은 칸이 아니다
+        _s = BeautifulSoup((hk.LIB / c['file']).read_text(encoding='utf-8'), 'html.parser')
+        slots = {el['data-slot'] for el in _s.select('[data-slot]')} - {''}  # 빈 data-slot 은 칸이 아니다
+        slots -= {el['data-slot'] for el in _s.select('[data-slot]') if el.name in hk.TEXT_TAGS and not el.get_text(strip=True)}  # 원본에서 비어 있던 글 칸은 비운 채 둔다(#540 2차)
         v = hk.vals_of(it)
         assert slots <= set(v), (k, sorted(slots - set(v)))
         assert {x[0] for x in hk.knobs(c)} <= {f['k'] for f in it['fields']} | set(it.get('derive') or {}), k  # 손잡이는 칸이거나 숫자 글 칸에서 계산
@@ -55,6 +57,11 @@ if items:
     assert hk.vals_of(items['hk-paper-t1-stat-bar'], {'stat': '30%'})['n_fill'] == '0.3'
     _m = hk.vals_of(items['hk-glow-t1-stat-money'], {'stat': '$1.5M'}); assert (_m['n_value'], _m['n_prefix'], _m['n_suffix'], _m['n_decimals']) == ('1500000', '$', 'M', '1')
     assert hk.vals_of(items['hk-glow-t1-stat-delta'], {'stat': '-12%'})['n_dir'] == 'down'
+    # 양 끝값 범위·복제 칸(#540 2차)
+    assert hk.vals_of(items['hk-paper-t1-stat-linear-meter'], {'stat': '100', 'minLabel': '0', 'maxLabel': '200'})['n_pct'] == '50'
+    assert hk.vals_of(items['hk-paper-t1-stat-timeline-point'], {'stat': '2023', 'axisStart': '2015', 'axisEnd': '2035'})['n_pos'] == '0.4'
+    assert hk.vals_of(items['hk-paper-t1-stat-spotlight'], {'stat': '7조원'})['stat-blur'] == '7조원'  # 원본 슬롯 이름
+    assert 'hk-paper-t1-stat-ticker-tape' not in items  # 원본 영어 소식이 칸 밖에 박힌 카드
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 {len(items)}장)')
 else:
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 파일 없음)')

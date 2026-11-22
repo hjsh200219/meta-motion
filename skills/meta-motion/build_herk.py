@@ -262,10 +262,11 @@ def vals_of(item, over=None):
     for f in item['fields']:
         v = over.get(f['k'], f.get('ex', ''))
         out[f['k'] if f['k'].startswith('n_') else f.get('slot', f['k'])] = v
-    for knob, (src, i, kind) in (item.get('derive') or {}).items():  # 그래픽 손잡이는 숫자 글 칸에서 계산(KB 리뷰 #540 F4)
-        if knob in over: out[knob] = over[knob]; continue
-        f = next(x for x in item['fields'] if x['k'] == src)
-        v = derived(str(over.get(src, f.get('ex', ''))), i, kind)
+    ex = {f['k']: over.get(f['k'], f.get('ex', '')) for f in item['fields']}
+    for knob, (src, i, kind, *rg) in (item.get('derive') or {}).items():  # 그래픽 손잡이·복제 칸은 숫자 글 칸에서 계산(KB 리뷰 #540)
+        if knob in over and kind != 'copy': out[knob] = over[knob]; continue
+        if kind == 'copy': out[rg[0] if rg else knob] = str(over.get(knob, ex[src])); continue
+        v = derived(str(ex[src]), i, kind, *(ex[k] for k in rg))
         if v is not None: out[knob] = v[:-2] if v.endswith('.0') else v
     return out
 
@@ -322,8 +323,19 @@ DATA_LOCKED = {'vox-explainer.t1.overview.vertical-timeline', 'vox-explainer.t1.
 
 
 def locked(card):
-    """칸으로 바꿀 수 없는 핵심 자료가 있는 카드 — 칸 밖 고정 글 3개 이상이거나 DATA_LOCKED."""
-    return card['id'] in DATA_LOCKED or len(fixed_text(card)) >= 3
+    """칸으로 바꿀 수 없는 핵심 자료가 있는 카드 — 칸 밖 고정 글 3개 이상, 20자 넘는 고정 문장(소식·설명이 원본 영어로 남음, #540 2차), DATA_LOCKED."""
+    ft = fixed_text(card)
+    return card['id'] in DATA_LOCKED or len(ft) >= 3 or any(len(x) >= 20 for x in ft)
+
+
+TEXT_TAGS = {'span', 'p', 'em', 'strong', 'b', 'i', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'small', 'label'}
+
+
+def text_slot_kinds(card):
+    """data-slot 이름 → 글 요소인지(True) 그림 자리인지 — 원본에서 비어 있던 글 칸이 «그림 파일» 로 잘못 붙는 것을 가린다."""
+    from bs4 import BeautifulSoup
+    s = BeautifulSoup((LIB / card['file']).read_text(encoding='utf-8'), 'html.parser')
+    return {el['data-slot']: el.name in TEXT_TAGS and not el.find('img') for el in s.select('[data-slot]') if el['data-slot'].strip()}
 
 
 NUM = r'-?\d+(?:\.\d+)?'
@@ -336,7 +348,7 @@ def norm(v):
     except ValueError: return s
 
 
-def derived(text, i, kind):
+def derived(text, i, kind, lo=None, hi=None):
     """숫자 글(예: «$860K», «10중 3명», «+27%»)에서 i 번째 숫자로 손잡이 값을 계산 — num 그대로·ratio /100·mag K/M/B 곱·pre 앞 기호·suf 뒤 단위·dec 소수 자릿수·sign 부호(up/down)."""
     s = text.replace(',', ''); ms = list(re.finditer(NUM, s))
     if i >= len(ms): return None
@@ -349,13 +361,20 @@ def derived(text, i, kind):
     if kind == 'pre': return s[:m.start()].strip()[-1:] or None
     if kind == 'suf': u = s[m.end():m.end() + 1]; return u if u.isalpha() else None
     if kind == 'dec': return repr(float(len(m.group().split('.')[1]) if '.' in m.group() else 0))
+    if kind in ('span100', 'span1'):  # 입력한 양 끝값 사이의 비율 — 끝값이 같거나 숫자가 아니면 계산하지 않는다
+        a = (re.findall(NUM, str(lo or '').replace(',', '')) or [None])[0]; z = (re.findall(NUM, str(hi or '').replace(',', '')) or [None])[0]
+        if a is None or z is None or float(z) == float(a): return None
+        r = (x - float(a)) / (float(z) - float(a))
+        return repr(round(r * (100 if kind == 'span100' else 1), 6))
     if kind == 'sign': return 'down' if m.group().startswith('-') else 'up' if s[:m.start()].strip().endswith('+') or x > 0 else None
 
 
-def polish(fields):
+def polish(fields, card=None):
     """칸 정리(KB 리뷰 #540): 같은 키는 하나로(한 값이 같은 이름의 칸 전부에 들어간다), 같은 라벨은 번호를 붙여 구분,
     숫자 글 칸과 예시 숫자가 같은 n_ 손잡이는 칸에서 빼고 그 글 칸에서 계산(derive) — 숫자와 그래픽 채움이 어긋나지 않게."""
     out, seen = [], {}
+    kinds = text_slot_kinds(card) if card else {}
+    fields = [f for f in fields if not ('그림' in f['label'] and not str(f.get('ex', '')).strip() and kinds.get(f.get('slot', f['k'])))]  # 비어 있던 글 칸에 붙은 그림 라벨은 칸에서 뺀다(#540 2차)
     for f in fields:
         if f['k'] in seen:
             g = seen[f['k']]
@@ -370,13 +389,37 @@ def polish(fields):
             lab = f['label']; idx[lab] = idx.get(lab, 0) + 1
             f['label'] = re.sub(r'(\s*\((?:선택|필수)\))?$', lambda m: f' {idx[lab]}' + (m.group(1) or ''), lab, count=1)
     derive = {}
+    for f in out:  # «…와 같게» 복제 글 칸(흐린 복제 숫자 등)은 원래 칸 값을 복사(#540 2차)
+        if f['k'].startswith('n_') or not str(f.get('ex', '')).strip(): continue
+        src = next((x for x in out if x is not f and not x['k'].startswith('n_') and str(x.get('ex', '')) == str(f['ex']) and f['k'].startswith(x['k'])), None)
+        if src: derive[f['k']] = [src['k'], 0, 'copy', f.get('slot', f['k'])]  # 넷째 값은 채울 원본 슬롯 이름
+    rng = {}  # 양 끝값 칸(min/max·axisStart/End)이 있으면 채움·위치는 그 범위로 계산
+    keys = {x['k'] for x in out}
+    for lo, hi in (('minLabel', 'maxLabel'), ('axisStart', 'axisEnd'), ('min', 'max')):
+        if lo in keys and hi in keys: rng = {'lo': lo, 'hi': hi}
     texts = sorted((x for x in out if not x['k'].startswith('n_') and re.search(r'\d', str(x.get('ex', '')))), key=lambda x: not x['k'].startswith('stat'))  # 수치 칸(stat…)을 먼저 — 제목 속 연도에 잘못 붙지 않게
     for f in out:
         if not f['k'].startswith('n_'): continue
+        if rng:  # 범위 칸이 있으면 범위 비율(퍼센트·0~1)로 먼저 대조
+            ex = {x['k']: str(x['ex']) for x in out}
+            for kind in ('span100', 'span1'):
+                if derived(ex.get('stat', ''), 0, kind, ex[rng['lo']], ex[rng['hi']]) == norm(f.get('ex')):
+                    derive[f['k']] = ['stat', 0, kind, rng['lo'], rng['hi']]; break
+            if f['k'] in derive: continue
         hit = next(([x['k'], i, kind] for x in texts for i in range(len(re.findall(NUM, str(x['ex']).replace(',', ''))))
                     for kind in KINDS if derived(str(x['ex']), i, kind) == norm(f.get('ex'))), None)
         if hit: derive[f['k']] = hit
     return [f for f in out if f['k'] not in derive], derive
+
+
+def derive_note(derive):
+    """요청 문장 끝 안내 — 손잡이를 어떻게 계산하는지(받는 쪽이 따로 숫자를 정하지 않게)."""
+    kinds = {v[2] for v in derive.values()}
+    out = []
+    if kinds & {'span100', 'span1'}: out.append('그래픽의 채움·위치는 위 숫자를 양 끝값 사이 비율로')
+    if kinds - {'span100', 'span1', 'copy'}: out.append('그래픽의 채움·목표 숫자는 위 숫자 그대로')
+    if 'copy' in kinds: out.append('흐린 복제 숫자는 위 숫자와 같게')
+    return ''.join(f' {x}.' for x in out)
 
 
 def export(gen, drop=()):
@@ -386,7 +429,7 @@ def export(gen, drop=()):
     for code, g in sorted(gen.items()):
         if code in drop or not g.get('tpl') or locked(by[code]): continue
         c = by[code]; ft = fixed_text(c)
-        fields, derive = polish(g['fields']); g = {**g, 'fields': fields}
+        fields, derive = polish(g['fields'], c); g = {**g, 'fields': fields}
         notes = [f"원본 스타일의 색·서체 자리에 템플릿을 넣는다(기본 {STYLE[c['style']][1]} — --template 로 바꾼다). 원본 AIS 브랜드 파랑·남색은 템플릿 강조색·배경으로 바꿔 넣는다(LICENSE 「Note on brand assets」)",
                  '1920x1080 고정 · 원본은 스스로 「렌더 QA 를 다 거치지 않은 초안」이라고 밝힌 키트다 — 쓰기 전에 snapshot 으로 한 번 본다']
         if ft: notes.append('칸 밖에 박힌 영어 글이 있다(사본에서 직접 바꾼다): ' + ' · '.join(dict.fromkeys(ft))[:160])
@@ -398,7 +441,7 @@ def export(gen, drop=()):
         outs[OUT_FILES[c['style']]]['items'][code] = {
             'kit': 'herk-edit-kit', 'path': 'style-library/' + c['file'], 'size': [1920, 1080], 'thumb': 'render', 'en': ' '.join([tier, *rest]),
             'template': STYLE[c['style']][1], 'cat': g['cat'], 'name': g['name'], 'plain': g['plain'], 'when': g['when'], 'len': g['len'], 'inds': [],
-            'fields': g['fields'], 'tpl': tpl_of(g) + (' 그래픽의 채움·눈금은 위 숫자 그대로.' if derive else ''), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {})}
+            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {})}
     for f, d in outs.items():
         (HERE / 'data' / f).write_text(json.dumps(d, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
     return {f: len(d['items']) for f, d in outs.items()}
