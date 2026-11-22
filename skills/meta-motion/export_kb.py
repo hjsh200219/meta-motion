@@ -20,7 +20,7 @@ HEAD = """<!doctype html>
 # 만들 때만 쓰는 키(재료 해시·repo 커밋·카드 재료인 변수·싱크 지점)를 빼고 내보내는 파일과 그 꼴.
 # KB PR 의 AI 리뷰는 diff 50만 자 상한이 있다(2026-10-17 #284 초과) — 한 줄로 줄여 파일 하나가 한 PR 에 들어가게 한다.
 # prompt_motion_ko.json 은 KB 에 이미 있는 그대로 둔다(해시를 빼면 233줄이 바뀌어 diff 16만 자가 더 붙는다).
-KO = {'hf_registry_ko.json': None, 'hf_registry.json': None, 'anim_skills.json': None, 'anim_herk_paper.json': None, 'anim_herk_glow.json': None}
+KO = {'hf_registry_ko.json': None, 'hf_registry.json': None, 'anim_skills.json': None, 'anim_herk_paper.json': None, 'anim_herk_glow2.json': None}
 BUILD_KEYS = {'src_sha', 'cat_src', 'cat_p', 'hold_checked', 'commit', 'variables', 'sync'}
 
 
@@ -40,8 +40,8 @@ def strip_build(v):
     return v
 
 
-DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_registry.json', 'hf_registry_ko.json', 'anim_skills.json', 'anim_herk_paper.json', 'anim_herk_glow.json')
-OPTIONAL = {'anim_herk_paper.json', 'anim_herk_glow.json'}  # herk 스타일 카드(build_herk.py) — 없으면 건너뛴다
+DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_registry.json', 'hf_registry_ko.json', 'anim_skills.json', 'anim_herk_paper.json', 'anim_herk_glow2.json')
+OPTIONAL = {'anim_herk_paper.json', 'anim_herk_glow2.json'}  # herk 스타일 카드(build_herk.py) — 없으면 건너뛴다
 BACK = '<a href="/" style="color:inherit;opacity:.7;font-size:13px;text-decoration:none">← PillDocKb</a>\n    <h1>'
 
 

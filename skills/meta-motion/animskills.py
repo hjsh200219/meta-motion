@@ -18,7 +18,7 @@ ORDER = ['as-3d-cartoon', 'as-stick-figure', 'as-line-art', 'as-map-route', 'as-
 TAIL = '\n⛔ 원본 예시의 문구·장면을 그대로 쓰지 않는다 · 코드를 거의 그대로 옮기면 원본 라이선스 고지를 함께 둔다'
 
 
-HERK = [HERE / 'data' / f for f in ('anim_herk_paper.json', 'anim_herk_glow.json')]  # herk-edit-kit 스타일 카드(build_herk.py) — 스타일별 두 파일(KB 리뷰 파일당 48만 자 상한). 꼴은 같다(kits + items)
+HERK = [HERE / 'data' / f for f in ('anim_herk_paper.json', 'anim_herk_glow2.json')]  # herk-edit-kit 스타일 카드(build_herk.py) — 스타일별 두 파일(KB 리뷰 파일당 48만 자 상한). 꼴은 같다(kits + items)
 
 
 @functools.lru_cache(maxsize=1)

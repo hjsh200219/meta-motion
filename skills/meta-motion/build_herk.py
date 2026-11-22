@@ -282,7 +282,7 @@ KIT = {'source': REPO, 'license': 'MIT + Herk Edit Kit Use Permission (licenses/
        'fetched': '2026-11-22', 'found_via': '쇼츠 «10 GitHub Repos That Level Up HyperFrames Videos»',
        'how': 'python3 build_herk.py card {code} --out <프로젝트> [--template <템플릿 id>] [칸=값 …] → <프로젝트>/compositions/{code}.html 과 fonts/ '
               '(칸을 주면 필수 칸은 모두 줘야 하고 안 준 선택 칸은 비운다 — 예시 인물·장소·숫자가 남지 않게(«비우면 이름에서»처럼 라벨에 적힌 칸은 그 규칙대로, 작은 고정 글 칸은 기본 글), 칸을 하나도 안 주면 미리보기용 예시값, 색·서체는 템플릿 — 원본의 AIS 브랜드 색은 템플릿 색으로 바꿔 넣는다). host 에 data-composition-src 로 넣고 길이는 카드 장면 순서대로'}
-OUT_FILES = {'vox-explainer': 'anim_herk_paper.json', 'kallaway': 'anim_herk_glow.json'}
+OUT_FILES = {'vox-explainer': 'anim_herk_paper.json', 'kallaway': 'anim_herk_glow2.json'}
 OVERLAY = {'lower-third', 'label'}
 
 
@@ -529,7 +529,7 @@ def export(gen, drop=()):
         outs[OUT_FILES[c['style']]]['items'][code] = {
             'kit': 'herk-edit-kit', 'path': 'style-library/' + c['file'], 'size': [1920, 1080], 'thumb': 'render', 'en': ' '.join([tier, *rest]),
             'template': STYLE[c['style']][1], 'cat': g['cat'], 'name': g['name'], 'plain': g['plain'], 'when': g['when'], 'len': g['len'], 'inds': [],
-            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive) + (' 꼬리표·배지·머리말 같은 작은 고정 글은 위 칸에 준 값을 쓰고, 안 준 칸은 기본 글을 쓴다(장면 설명에 적힌 원래 글보다 우선).' if any(f.get('fixed') for f in g['fields']) else ''), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {}), **({'fixed_tmpl': ftmpl} if ftmpl else {})}
+            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive) + (' 꼬리표·배지·머리말 같은 작은 고정 글은 위 칸에 준 값을 쓰고, 안 준 칸은 기본 글을 쓴다(장면 설명에 적힌 원래 글보다 우선).' if any(f.get('fixed') for f in g['fields']) else '') + (' 배지 이니셜 칸을 비우면 인물 이름 끝 두 글자로 만든다(기본 글보다 우선).' if any(f.get('auto') == 'initial' for f in g['fields']) else ''), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {}), **({'fixed_tmpl': ftmpl} if ftmpl else {})}
     for f, d in outs.items():
         (HERE / 'data' / f).write_text(dump_lines(d), encoding='utf-8')
     return {f: len(d['items']) for f, d in outs.items()}

@@ -491,7 +491,7 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const KEEP = ['kit', 'path', 'size', 'thumb', 'en', 'skill', 'render', 'engine', 'notes', 'cat', 'name', 'plain', 'when', 'len', 'inds', 'fields', 'tpl', 'dx'];
   // 같은 코드 비교는 화면이 쓰는 필드만, 직렬화가 실패하면 그 항목 경고로(14차 F4 — 쓰지 않는 깊은 속성이 페이지 전체를 멈추지 않게)
   const sig = (x) => { try { return JSON.stringify(KEEP.map((k) => x[k])); } catch { return null; } };
-  const files = [['anim_skills.json', ask], ...(herks ? [['anim_herk_paper.json', herks[0]], ['anim_herk_glow.json', herks[1]]] : [])];
+  const files = [['anim_skills.json', ask], ...(herks ? [['anim_herk_paper.json', herks[0]], ['anim_herk_glow2.json', herks[1]]] : [])];
   for (const [name, d] of files) {
     if (d instanceof LoadErr) { if (!isMissing(d) || name === 'anim_skills.json') notes.push(`${name} 을 읽지 못함`); continue; }  // 보조 파일만 두 경로 모두 404 면 조용히 — 기본 파일이 없으면 알린다(13차 F3)
     if (!(obj(d) && obj(d.kits) && obj(d.items))) { notes.push(`${name} 형식이 맞지 않음`); continue; }
@@ -543,7 +543,7 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   select((hit || ITEMS[0]).code, false, !hit && !!h);  // 주소가 아직 없는 카드(보조 파일)를 가리키면 주소는 그대로 두고 임시 카드만
   const first = cur && cur.code;
   requestAnimationFrame(tick);
-  Promise.all([optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then((herks) => {
+  Promise.all([optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow2.json')]).then((herks) => {
     const before = ITEMS.map((x) => x.code).join('\n');
     const prev = ITEMS;
     build(herks);

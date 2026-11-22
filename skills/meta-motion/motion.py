@@ -13,7 +13,7 @@ _EX = {e['id']: e for e in EXAMPLES}
 _HF = {it['name']: it for it in _load('hf_registry.json', {}).get('items', [])}
 MORE = ([{**c, 'code': k, 'en': _EX[k]['title'], 'inds': _EX[k]['tags'], 'src': 'pm'} for k, c in _load('prompt_motion_ko.json', {}).items() if k in _EX]
         + [{**c, 'code': k, 'en': _HF[k]['title'], 'inds': _HF[k]['tags'], 'src': 'hf'} for k, c in _load('hf_registry_ko.json', {}).items() if c.get('tpl') and k in _HF]
-        + [{**c, 'code': k, 'src': 'as'} for k, c in {**_load('anim_skills.json', {'items': {}})['items'], **_load('anim_herk_paper.json', {'items': {}})['items'], **_load('anim_herk_glow.json', {'items': {}})['items']}.items()])  # 애니메이션 스킬 — GitHub 모션 키트(animskills.py) + herk 스타일 카드(build_herk.py)
+        + [{**c, 'code': k, 'src': 'as'} for k, c in {**_load('anim_skills.json', {'items': {}})['items'], **_load('anim_herk_paper.json', {'items': {}})['items'], **_load('anim_herk_glow2.json', {'items': {}})['items']}.items()])  # 애니메이션 스킬 — GitHub 모션 키트(animskills.py) + herk 스타일 카드(build_herk.py)
 MORE_BY = {c['code']: c for c in MORE}
 TOOLS = {'auto': '하이퍼프레임(HyperFrames)으로', 'claude': '/hyperframes 로', 'codex': '$hyperframes 로'}
 RATIO = {'가로': '가로 16:9', '세로': '세로 9:16', '정사각': '정사각 1:1', '없음': ''}

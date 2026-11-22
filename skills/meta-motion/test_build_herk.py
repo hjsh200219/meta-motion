@@ -77,7 +77,7 @@ if items:
     assert hk.vals_of(items['hk-glow-t1-stat-isotype'], {'stat': '20명 중 6명'})['n_lit'] == '3'
     assert hk.vals_of(items['hk-glow-t1-stat-isotype'])['n_lit'] == '6'
     assert hk.vals_of(items['hk-glow-t1-overview-callouts'], {f['k']: f['ex'] for f in items['hk-glow-t1-overview-callouts']['fields'] if not f.get('opt')})['n_suffix_2'] == ''  # 손잡이엔 지움 신호를 넣지 않는다
-    for _f in ('anim_herk_paper.json', 'anim_herk_glow.json'):  # 카드 한 장 = 한 줄(KB 리뷰 diff 상한, #541)
+    for _f in ('anim_herk_paper.json', 'anim_herk_glow2.json'):  # 카드 한 장 = 한 줄(KB 리뷰 diff 상한, #541)
         _t = (hk.HERE / 'data' / _f).read_text(encoding='utf-8'); _d = json.loads(_t)
         assert _t == hk.dump_lines(_d) and _t.count('\n') == len(_d['items']) + 2, _f
     assert hk.vals_of(items['hk-glow-t1-stat-dotgrid'])['__fixed'] == {'OF 100': '100칸 기준'} and not any(f.get('fixed') for f in items['hk-glow-t1-stat-dotgrid']['fields'])  # 격자 분모는 고정(#541 5차)
