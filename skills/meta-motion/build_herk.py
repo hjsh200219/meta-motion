@@ -363,7 +363,9 @@ DATA_LOCKED = {'vox-explainer.t1.overview.vertical-timeline', 'vox-explainer.t1.
                'kallaway.t1.overview.legend', 'kallaway.t1.stat.radialbars', 'kallaway.t1.stat.waterfall',
                # #541 1차: 이름·목표값·가격·증감·지원 여부가 스크립트 상수·고정 표시에 박힌 카드
                'kallaway.t2.lower-third.typedname', 'kallaway.t2.label.numbercallout', 'kallaway.t2.label.percent',
-               'kallaway.t2.label.deltachip', 'kallaway.t2.label.price', 'kallaway.t1.overview.featurecompare'}
+               'kallaway.t2.label.deltachip', 'kallaway.t2.label.price', 'kallaway.t1.overview.featurecompare',
+               # #541 2차: 시각·단계 번호·별점·꽃잎 값·재생 시점·변화율·좌표·전체 장 수가 칸 밖 고정 숫자·스크립트 값에 박힌 카드
+               'kallaway.t2.label.timestamp', 'kallaway.t2.label.step', 'kallaway.t2.lower-third.ratingname', 'kallaway.t1.stat.polar', 'kallaway.t2.lower-third.nowplaying', 'kallaway.t2.label.sparkchip', 'kallaway.t2.label.coord', 'kallaway.t1.section.index'}
 
 
 def locked(card):
