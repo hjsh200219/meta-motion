@@ -364,6 +364,7 @@ def locked(card):
     return card['id'] in DATA_LOCKED or len(ft) >= 3 or any(len(x) >= 20 for x in ft)
 
 
+IMG_SLOT = re.compile(r'img|image|photo|pic|scrap|frame|thumb|avatar|logo|subject|cutout|portrait', re.I)  # 그림을 넣는 칸 이름
 TEXT_TAGS = {'span', 'p', 'em', 'strong', 'b', 'i', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'small', 'label'}
 
 
@@ -410,7 +411,8 @@ def polish(fields, card=None):
     숫자 글 칸과 예시 숫자가 같은 n_ 손잡이는 칸에서 빼고 그 글 칸에서 계산(derive) — 숫자와 그래픽 채움이 어긋나지 않게."""
     out, seen = [], {}
     kinds = text_slot_kinds(card) if card else {}
-    fields = [f for f in fields if not ('그림' in f['label'] and not str(f.get('ex', '')).strip() and kinds.get(f.get('slot', f['k'])))]  # 비어 있던 글 칸에 붙은 그림 라벨은 칸에서 뺀다(#540 2차)
+    img = lambda f: IMG_SLOT.search(f.get('slot', f['k']))
+    fields = [f for f in fields if not ('그림' in f['label'] and not str(f.get('ex', '')).strip() and (kinds.get(f.get('slot', f['k'])) or not img(f)))]  # 비어 있던 글 칸·장식 칸에 붙은 그림 라벨은 칸에서 뺀다(#540 2·4차)
     for f in fields:
         if f['k'] in seen:
             g = seen[f['k']]
@@ -447,6 +449,9 @@ def polish(fields, card=None):
         hit = next(([x['k'], i, kind] for x in texts for i in range(len(re.findall(NUM, str(x['ex']).replace(',', ''))))
                     for kind in KINDS if derived(str(x['ex']), i, kind) == norm(f.get('ex'))), None)
         if hit: derive[f['k']] = hit
+    for f in out:  # 계산되지 않는 손잡이는 필수 — 비우면 예시값(예: 최고 위험 단계)이 설명과 어긋난 채 남는다(#540 4차)
+        if f['k'].startswith('n_') and f['k'] not in derive and f.get('opt'):
+            f['opt'] = False; f['label'] = re.sub(r'\s*\(선택\)\s*$', '', f['label'])
     return [f for f in out if f['k'] not in derive], derive
 
 

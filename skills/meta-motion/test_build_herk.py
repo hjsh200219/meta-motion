@@ -42,7 +42,7 @@ if items:
         c = by[k]
         _s = BeautifulSoup((hk.LIB / c['file']).read_text(encoding='utf-8'), 'html.parser')
         slots = {el['data-slot'] for el in _s.select('[data-slot]')} - {''}  # 빈 data-slot 은 칸이 아니다
-        slots -= {el['data-slot'] for el in _s.select('[data-slot]') if el.name in hk.TEXT_TAGS and not el.get_text(strip=True)}  # 원본에서 비어 있던 글 칸은 비운 채 둔다(#540 2차)
+        slots -= {el['data-slot'] for el in _s.select('[data-slot]') if not el.get_text(strip=True) and not el.find('img') and (el.name in hk.TEXT_TAGS or not hk.IMG_SLOT.search(el['data-slot']))}  # 원본에서 비어 있던 글 칸·장식 칸은 비운 채 둔다(#540 2·4차)
         v = hk.vals_of(it)
         assert slots <= set(v), (k, sorted(slots - set(v)))
         assert {x[0] for x in hk.knobs(c)} <= {f['k'] for f in it['fields']} | set(it.get('derive') or {}), k  # 손잡이는 칸이거나 숫자 글 칸에서 계산
