@@ -159,6 +159,38 @@ document.querySelectorAll('[data-slot]').forEach(function(el){var v=V[el.getAttr
 """
 
 
+# 칸 밖에 박힌 짧은 원본 영어 → 한국어 기본값이 든 선택 칸(KB 리뷰 #540 3차 — 한국어 카드에 noun·DW 같은 영어가 남던 것)
+# {원본 글: (칸 라벨, 한국어 예시)} — 예시가 None 이면 카드의 이름 칸에서 만든다(배지 이니셜)
+GLOSS = {
+    'NOW': ('현재 표시 딱지', '지금'), 'TOPIC': ('표 머리 — 주제 열', '주제'), 'TIME': ('표 머리 — 시간 열', '시간'),
+    'KEY LOCATIONS': ('범례 제목', '주요 장소'), 'of total': ('숫자 뒤 작은 글', '전체 중'), 'VS': ('가운데 대결 표시', 'VS'), 'vs': ('가운데 대결 표시', 'vs'),
+    'noun': ('품사 표시', '명사'), 'DW': ('배지 이니셜', None), 'JL': ('배지 이니셜', None),
+    'Engagement': ('작은 머리말', '참여도'), 'Scenario A': ('왼쪽 카드 머리말', '시나리오 A'), 'Scenario B': ('오른쪽 카드 머리말', '시나리오 B'),
+    'Value': ('가운데 머리말', '가치'), 'Advantages': ('왼쪽 열 제목', '장점'), 'Disadvantages': ('오른쪽 열 제목', '단점'), 'The Shift': ('카드 머리말', '변화'),
+    'Chapter': ('장 표시 글', '장'), 'Next Up': ('다음 표시 글', '다음'), 'TOTAL MARKET VALUE': ('숫자 위 머리말', '전체 시장 가치'), 'PROJECTED BY 2028': ('숫자 아래 설명', '2028년 전망'),
+    'BEFORE': ('왼쪽 막대 이름', '이전'), 'AFTER': ('오른쪽 막대 이름', '이후'), 'UTILISED': ('숫자 아래 글', '사용률'), 'YEAR OVER YEAR': ('숫자 아래 글', '전년 대비'),
+    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '100명 중'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 4,200 중'),
+    'retained': ('왼쪽 이름', '유지'), 'churned': ('오른쪽 이름', '이탈'), 'pass rate': ('숫자 아래 글', '합격률'), 'PASS RATE': ('숫자 아래 글', '합격률'),
+    'Intuition': ('왼쪽 이름', '직관'), 'Data-Driven': ('오른쪽 이름', '데이터 기반'), 'minutes': ('분 단위 글', '분'), 'seconds': ('초 단위 글', '초'),
+    'TGT': ('조준 표시 글', '목표'), 'Definition': ('머리말', '정의'), 'vs. last cohort': ('비교 기준 글', '지난 기수 대비'), 'The Big Idea': ('머리말', '핵심 아이디어'),
+    'Fact': ('머리말', '사실'), 'Legend': ('범례 제목', '범례'), '12 wk': ('기간 표시', '12주'), 'LIVE': ('상태 딱지', '라이브'), 'Live': ('상태 딱지', '라이브'),
+    '/yr': ('가격 뒤 단위', '/년'), 'Step': ('단계 표시 글', '단계'), 'Key Moment': ('머리말', '핵심 장면'), 'just now': ('시간 표시', '방금'), 'Warning': ('머리말', '주의'),
+    'FOLLOWERS': ('숫자 아래 글', '팔로워'), 'Now Discussing': ('머리말', '지금 다루는 주제'), 'ON AIR': ('방송 표시', '방송 중'), 'Now Playing': ('머리말', '지금 재생 중'),
+}
+FIXED_JS = ('<script>(function(m){var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),ns=[];while(w.nextNode())ns.push(w.currentNode);'
+            'ns.forEach(function(n){var t=n.nodeValue.trim(),p=n.parentElement;if(t&&Object.prototype.hasOwnProperty.call(m,t)&&p&&!p.closest("script,style,[data-slot]"))n.nodeValue=n.nodeValue.replace(t,m[t]);});})(%s);</script>')
+
+
+def fixed_fields(card, item_fields=()):
+    """카드의 칸 밖 고정 글 중 GLOSS 에 있는 것 → 선택 칸(fx1…, fixed=원본 글)."""
+    out, seen = [], set()
+    name = next((str(f.get('ex', '')) for f in item_fields if f['k'] in ('name', 'title')), '')
+    for s in fixed_text(card, raw=True):
+        if s not in GLOSS or s in seen: continue
+        seen.add(s); lab, ex = GLOSS[s]
+        out.append({'k': f'fx{len(out) + 1}', 'label': f'{lab}(선택)', 'opt': True, 'ex': ex if ex is not None else (name.replace(' ', '')[-2:] or '★'), 'fixed': s})
+    return out
+
 def prepare(card, vals, template=None):
     """카드 한 장을 쓸 HTML 로 — tokens.css 링크를 바꾼 토큰 <style> 로, AIS 색 리터럴을 강조색으로, 칸 글은 카드 스크립트 앞에서 바꾼다."""
     template = template or STYLE[card['style']][1]
@@ -167,9 +199,11 @@ def prepare(card, vals, template=None):
     html = re.sub(r'<link[^>]+tokens\.css[^>]*>', lambda m: '<style>' + css + '</style>', html, count=1)
     html = re.sub(r'<link[^>]+fonts\.googleapis\.com[^>]*>', '', html)
     html = debrand(html, template)
+    fx = vals.pop('__fixed', None) if isinstance(vals, dict) else None
     km = {k: (a, i) for k, a, i, _ in knobs(card)}  # 손잡이 칸(n_…)은 data 속성으로
     vals = {(f'@{km[k][0]}' + ('' if km[k][1] is None else f'#{km[k][1]}') if k in km else k): v for k, v in vals.items()}
     js = SLOT_JS % json.dumps(vals, ensure_ascii=False).replace('</', '<\\/')
+    if fx: js = FIXED_JS % json.dumps(fx, ensure_ascii=False).replace('</', '<\\/') + js  # 칸 밖 고정 글을 한국어로(카드 스크립트 앞)
     i = html.find('window.__timelines')
     j = html.rfind('<script', 0, i) if i >= 0 else -1
     html = html[:j] + js + html[j:] if j >= 0 else html.replace('</body>', js + '</body>', 1)
@@ -261,6 +295,7 @@ def vals_of(item, over=None):
     out = {}
     for f in item['fields']:
         v = over.get(f['k'], f.get('ex', ''))
+        if f.get('fixed'): out.setdefault('__fixed', {})[f['fixed']] = v; continue  # 칸 밖 고정 글(GLOSS)
         out[f['k'] if f['k'].startswith('n_') else f.get('slot', f['k'])] = v
     ex = {f['k']: over.get(f['k'], f.get('ex', '')) for f in item['fields']}
     for knob, (src, i, kind, *rg) in (item.get('derive') or {}).items():  # 그래픽 손잡이·복제 칸은 숫자 글 칸에서 계산(KB 리뷰 #540)
@@ -271,15 +306,16 @@ def vals_of(item, over=None):
     return out
 
 
-def fixed_text(card):
-    """칸 밖에 박힌 영어 글(사본에서 직접 바꿔야 하는 것)."""
+def fixed_text(card, raw=False):
+    """칸 밖에 박힌 영어 글(사본에서 직접 바꿔야 하는 것). raw=False 면 GLOSS 로 칸이 되는 글은 뺀다."""
     from bs4 import BeautifulSoup, Comment
     s = BeautifulSoup((LIB / card['file']).read_text(encoding='utf-8'), 'html.parser')
     for x in s(['script', 'style', 'template']): x.decompose()
     for x in s.find_all(string=lambda v: isinstance(v, Comment)): x.extract()
     for el in s.select('[data-slot]'):
         if el['data-slot'].strip(): el.decompose()  # 빈 data-slot 은 고정 글자로 남겨 센다
-    return [v.strip() for v in s.body.find_all(string=True) if re.search(r'[A-Za-z]{2,}', v)] if s.body else []
+    out = [v.strip() for v in s.body.find_all(string=True) if re.search(r'[A-Za-z]{2,}', v)] if s.body else []
+    return out if raw else [x for x in out if x not in GLOSS]
 
 
 def verify(gen):
@@ -324,7 +360,7 @@ DATA_LOCKED = {'vox-explainer.t1.overview.vertical-timeline', 'vox-explainer.t1.
 
 def locked(card):
     """칸으로 바꿀 수 없는 핵심 자료가 있는 카드 — 칸 밖 고정 글 3개 이상, 20자 넘는 고정 문장(소식·설명이 원본 영어로 남음, #540 2차), DATA_LOCKED."""
-    ft = fixed_text(card)
+    ft = fixed_text(card, raw=True)  # 대응표(GLOSS)와 상관없이 원본 고정 글 전체로 판단
     return card['id'] in DATA_LOCKED or len(ft) >= 3 or any(len(x) >= 20 for x in ft)
 
 
@@ -381,6 +417,8 @@ def polish(fields, card=None):
             if '같은 값' not in g['label']: g['label'] = re.sub(r'(\s*\((?:선택|필수)\))?$', lambda m: ' — 같은 이름의 칸 모두 같은 값' + (m.group(1) or ''), g['label'], count=1)
             continue
         f = dict(f); seen[f['k']] = f; out.append(f)
+        if re.fullmatch(r'row\d+[a-z]?', f['k']) and f.get('opt'):  # 합계·순위에 들어가는 행은 필수 — 비우면 예시 행이 사용자 합계와 함께 남는다(#540 3차)
+            f['opt'] = False; f['label'] = re.sub(r'\s*\(선택\)\s*$', '', f['label'])
     cnt = {}
     for f in out: cnt[f['label']] = cnt.get(f['label'], 0) + 1
     idx = {}
@@ -429,7 +467,7 @@ def export(gen, drop=()):
     for code, g in sorted(gen.items()):
         if code in drop or not g.get('tpl') or locked(by[code]): continue
         c = by[code]; ft = fixed_text(c)
-        fields, derive = polish(g['fields'], c); g = {**g, 'fields': fields}
+        fields, derive = polish(g['fields'], c); g = {**g, 'fields': fields + fixed_fields(c, fields)}
         notes = [f"원본 스타일의 색·서체 자리에 템플릿을 넣는다(기본 {STYLE[c['style']][1]} — --template 로 바꾼다). 원본 AIS 브랜드 파랑·남색은 템플릿 강조색·배경으로 바꿔 넣는다(LICENSE 「Note on brand assets」)",
                  '1920x1080 고정 · 원본은 스스로 「렌더 QA 를 다 거치지 않은 초안」이라고 밝힌 키트다 — 쓰기 전에 snapshot 으로 한 번 본다']
         if ft: notes.append('칸 밖에 박힌 영어 글이 있다(사본에서 직접 바꾼다): ' + ' · '.join(dict.fromkeys(ft))[:160])

@@ -62,6 +62,11 @@ if items:
     assert hk.vals_of(items['hk-paper-t1-stat-timeline-point'], {'stat': '2023', 'axisStart': '2015', 'axisEnd': '2035'})['n_pos'] == '0.4'
     assert hk.vals_of(items['hk-paper-t1-stat-spotlight'], {'stat': '7조원'})['stat-blur'] == '7조원'  # 원본 슬롯 이름
     assert 'hk-paper-t1-stat-ticker-tape' not in items  # 원본 영어 소식이 칸 밖에 박힌 카드
+    # 칸 밖 짧은 원본 영어는 한국어 기본값 선택 칸으로(#540 3차) — 들어간 카드에 고정 영어가 남지 않는다
+    assert all(not hk.fixed_text(by[k]) for k in items)
+    _d = items['hk-paper-t2-label-definition']; assert any(f.get('fixed') == 'noun' and f['ex'] == '명사' for f in _d['fields'])
+    assert hk.vals_of(_d)['__fixed'] == {'noun': '명사'} and hk.vals_of(_d, {'fx1': '동사'})['__fixed'] == {'noun': '동사'}
+    assert all(not f.get('opt') for f in items['hk-paper-t1-stat-ledger']['fields'] if f['k'].startswith('row'))  # 합계에 들어가는 행은 필수
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 {len(items)}장)')
 else:
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 파일 없음)')
