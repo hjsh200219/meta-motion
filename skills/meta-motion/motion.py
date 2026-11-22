@@ -79,9 +79,9 @@ def fixed_ratio(c):
     return next((k for k, v in RES.items() if v == f'{s[0]}x{s[1]}'), f'{s[0]}x{s[1]} 고정')
 
 
-def num_of(s):
-    m = re.search(r'-?\d+(?:\.\d+)?', str(s or '').replace(',', ''))
-    return float(m.group()) if m else None
+def num_of(s):  # 입력 전체가 숫자일 때만(공백·천 단위 쉼표·끝 % 허용, .5 도) — preview.html numOf 와 같은 규칙(19차)
+    v = str(s or '').strip().replace(',', '').removesuffix('%').strip()
+    return float(v) if re.fullmatch(r'[-+]?(\d+(\.\d*)?|\.\d+)', v) else None
 
 
 def card_resolver(c, vals, g):
@@ -119,7 +119,16 @@ def count_warn(c, r):
     for k, n in ((c.get('dx') or {}).get('min') or {}).items():  # 최소 개수(꺾은선은 숫자 2개 이상, 18차)
         f = next(x for x in c['fields'] if x['k'] == k); v = r(k)
         if v is not None and len([x for x in re.split(r'[,，]', v) if x.strip()]) < n: bad.append(f"{re.split(r'[(（]', f['label'])[0].strip()}는 {n}개 이상이어야 합니다")
+    head = lambda f: re.split(r'[(（]', f['label'])[0].strip()
+    for k in (c.get('dx') or {}).get('nums') or []:  # 숫자 목록 칸은 항목마다 숫자여야(19차)
+        f = next(x for x in c['fields'] if x['k'] == k); v = r(k)
+        badv = [x.strip() for x in re.split(r'[,，]', v or '') if x.strip() and num_of(x) is None]
+        if badv: bad.append(f"{head(f)}에 숫자가 아닌 값({', '.join(badv[:3])})이 있습니다")
     cmp = (c.get('dx') or {}).get('cmp')
+    if cmp:
+        for k in (cmp['a'], cmp['b']):
+            f = next(x for x in c['fields'] if x['k'] == k); v = r(k)
+            if v is not None and num_of(v) is None: bad.append(f'{head(f)} 「{v}」를 숫자로 읽을 수 없습니다')
     if cmp:  # 직접 넣은 기호가 두 숫자와 맞지 않으면
         a, b, op = num_of(r(cmp['a'])), num_of(r(cmp['b'])), (r(cmp['op']) or '').strip()
         want = None if a is None or b is None else '>' if a > b else '<' if a < b else '='

@@ -177,6 +177,9 @@
       "values",
       "labels"
      ]
+    ],
+    "nums": [
+     "values"
     ]
    },
    "spec": {
@@ -812,6 +815,9 @@
       "values",
       "colors"
      ]
+    ],
+    "nums": [
+     "values"
     ]
    },
    "kit": "hyperframes-motion-library",
@@ -2184,7 +2190,10 @@
     "min": {
      "values": 2,
      "labels": 2
-    }
+    },
+    "nums": [
+     "values"
+    ]
    },
    "kit": "hyperframes-motion-library",
    "path": "templates/line-chart-draw/index.html",
@@ -2997,12 +3006,13 @@
     },
     {
      "k": "verdict",
-     "label": "결론 한 줄",
-     "opt": false,
-     "ex": "평일 점심이 조금 더 붐벼요"
+     "label": "결론 한 줄(숫자·기호와 맞게 — 비우면 결론 없음)",
+     "opt": true,
+     "ex": "평일 점심이 조금 더 붐벼요",
+     "drop": "결론 한 줄"
     }
    ],
-   "tpl": "두 숫자 맞대결(stat duel) 만들어줘. 카드가 열리고 좌우 이름과 큰 숫자가 차례로 올라와 0에서 굴러 올라가고 가운데에 비교 기호가 나타난 뒤 결론 한 줄이 올라와. 왼쪽: 「{leftLabel}」 {leftValue}%. 오른쪽: 「{rightLabel}」 {rightValue}%. 기호: {operator}. 결론: 「{verdict}」.",
+   "tpl": "두 숫자 맞대결(stat duel) 만들어줘. 카드가 열리고 좌우 이름과 큰 숫자가 차례로 올라와 0에서 굴러 올라가고 가운데에 비교 기호가 나타나게. 왼쪽: 「{leftLabel}」 {leftValue}%. 오른쪽: 「{rightLabel}」 {rightValue}%. 기호: {operator}.[[ 마지막에 결론 한 줄이 올라오게: 「{verdict}」.]]",
    "dx": {
     "kind": "scene",
     "base": 5,

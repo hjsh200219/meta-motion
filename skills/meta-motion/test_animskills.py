@@ -57,6 +57,11 @@ assert '\n전체 길이 약 9.1초(문구 길이로 잡음).' in run('show', 'tg
 assert '기호: <.' in run('show', 'ml-stat-duel', 'leftValue=80', 'rightValue=90').stdout
 assert run('show', 'ml-stat-duel', 'leftValue=80', 'rightValue=90', 'operator=>').stdout.startswith('[입력 확인] 기호 「>」')
 assert run('show', 'ml-line-chart-draw', 'labels=1월', 'values=3').stdout.startswith('[입력 확인] 숫자는 2개 이상')
+# 19차: .5 도 숫자로, 결론은 선택 칸, 숫자 목록에 숫자 아닌 값이면 [입력 확인]
+assert '기호: <.' in run('show', 'ml-stat-duel', 'leftValue=.5', 'rightValue=1').stdout and '[입력 확인]' not in run('show', 'ml-stat-duel', 'leftValue=.5', 'rightValue=1', 'operator=<').stdout
+assert '결론' not in run('show', 'ml-stat-duel', '--simple', 'leftValue=80', 'rightValue=90').stdout
+assert run('show', 'ml-line-chart-draw', 'labels=1월,2월', 'values=120,미정').stdout.startswith('[입력 확인] 숫자에 숫자가 아닌 값(미정)')
+assert all('[입력 확인]' not in run('show', k).stdout for k in ('ml-stat-duel', 'ml-bar-chart-grow', 'ml-line-chart-draw', 'as-graph'))
 # 원래 6개는 그대로(기존 스킬 이름·크기)
 assert {items[k]['skill'] for k in ORIG} == {'graph', 'map-route', 'breakdown', 'minimalistic-graphics', 'stick-figure', 'zach-d-films'}
 assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == [1080, 1920] for k in ORIG)
