@@ -163,10 +163,10 @@ const jsround = Math.round, r1 = (x) => jsround(x * 10) / 10, num = (x) => Strin
 // 손글씨처럼 dx.auto 가 있는 카드는 길이 칸을 비우면 문구 길이로 전체 길이를 잡는다(KB 리뷰 14차) — motion.py auto_len 과 같은 식
 function autoLen(c, vals) {
   const a = c.dx.auto, f = c.fields.find((x) => x.k === a.k), t = trim(vals[a.k]) || String(f.ex);
-  let units = 0, glyphs = 0;
-  for (const ch of t) { if (/\s/.test(ch)) continue; glyphs++; units += ch >= '가' && ch <= '힣' ? ((ch.codePointAt(0) - 0xAC00) % 28 ? 3 : 2) : 2; }
+  let write = 0, glyphs = 0;  // 원본 글자별 glyph.t 합(묶음에 없는 글자는 miss) — 15차
+  for (const ch of t) { if (/\s/.test(ch)) continue; glyphs++; write += Object.hasOwn(a.t, ch) ? a.t[ch] : a.miss; }
   const sp = t.split(' ').length - 1, nl = t.split('\n').length - 1;
-  const W = a.start + a.unit * units + a.gap * Math.max(glyphs - 1 - sp - nl, 0) + a.space * sp + a.line * nl;
+  const W = a.start + write + a.gap * Math.max(glyphs - 1 - sp - nl, 0) + a.space * sp + a.line * nl;
   const base = c.dx.base, t1 = c.dx.beats[a.beat].t1;
   return Math.ceil(Math.max(base, W + a.hold, W * base / t1) * 10 - 1e-9) / 10;
 }
@@ -225,7 +225,8 @@ const ORIGIN = window.MOTION_MEDIA === 'origin';
 const KIT = (it) => AS.kits[it.as.kit];
 // 폴더는 tree, 파일은 blob · 줄 앵커(#L12)만 남긴다 — animskills.url 과 같은 규칙
 const asUrl = (it) => { const [path, a] = it.as.path.split('#'); const dir = it.as.kit === 'claude-animation-skills' || !/\.[A-Za-z0-9]+$/.test(path);
-  return `${KIT(it).source}/${dir ? 'tree' : 'blob'}/${KIT(it).ref || KIT(it).commit.slice(0, 7)}/${path}${a && /^L\d+$/.test(a) ? '#' + a : ''}`; };
+  // 경로는 세그먼트마다 인코딩(검증에서 ..·빈 세그먼트는 이미 거부) — 고정 커밋 경로 밖으로 해석되지 않게(KB 리뷰 15차)
+  return `${KIT(it).source}/${dir ? 'tree' : 'blob'}/${KIT(it).ref || KIT(it).commit.slice(0, 7)}/${path.split('/').map(encodeURIComponent).join('/')}${a && /^L\d+$/.test(a) ? '#' + a : ''}`; };
 const asSize = (it) => it.as.size ? `${it.as.size[0]}x${it.as.size[1]}` : '크기 가변';
 const poster = (it) => it.as ? (it.as.thumb ? `${BASE}as_thumb/${esc(it.code)}.jpg` : '') : it.hf ? `${BASE}hf_thumb/${esc(it.code)}.jpg` : !it.pm?.poster ? '' : ORIGIN ? url(it.pm.poster) : `${BASE}posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}`;
 // 레지스트리 영상은 공식 미리보기가 있는 항목만, 외부 영상을 여는 곳(KB)에서만 — 없으면 직접 렌더한 그림 위에서 진행표를 넘긴다
@@ -417,17 +418,20 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const strs = (v) => Array.isArray(v) && v.every((x) => typeof x === 'string'), num = (v) => typeof v === 'number' && Number.isFinite(v);
   const okSize = (s) => s === null || s === undefined || (Array.isArray(s) && s.length === 2 && s.every((n) => Number.isSafeInteger(n) && n > 0 && n <= 16384));  // 지수 표기가 되는 큰 수는 막는다
   // 키트는 화면이 쓰는 값만 검증된 꼴로 다시 만든다(ref 는 문자열일 때만, 아니면 commit)
-  const cleanKit = (k) => obj(k) && str(k.source) && str(k.license) && str(k.creator) && (str(k.ref) || str(k.commit))
+  // 출처는 github 저장소 주소, 커밋은 16진수 해시만(15차 F4) — 링크가 고정 커밋 밖을 가리키지 않게
+  const okRepo = (s) => str(s) && /^https:\/\/github\.com\/[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(s), hex = (s, n) => str(s) && new RegExp(`^[0-9a-f]{${n}}$`).test(s);
+  const okPath = (s) => { if (!str(s)) return false; const [p, a, ...rest] = s.split('#'); return !rest.length && (a === undefined || /^L\d+$/.test(a)) && !/[\\?]/.test(p) && p.split('/').every((x) => x && x !== '.' && x !== '..'); };
+  const cleanKit = (k) => obj(k) && okRepo(k.source) && str(k.license) && str(k.creator) && (str(k.ref) ? hex(k.ref, '7,40') : hex(k.commit, '40'))
     ? { source: k.source, license: k.license, creator: k.creator, ...(str(k.ref) ? { ref: k.ref } : { commit: k.commit }) } : null;
   const okField = (f) => obj(f) && str(f.k) && str(f.label) && (f.opt === undefined || typeof f.opt === 'boolean') && (f.ex === undefined || typeof f.ex === 'string' || num(f.ex));
   const okBeat = (x) => obj(x) && num(x.t0) && num(x.t1) && typeof x.s === 'string' && optStr(x.label) && (x.hold === undefined || typeof x.hold === 'boolean');
   const okItem = (c, kits) => obj(c) && typeof c.kit === 'string' && Object.hasOwn(kits, c.kit)
-    && [c.name, c.tpl, c.path, c.cat, c.plain, c.when, c.len].every(str) && [c.en, c.skill, c.render, c.thumb].every(optStr) && (c.engine === undefined || typeof c.engine === 'boolean')
+    && [c.name, c.tpl, c.cat, c.plain, c.when, c.len].every(str) && okPath(c.path) && [c.en, c.skill, c.render, c.thumb].every(optStr) && (c.engine === undefined || typeof c.engine === 'boolean')
     && strs(c.inds) && (c.notes === undefined || strs(c.notes)) && okSize(c.size) && Array.isArray(c.fields) && c.fields.every(okField)
     && obj(c.dx) && typeof c.dx.kind === 'string' && Object.hasOwn(KIND, c.dx.kind) && Array.isArray(c.dx.beats) && c.dx.beats.every(okBeat)
     && [c.dx.look, c.dx.wow, c.dx.avoid, c.dx.lenText].every(optStr) && (c.dx.base === undefined || num(c.dx.base)) && (c.dx.auto === undefined || okAuto(c));
   // 문구 길이로 길이를 잡는 설정(손글씨) — 숫자·칸·장면 번호가 맞을 때만(14차)
-  const okAuto = (c) => { const a = c.dx.auto; return obj(a) && typeof a.k === 'string' && c.fields.some((f) => f.k === a.k) && ['start', 'unit', 'gap', 'space', 'line', 'hold'].every((k) => num(a[k]) && a[k] >= 0)
+  const okAuto = (c) => { const a = c.dx.auto; return obj(a) && typeof a.k === 'string' && c.fields.some((f) => f.k === a.k) && ['start', 'gap', 'space', 'line', 'hold', 'miss'].every((k) => num(a[k]) && a[k] >= 0) && obj(a.t) && Object.values(a.t).every((v) => num(v) && v >= 0)
     && Number.isInteger(a.beat) && a.beat >= 0 && a.beat < c.dx.beats.length && c.dx.beats[a.beat].t1 > 0 && num(c.dx.base) && c.dx.base > 0; };
   const notes = [], kits = {}, items = {};
   const KEEP = ['kit', 'path', 'size', 'thumb', 'en', 'skill', 'render', 'engine', 'notes', 'cat', 'name', 'plain', 'when', 'len', 'inds', 'fields', 'tpl', 'dx'];

@@ -37,9 +37,10 @@ for code, c in items.items():
             assert '{%s}' % f['k'] in c['dx']['look'] and not f['opt'], (code, f['k'])
 # 손글씨는 길이 칸을 비우면 문구 길이로 — 쓰기 끝이 카드 실측(7.66초)보다 뒤, 그 뒤 1.2초 이상 머묾
 hw = items['tg-handwriting']
-assert motion.auto_len(hw, {}) == 8.0 and motion.auto_len(hw, {'text': '오늘도 감사합니다'}) == 9.4
-w = hw['dx']['beats'][hw['dx']['auto']['beat']]['t1'] * 9.4 / hw['dx']['base']
-assert 7.66 <= w <= 9.4 - 1.2, w
+assert motion.auto_len(hw, {}) == 7.7 and motion.auto_len(hw, {'text': '오늘도 감사합니다'}) == 9.1  # 원본 글자별 glyph.t 표(15차)
+w = hw['dx']['beats'][hw['dx']['auto']['beat']]['t1'] * 9.1 / hw['dx']['base']
+assert 7.66 <= w <= 9.1 - 1.2, w
+assert len(hw['dx']['auto']['t']) > 700 and max(hw['dx']['auto']['t'].values()) == 2.41
 # 원래 6개는 그대로(기존 스킬 이름·크기)
 assert {items[k]['skill'] for k in ORIG} == {'graph', 'map-route', 'breakdown', 'minimalistic-graphics', 'stick-figure', 'zach-d-films'}
 assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == [1080, 1920] for k in ORIG)

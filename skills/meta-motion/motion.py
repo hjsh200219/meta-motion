@@ -77,14 +77,14 @@ def simple(pre, c, vals, g):
 
 def auto_len(c, vals):
     """dx.auto 가 있는 카드(손글씨)는 길이 칸을 비우면 문구 길이로 전체 길이를 잡는다 — preview.html autoLen 과 같은 식.
-    쓰기 끝 W = 시작 + 자모 수×unit + 글자 사이·띄어쓰기·줄바꿈 간격, 전체 = max(원본 길이, W+머묾, 쓰기 구간이 비율로 늘어도 W 를 덮는 길이)."""
+    쓰기 끝 W = 시작 + 글자별 쓰기 시간 합(dx.auto.t) + 글자 사이·띄어쓰기·줄바꿈 간격, 전체 = max(원본 길이, W+머묾, 쓰기 구간이 비율로 늘어도 W 를 덮는 길이)."""
     a = c['dx'].get('auto')
     if not a: return None
     f = next(x for x in c['fields'] if x['k'] == a['k'])
     t = (vals.get(a['k']) or '').strip() or f['ex']
-    units = sum((3 if (ord(ch) - 0xAC00) % 28 else 2) if '가' <= ch <= '힣' else 2 for ch in t if not ch.isspace())
+    write = sum(a['t'].get(ch, a['miss']) for ch in t if not ch.isspace())  # 원본 글자별 glyph.t(묶음에 없는 글자는 miss)
     glyphs = sum(1 for ch in t if not ch.isspace()); sp = t.count(' '); nl = t.count('\n')
-    W = a['start'] + a['unit'] * units + a['gap'] * max(glyphs - 1 - sp - nl, 0) + a['space'] * sp + a['line'] * nl
+    W = a['start'] + write + a['gap'] * max(glyphs - 1 - sp - nl, 0) + a['space'] * sp + a['line'] * nl
     base = c['dx']['base']; t1 = c['dx']['beats'][a['beat']]['t1']
     return math.ceil(max(base, W + a['hold'], W * base / t1) * 10 - 1e-9) / 10
 
