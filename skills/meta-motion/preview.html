@@ -386,7 +386,9 @@ for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if
 // 게시본은 자료를 같은 폴더에, repo 는 data/ 아래에 둔다 — 없으면 data/ 에서 찾는다
 const load = (f) => fetch(f).then((r) => r.ok ? r : fetch('data/' + f).then((d) => { if (!d.ok) throw new Error(`${f} ${r.status}`); BASE = 'data/'; return d; })).then((r) => r.json());
 const optional = (f, empty) => load(f).catch(() => empty);  // 레지스트리 자료가 없는 옛 게시본에서도 나머지는 뜬다
-Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optional('anim_skills.json', null), optional('anim_herk_paper.json', null), optional('anim_herk_glow.json', null)]).then(([cards, ex, ko, reg, hko, ask, ...herks]) => {
+// 선택 파일(herk 스타일 카드) — 없음(404)은 조용히 넘기고, 그 밖의 읽기·해석 실패는 표시한다(KB 리뷰 5차 F5)
+const optionalErr = (f) => load(f).catch((e) => ({ __err: String(e && e.message || e), __file: f }));
+Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optional('anim_skills.json', null), optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then(([cards, ex, ko, reg, hko, ask, ...herks]) => {
   // 애니메이션 스킬 자료는 따로 검증한다 — 못 읽거나 출처(kit)가 빠진 항목은 빼고 나머지 카드는 그대로 띄운다(KB 리뷰 F7)
   const obj = (o) => o && typeof o === 'object' && !Array.isArray(o);
   const okShape = obj(ask) && obj(ask.kits) && obj(ask.items);
@@ -396,16 +398,17 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const okSize = (s) => s === null || s === undefined || (Array.isArray(s) && s.length === 2 && s.every((n) => Number.isInteger(n) && n > 0));
   const okKit = (k) => obj(k) && str(k.source) && str(k.license) && str(k.creator) && (str(k.ref) || str(k.commit));
   // herk 스타일 카드는 따로 둔 파일 — 키트를 먼저 검증하고, 원본에 이미 있는 키는 덮지 않는다(KB 리뷰 4차 F3)
-  for (const herk of herks) if (okShape && obj(herk) && obj(herk.kits) && obj(herk.items)) {
+  const herkBad = herks.filter((h) => obj(h) && h.__err ? !/\b404\b/.test(h.__err) : !(obj(h) && obj(h.kits) && obj(h.items))).length;
+  for (const herk of herks) if (okShape && obj(herk) && !herk.__err && obj(herk.kits) && obj(herk.items)) {
     const kits = Object.fromEntries(Object.entries(herk.kits).filter(([k, v]) => !AS.kits[k] && okKit(v)));
     const items = Object.fromEntries(Object.entries(herk.items).filter(([k]) => !AS.items[k]));
     AS = { kits: { ...AS.kits, ...kits }, items: { ...AS.items, ...items } };
   }
-  const okItem = (c) => obj(c) && okKit(AS.kits[c.kit]) && [c.name, c.tpl, c.path, c.cat, c.plain, c.when, c.len].every(str) && strs(c.inds) && strs(c.notes || [])
+  const okItem = (c) => obj(c) && okKit(AS.kits[c.kit]) && typeof c.dx?.kind === 'string' && Object.hasOwn(KIND, c.dx.kind) && [c.name, c.tpl, c.path, c.cat, c.plain, c.when, c.len].every(str) && strs(c.inds) && strs(c.notes || [])
     && okSize(c.size) && Array.isArray(c.fields) && c.fields.every((f) => obj(f) && str(f.k) && str(f.label)) && obj(c.dx) && Array.isArray(c.dx.beats)
     && c.dx.beats.every((x) => obj(x) && typeof x.t0 === 'number' && typeof x.t1 === 'number' && typeof x.s === 'string') && (c.thumb === null || c.thumb === undefined || str(c.thumb));
   const asAll = Object.entries(AS.items), as = asAll.filter(([, c]) => okItem(c)).map(([code, c]) => ({ ...c, code, src: 'as', as: c }));
-  const asNote = ask === null ? '애니메이션 스킬 자료를 읽지 못해 그 항목은 빠졌습니다' : !okShape ? '애니메이션 스킬 자료 형식이 맞지 않아 그 항목은 빠졌습니다' : as.length < asAll.length ? `애니메이션 스킬 ${asAll.length - as.length}개는 자료가 온전하지 않아 빠졌습니다` : '';
+  const asNote = ask === null ? '애니메이션 스킬 자료를 읽지 못해 그 항목은 빠졌습니다' : !okShape ? '애니메이션 스킬 자료 형식이 맞지 않아 그 항목은 빠졌습니다' : as.length < asAll.length ? `애니메이션 스킬 ${asAll.length - as.length}개는 자료가 온전하지 않아 빠졌습니다` : herkBad ? `애니메이션 스킬 보조 자료 ${herkBad}개를 읽지 못해 그 항목은 빠졌습니다` : '';
   if (asNote) console.warn(asNote);
   const pm = ex.filter((e) => ko[e.id]).map((e) => ({ ...ko[e.id], code: e.id, en: e.title, inds: e.tags.map((t) => TAG[t] || t), src: 'pm', pm: e }));
   const hf = reg.items.filter((r) => hko[r.name]?.tpl).map((r) => ({ ...hko[r.name], code: r.name, en: r.title, inds: r.tags, src: 'hf', hf: r }));
