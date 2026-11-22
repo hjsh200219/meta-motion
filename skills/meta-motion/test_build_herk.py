@@ -67,6 +67,10 @@ if items:
     _d = items['hk-paper-t2-label-definition']; assert any(f.get('fixed') == 'noun' and f['ex'] == '명사' for f in _d['fields'])
     assert hk.vals_of(_d)['__fixed'] == {'noun': '명사'} and hk.vals_of(_d, {'fx1': '동사'})['__fixed'] == {'noun': '동사'}
     assert all(not f.get('opt') for f in items['hk-paper-t1-stat-ledger']['fields'] if f['k'].startswith('row'))  # 합계에 들어가는 행은 필수
+    # 고정 글을 다른 칸 계산 값으로(같은 수를 두 번 받지 않게, #541 1차)
+    _r = items['hk-glow-t1-stat-rank']; assert not any(f['k'] == 'n_outof' for f in _r['fields'])
+    assert hk.vals_of(_r, {'label': '전체 9,500개 채널 중'})['__fixed'] == {'out of 4,200': '전체 9,500 중'}
+    assert all(f.get('opt') for c in items.values() for f in c['fields'] if f['k'].startswith('n_') and not str(f.get('ex', '')).strip())  # 예시가 빈 손잡이는 선택
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 {len(items)}장)')
 else:
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 파일 없음)')

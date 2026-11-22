@@ -169,7 +169,7 @@ GLOSS = {
     'Value': ('가운데 머리말', '가치'), 'Advantages': ('왼쪽 열 제목', '장점'), 'Disadvantages': ('오른쪽 열 제목', '단점'), 'The Shift': ('카드 머리말', '변화'),
     'Chapter': ('장 표시 글', '장'), 'Next Up': ('다음 표시 글', '다음'), 'TOTAL MARKET VALUE': ('숫자 위 머리말', '전체 시장 가치'), 'PROJECTED BY 2028': ('숫자 아래 설명', '2028년 전망'),
     'BEFORE': ('왼쪽 막대 이름', '이전'), 'AFTER': ('오른쪽 막대 이름', '이후'), 'UTILISED': ('숫자 아래 글', '사용률'), 'YEAR OVER YEAR': ('숫자 아래 글', '전년 대비'),
-    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '100명 중'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 4,200 중'),
+    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '100명 중'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 {n_outof} 중'),
     'retained': ('왼쪽 이름', '유지'), 'churned': ('오른쪽 이름', '이탈'), 'pass rate': ('숫자 아래 글', '합격률'), 'PASS RATE': ('숫자 아래 글', '합격률'),
     'Intuition': ('왼쪽 이름', '직관'), 'Data-Driven': ('오른쪽 이름', '데이터 기반'), 'minutes': ('분 단위 글', '분'), 'seconds': ('초 단위 글', '초'),
     'TGT': ('조준 표시 글', '목표'), 'Definition': ('머리말', '정의'), 'vs. last cohort': ('비교 기준 글', '지난 기수 대비'), 'The Big Idea': ('머리말', '핵심 아이디어'),
@@ -188,6 +188,8 @@ def fixed_fields(card, item_fields=()):
     for s in fixed_text(card, raw=True):
         if s not in GLOSS or s in seen: continue
         seen.add(s); lab, ex = GLOSS[s]
+        if ex and '{' in ex:  # 다른 칸 값으로 만드는 고정 글(같은 수를 두 번 받지 않게, #541 1차) — 칸이 아니라 tmpl
+            out.append({'k': f'fx{len(out) + 1}', 'tmpl': ex, 'fixed': s}); continue
         out.append({'k': f'fx{len(out) + 1}', 'label': f'{lab}(선택)', 'opt': True, 'ex': ex if ex is not None else (name.replace(' ', '')[-2:] or '★'), 'fixed': s})
     return out
 
@@ -303,6 +305,9 @@ def vals_of(item, over=None):
         if kind == 'copy': out[rg[0] if rg else knob] = str(over.get(knob, ex[src])); continue
         v = derived(str(ex[src]), i, kind, *(ex[k] for k in rg))
         if v is not None: out[knob] = v[:-2] if v.endswith('.0') else v
+    ctx = {**ex, **{k: (f'{int(v):,}' if re.fullmatch(r'\d{4,}', str(v)) else v) for k, v in out.items() if k.startswith('n_')}}
+    for fixed, tmpl in (item.get('fixed_tmpl') or {}).items():  # 다른 칸·계산 값으로 만드는 고정 글(같은 수를 두 번 받지 않게, #541 1차)
+        out.setdefault('__fixed', {})[fixed] = tmpl.format(**ctx)
     return out
 
 
@@ -355,7 +360,10 @@ def tpl_of(g):
 
 # 핵심 자료가 칸이 아니라 스크립트 배열·CSS 에 박힌 카드 — 요청 문장으로 자료를 바꿀 수 없어 뺀다(KB 리뷰 #540 F3, 2026-11-23 스크립트 배열 조사)
 DATA_LOCKED = {'vox-explainer.t1.overview.vertical-timeline', 'vox-explainer.t1.stat.column-chart', 'vox-explainer.t1.overview.matrix',
-               'kallaway.t1.overview.legend', 'kallaway.t1.stat.radialbars', 'kallaway.t1.stat.waterfall'}
+               'kallaway.t1.overview.legend', 'kallaway.t1.stat.radialbars', 'kallaway.t1.stat.waterfall',
+               # #541 1차: 이름·목표값·가격·증감·지원 여부가 스크립트 상수·고정 표시에 박힌 카드
+               'kallaway.t2.lower-third.typedname', 'kallaway.t2.label.numbercallout', 'kallaway.t2.label.percent',
+               'kallaway.t2.label.deltachip', 'kallaway.t2.label.price', 'kallaway.t1.overview.featurecompare'}
 
 
 def locked(card):
@@ -453,7 +461,7 @@ def polish(fields, card=None):
                     for kind in KINDS if derived(str(x['ex']), i, kind) == norm(f.get('ex'))), None)
         if hit: derive[f['k']] = hit
     for f in out:  # 계산되지 않는 손잡이는 필수 — 비우면 예시값(예: 최고 위험 단계)이 설명과 어긋난 채 남는다(#540 4차)
-        if f['k'].startswith('n_') and f['k'] not in derive and f.get('opt'):
+        if f['k'].startswith('n_') and f['k'] not in derive and f.get('opt') and str(f.get('ex', '')).strip():  # 예시가 빈 손잡이(없으면 비움)는 선택으로 둔다(#541 1차)
             f['opt'] = False; f['label'] = re.sub(r'\s*\(선택\)\s*$', '', f['label'])
     return [f for f in out if f['k'] not in derive], derive
 
@@ -475,19 +483,23 @@ def export(gen, drop=()):
     for code, g in sorted(gen.items()):
         if code in drop or not g.get('tpl') or locked(by[code]): continue
         c = by[code]; ft = fixed_text(c)
-        fields, derive = polish(g['fields'], c); g = {**g, 'fields': fields + fixed_fields(c, fields)}
+        fields, derive = polish(g['fields'], c); fx = fixed_fields(c, fields)
+        g = {**g, 'fields': fields + [f for f in fx if 'tmpl' not in f]}
+        ftmpl = {f['fixed']: f['tmpl'] for f in fx if 'tmpl' in f}
         notes = [f"원본 스타일의 색·서체 자리에 템플릿을 넣는다(기본 {STYLE[c['style']][1]} — --template 로 바꾼다). 원본 AIS 브랜드 파랑·남색은 템플릿 강조색·배경으로 바꿔 넣는다(LICENSE 「Note on brand assets」)",
                  '1920x1080 고정 · 원본은 스스로 「렌더 QA 를 다 거치지 않은 초안」이라고 밝힌 키트다 — 쓰기 전에 snapshot 으로 한 번 본다']
         if ft: notes.append('칸 밖에 박힌 영어 글이 있다(사본에서 직접 바꾼다): ' + ' · '.join(dict.fromkeys(ft))[:160])
         kn = [f['k'] for f in g['fields'] if f['k'].startswith('n_')]
-        if kn: notes.append(f"n_ 칸({', '.join(kn)})은 화면 글이 아니라 스크립트가 읽는 숫자(채움 비율·목표값 등) — 숫자만 넣는다")
+        num = [k for k in kn if re.fullmatch(r'-?\d+(\.\d+)?', str(next((f.get('ex', '') for f in g['fields'] if f['k'] == k), '')).strip())]
+        if num: notes.append(f"n_ 칸({', '.join(num)})은 화면 글이 아니라 스크립트가 읽는 숫자(채움 비율·목표값 등) — 숫자만 넣는다")
+        if set(kn) - set(num): notes.append(f"n_ 칸({', '.join(k for k in kn if k not in num)})은 스크립트가 읽는 값 — 칸 설명대로(부호·단위 포함 가능, 비워도 되는 칸은 비움)")  # #541 1차
         if derive: notes.append('그래픽 손잡이(' + ', '.join(derive) + ')는 따로 받지 않고 ' + ', '.join(dict.fromkeys(v[0] for v in derive.values())) + ' 칸의 숫자에서 계산한다(build_herk card)')
         if c['purpose'] in OVERLAY: notes.append('배경이 비어 있는 얹는 카드 — 영상 위 트랙에 둔다')
         tier, *rest = c['id'].split('.')[1:]
         outs[OUT_FILES[c['style']]]['items'][code] = {
             'kit': 'herk-edit-kit', 'path': 'style-library/' + c['file'], 'size': [1920, 1080], 'thumb': 'render', 'en': ' '.join([tier, *rest]),
             'template': STYLE[c['style']][1], 'cat': g['cat'], 'name': g['name'], 'plain': g['plain'], 'when': g['when'], 'len': g['len'], 'inds': [],
-            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {})}
+            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {}), **({'fixed_tmpl': ftmpl} if ftmpl else {})}
     for f, d in outs.items():
         (HERE / 'data' / f).write_text(json.dumps(d, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
     return {f: len(d['items']) for f, d in outs.items()}
