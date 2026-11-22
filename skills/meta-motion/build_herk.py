@@ -169,7 +169,7 @@ GLOSS = {
     'Value': ('가운데 머리말', '가치'), 'Advantages': ('왼쪽 열 제목', '장점'), 'Disadvantages': ('오른쪽 열 제목', '단점'), 'The Shift': ('카드 머리말', '변화'),
     'Chapter': ('장 표시 글', '장'), 'Next Up': ('다음 표시 글', '다음'), 'TOTAL MARKET VALUE': ('숫자 위 머리말', '전체 시장 가치'), 'PROJECTED BY 2028': ('숫자 아래 설명', '2028년 전망'),
     'BEFORE': ('위쪽(첫째) 막대 이름', '이전'), 'AFTER': ('아래쪽(둘째) 막대 이름', '이후'), 'UTILISED': ('숫자 아래 글', '사용률'), 'YEAR OVER YEAR': ('숫자 아래 글', '전년 대비'),
-    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '100명 중'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 {n_outof} 중'),
+    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '=100명 중'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 {n_outof} 중'),
     'retained': ('왼쪽 이름', '유지'), 'churned': ('오른쪽 이름', '이탈'), 'pass rate': ('숫자 아래 글', '합격률'), 'PASS RATE': ('숫자 아래 글', '합격률'),
     'Intuition': ('왼쪽 이름', '직관'), 'Data-Driven': ('오른쪽 이름', '데이터 기반'), 'minutes': ('분 단위 글', '분'), 'seconds': ('초 단위 글', '초'),
     'TGT': ('조준 표시 글', '목표'), 'Definition': ('머리말', '정의'), 'vs. last cohort': ('비교 기준 글', '지난 기수 대비'), 'The Big Idea': ('머리말', '핵심 아이디어'),
@@ -188,8 +188,8 @@ def fixed_fields(card, item_fields=()):
     for s in fixed_text(card, raw=True):
         if s not in GLOSS or s in seen: continue
         seen.add(s); lab, ex = GLOSS[s]
-        if ex and '{' in ex:  # 다른 칸 값으로 만드는 고정 글(같은 수를 두 번 받지 않게, #541 1차) — 칸이 아니라 tmpl
-            out.append({'k': f'fx{len(out) + 1}', 'tmpl': ex, 'fixed': s}); continue
+        if ex and ('{' in ex or ex.startswith('=')):  # 다른 칸 값으로 만드는 고정 글(#541 1차)·바꿀 수 없는 번역(=…, 격자 크기 같은 고정 분모 — #541 5차) — 칸이 아니라 tmpl
+            out.append({'k': f'fx{len(out) + 1}', 'tmpl': ex.lstrip('='), 'fixed': s}); continue
         need = bool(re.search(r'\d', s))  # 숫자가 든 고정 글(기간·연도 등)은 카드의 핵심 값이라 필수 — 비우면 예시값이 다른 대상에 남는다(#541 3차)
         out.append({'k': f'fx{len(out) + 1}', 'label': lab if need else f'{lab}(선택)', 'opt': not need, 'ex': ex if ex is not None else (name.replace(' ', '')[-2:] or '★'), 'fixed': s,
                     **({'auto': 'initial'} if ex is None else {})})  # 배지 이니셜 — 안 주면 입력한 이름에서 만든다(#541 4차)
@@ -280,7 +280,7 @@ def probe(items, workers=4):
 KIT = {'source': REPO, 'license': 'MIT + Herk Edit Kit Use Permission (licenses/PERMISSION-herk-edit-kit.txt)', 'creator': 'Nate Herk', 'commit': COMMIT, 'cache': True,
        'fetched': '2026-11-22', 'found_via': '쇼츠 «10 GitHub Repos That Level Up HyperFrames Videos»',
        'how': 'python3 build_herk.py card {code} --out <프로젝트> [--template <템플릿 id>] [칸=값 …] → <프로젝트>/compositions/{code}.html 과 fonts/ '
-              '(안 준 필수 칸은 카드 예시값, 안 준 선택 칸은 비운다(예시 인물·장소가 남지 않게), 색·서체는 템플릿 — 원본의 AIS 브랜드 색은 템플릿 색으로 바꿔 넣는다). host 에 data-composition-src 로 넣고 길이는 카드 장면 순서대로'}
+              '(칸을 주면 필수 칸은 모두 줘야 하고 안 준 선택 칸은 비운다 — 예시 인물·장소·숫자가 남지 않게, 칸을 하나도 안 주면 미리보기용 예시값, 색·서체는 템플릿 — 원본의 AIS 브랜드 색은 템플릿 색으로 바꿔 넣는다). host 에 data-composition-src 로 넣고 길이는 카드 장면 순서대로'}
 OUT_FILES = {'vox-explainer': 'anim_herk_paper.json', 'kallaway': 'anim_herk_glow.json'}
 OVERLAY = {'lower-third', 'label'}
 
@@ -563,7 +563,10 @@ def main(a):
         vals = dict(x.split('=', 1) for x in a[2:] if '=' in x and not x.startswith('--'))
         if 'out' not in opt: sys.exit('--out <폴더> 가 필요하다')
         it = items_all().get(a[1])
-        if it: vals = vals_of(it, vals)  # 안 준 칸은 카드 예시값(원본 영어 자리표시자가 남지 않게)
+        if it and vals:  # 사용자 값으로 만들 때 필수 칸을 빠뜨리면 멈춘다 — 예시 인물·숫자가 새 내용에 붙지 않게(#541 5차). 예시값은 미리보기에서만
+            miss = [f"{f['k']}({f['label']})" for f in it['fields'] if not f.get('opt') and f['k'] not in vals]
+            if miss: sys.exit('필수 칸이 빠졌다: ' + ', '.join(miss))
+        if it: vals = vals_of(it, vals)  # 칸을 하나도 안 주면 카드 예시값으로(미리보기)
         p, cid = write(by[a[1]], vals, opt['out'], opt.get('template'))
         return print(f'{p}\n host 에: <div id="{cid}" class="clip" data-composition-id="{cid}" data-composition-src="compositions/{p.name}" '
                      f'data-start="0" data-duration="<초>" data-track-index="0" data-width="1920" data-height="1080"></div>')
