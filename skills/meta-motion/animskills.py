@@ -32,10 +32,12 @@ def cache(kit):
 
 
 def url(code):
-    """원본 파일 주소(고정 커밋) — 원래 6개는 스킬 폴더(tree), 나머지는 파일(blob)."""
+    """원본 주소(고정 커밋) — 폴더는 tree, 파일은 blob, 줄 앵커(#L12)는 남긴다(preview.html asUrl 과 같은 규칙)."""
+    import re
     c, k = load()['items'][code], kit_of(code)
-    path = c['path'].split('#')[0]
-    return f"{k['source']}/{'tree' if c['kit'] == 'claude-animation-skills' else 'blob'}/{k['commit'][:7]}/{path}"
+    path, _, a = c['path'].partition('#')
+    tree = c['kit'] == 'claude-animation-skills' or not re.search(r'\.[A-Za-z0-9]+$', path)  # 폴더(tegaki 서체 폴더 등)는 tree
+    return f"{k['source']}/{'tree' if tree else 'blob'}/{k['commit'][:7]}/{path}{'#' + a if re.fullmatch(r'L\d+', a) else ''}"
 
 
 def sync(kit=None):

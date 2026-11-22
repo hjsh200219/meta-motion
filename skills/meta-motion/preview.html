@@ -200,13 +200,17 @@ const TAG = { 'product-ui': '제품 화면', 'kinetic-type': '글자 움직임',
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let AS = { items: {} }, BASE = '', animOk = false, ITEMS = [], cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
-const g = () => ({ ratio: RATIO[$('#ratio').value] ?? '', color: $('#color').value, file: '' });
+// 크기가 고정된 애니메이션 스킬은 고른 비율 대신 그 크기의 비율로 요청한다(KB 리뷰 F2 — 가로 16:9 와 1080x1920 이 한 문장에 섞임)
+const fixedRatio = (it) => { const s = it?.as?.size; return s ? (s[1] > s[0] ? RATIO['세로'] : s[0] > s[1] ? RATIO['가로'] : RATIO['정사각']) : null; };
+const g = () => ({ ratio: fixedRatio(cur) ?? RATIO[$('#ratio').value] ?? '', color: $('#color').value, file: '' });
 const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
 // KB(kb.pilldoc.co.kr)처럼 외부 영상을 막지 않는 곳은 window.MOTION_MEDIA = 'origin' 으로 원본 영상·그림을 바로 쓴다(Artifact 는 CSP 가 막아 함께 올린 사본을 쓴다)
 const ORIGIN = window.MOTION_MEDIA === 'origin';
 // 애니메이션 스킬은 출처(kit)가 항목마다 — animskills.url·size_text 와 같은 규칙
 const KIT = (it) => AS.kits[it.as.kit];
-const asUrl = (it) => `${KIT(it).source}/${it.as.kit === 'claude-animation-skills' ? 'tree' : 'blob'}/${KIT(it).ref || KIT(it).commit.slice(0, 7)}/${it.as.path.split('#')[0]}`;
+// 폴더는 tree, 파일은 blob · 줄 앵커(#L12)만 남긴다 — animskills.url 과 같은 규칙
+const asUrl = (it) => { const [path, a] = it.as.path.split('#'); const dir = it.as.kit === 'claude-animation-skills' || !/\.[A-Za-z0-9]+$/.test(path);
+  return `${KIT(it).source}/${dir ? 'tree' : 'blob'}/${KIT(it).ref || KIT(it).commit.slice(0, 7)}/${path}${a && /^L\d+$/.test(a) ? '#' + a : ''}`; };
 const asSize = (it) => it.as.size ? `${it.as.size[0]}x${it.as.size[1]}` : '크기 가변';
 const poster = (it) => it.as ? (it.as.thumb ? `${BASE}as_thumb/${esc(it.code)}.jpg` : '') : it.hf ? `${BASE}hf_thumb/${esc(it.code)}.jpg` : !it.pm?.poster ? '' : ORIGIN ? url(it.pm.poster) : `${BASE}posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}`;
 // 레지스트리 영상은 공식 미리보기가 있는 항목만, 외부 영상을 여는 곳(KB)에서만 — 없으면 직접 렌더한 그림 위에서 진행표를 넘긴다
@@ -291,7 +295,7 @@ function select(code, scroll) {
     <div><h3>받아서 고치기 · HyperFrames 프로젝트 폴더에서</h3><pre class="en-txt" tabindex="0">${esc(HF_CMD(it))}</pre></div>` : ''}
     ${it.as ? `<div class="links">
       <a class="btn pri" href="${url(asUrl(it))}" target="_blank" rel="noopener">원본 ↗</a>
-      <a class="btn" href="https://novitckii.com/resources/animation-skills/" target="_blank" rel="noopener">움직이는 모습 ↗</a>
+      ${it.as.kit === 'claude-animation-skills' ? `<a class="btn" href="https://novitckii.com/resources/animation-skills/" target="_blank" rel="noopener">움직이는 모습 ↗</a>` : ''}
     </div>
     <div><h3>만드는 법 · 원본(고정 커밋)을 그대로 쓴다</h3><pre class="en-txt" tabindex="0">${esc(`python3 motion.py show ${it.code}`)}</pre>${(it.as.notes || []).length ? `<ul class="rules">${it.as.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}</div>` : ''}
     ${rules.length ? `<div><h3>처음부터 끝까지 지키는 것</h3><ul class="rules">${rules.map((b) => `<li><b>${esc(b.label)}</b> — ${esc(strip(b.s))}</li>`).join('')}</ul></div>` : ''}
@@ -381,16 +385,19 @@ for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if
 // 게시본은 자료를 같은 폴더에, repo 는 data/ 아래에 둔다 — 없으면 data/ 에서 찾는다
 const load = (f) => fetch(f).then((r) => r.ok ? r : fetch('data/' + f).then((d) => { if (!d.ok) throw new Error(`${f} ${r.status}`); BASE = 'data/'; return d; })).then((r) => r.json());
 const optional = (f, empty) => load(f).catch(() => empty);  // 레지스트리 자료가 없는 옛 게시본에서도 나머지는 뜬다
-Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optional('anim_skills.json', { items: {} })]).then(([cards, ex, ko, reg, hko, ask]) => {
-  AS = ask;
-  const as = Object.entries(ask.items).map(([code, c]) => ({ ...c, code, src: 'as', as: c }));
+Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optional('anim_skills.json', null)]).then(([cards, ex, ko, reg, hko, ask]) => {
+  // 애니메이션 스킬 자료는 따로 검증한다 — 못 읽거나 출처(kit)가 빠진 항목은 빼고 나머지 카드는 그대로 띄운다(KB 리뷰 F7)
+  AS = ask && ask.kits && ask.items ? ask : { kits: {}, items: {} };
+  const asAll = Object.entries(AS.items), as = asAll.filter(([, c]) => AS.kits[c.kit]).map(([code, c]) => ({ ...c, code, src: 'as', as: c }));
+  const asNote = !ask ? '애니메이션 스킬 자료를 읽지 못해 그 항목은 빠졌습니다' : as.length < asAll.length ? `애니메이션 스킬 ${asAll.length - as.length}개는 출처 정보가 없어 빠졌습니다` : '';
+  if (asNote) console.warn(asNote);
   const pm = ex.filter((e) => ko[e.id]).map((e) => ({ ...ko[e.id], code: e.id, en: e.title, inds: e.tags.map((t) => TAG[t] || t), src: 'pm', pm: e }));
   const hf = reg.items.filter((r) => hko[r.name]?.tpl).map((r) => ({ ...hko[r.name], code: r.name, en: r.title, inds: r.tags, src: 'hf', hf: r }));
   // 출처를 나누지 않고 분류별로 번갈아 섞는다(2026-10-12 «요청카드와 실전 예시를 왜 분리한거야?» — 레지스트리도 같은 규칙)
   const all = [...cards.map((c) => ({ ...c, src: 'card' })), ...pm, ...hf, ...as], order = [...new Set(all.map((it) => it.cat))];
   ITEMS = order.flatMap((k) => { const by = ['card', 'pm', 'hf', 'as'].map((s) => all.filter((it) => it.cat === k && it.src === s)); return Array.from({ length: Math.max(...by.map((a) => a.length)) }, (_, i) => by.map((a) => a[i])).flat().filter(Boolean); });
   for (const it of ITEMS) it.hay = [it.code, it.name, it.en, it.plain, it.when, it.cat, ...it.inds, it.pm?.creator, ...(it.pm?.tags || []), it.hf && 'hyperframes 레지스트리', it.as && `animation skills 애니메이션 스킬 ${it.as.kit} ${KIT(it).creator}`].join(' ').toLowerCase();
-  $('#total').textContent = ITEMS.length;
+  $('#total').textContent = ITEMS.length + (asNote ? ` (${asNote})` : '');
   const h = decodeURIComponent(location.hash.slice(1));
   renderChips(); renderList();
   select((ITEMS.find((it) => it.code === h || it.code === h.toUpperCase()) || ITEMS[0]).code);
