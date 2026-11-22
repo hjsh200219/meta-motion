@@ -30,6 +30,16 @@ for code, c in items.items():  # 같은 카드 꼴 — 기존 16개 분류 안�
     assert not re.search(r'netflix|apple|zach|zack|vox|kallaway|cheerful', c['name'], re.I), code  # 실제 회사·크리에이터 이름은 제목에 쓰지 않는다
     assert not c['dx']['base'] or all(b['t0'] < 0 or (0 <= b['t0'] <= b['t1'] <= c['dx']['base'] + 0.01) for b in c['dx']['beats']), (code, c['dx']['base'])  # 초 있는 구간은 카드 길이 안(KB 리뷰 2026-11-22 — 루프·셋째 줄이 길이 밖에 있던 것)
     assert not c['dx']['base'] or all((b['t0'] < 0) == bool(b['label']) for b in c['dx']['beats']), code  # 이름(label) 붙은 것은 초 없는 규칙 — 초 있는 구간에 붙으면 진행표에서 빠진다
+# 색 칸이 있으면 모양 문장도 같은 칸을 쓴다 — 고정 원본 색과 입력 색이 한 요청에 함께 들어가지 않게(KB 리뷰 14차)
+for code, c in items.items():
+    for f in c['fields']:
+        if f['k'] in ('accent_color', 'background', 'palette', 'scheme') and c['dx'].get('look') and not code.startswith('hk-'):
+            assert '{%s}' % f['k'] in c['dx']['look'] and not f['opt'], (code, f['k'])
+# 손글씨는 길이 칸을 비우면 문구 길이로 — 쓰기 끝이 카드 실측(7.66초)보다 뒤, 그 뒤 1.2초 이상 머묾
+hw = items['tg-handwriting']
+assert motion.auto_len(hw, {}) == 8.0 and motion.auto_len(hw, {'text': '오늘도 감사합니다'}) == 9.4
+w = hw['dx']['beats'][hw['dx']['auto']['beat']]['t1'] * 9.4 / hw['dx']['base']
+assert 7.66 <= w <= 9.4 - 1.2, w
 # 원래 6개는 그대로(기존 스킬 이름·크기)
 assert {items[k]['skill'] for k in ORIG} == {'graph', 'map-route', 'breakdown', 'minimalistic-graphics', 'stick-figure', 'zach-d-films'}
 assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == [1080, 1920] for k in ORIG)
