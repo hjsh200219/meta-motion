@@ -390,25 +390,37 @@ const optional = (f, empty) => load(f).catch(() => empty);  // 레지스트리 �
 const optionalErr = (f) => load(f).catch((e) => ({ __err: String(e && e.message || e), __file: f }));
 Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optional('anim_skills.json', null), optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then(([cards, ex, ko, reg, hko, ask, ...herks]) => {
   // 애니메이션 스킬 자료는 따로 검증한다 — 못 읽거나 출처(kit)가 빠진 항목은 빼고 나머지 카드는 그대로 띄운다(KB 리뷰 F7)
+  // 파일마다 따로 검증해 온전한 키트·항목만 모은다 — 기본 파일이 깨져도 보조 파일(herk)은 싣고, 항목 하나가 깨져도 나머지는 뜬다(KB 리뷰 F7·4~7차)
   const obj = (o) => o && typeof o === 'object' && !Array.isArray(o);
-  const okShape = obj(ask) && obj(ask.kits) && obj(ask.items);
-  AS = okShape ? ask : { kits: {}, items: {} };
-  // 목록·찾기·상세·요청 문장이 쓰는 필드를 모두 검사한다 — 하나라도 어긋나면 그 항목만 뺀다
-  const str = (v) => typeof v === 'string' && v.length > 0, strs = (v) => Array.isArray(v) && v.every((x) => typeof x === 'string');
+  const str = (v) => typeof v === 'string' && v.length > 0, optStr = (v) => v === undefined || v === null || typeof v === 'string';
+  const strs = (v) => Array.isArray(v) && v.every((x) => typeof x === 'string'), num = (v) => typeof v === 'number' && Number.isFinite(v);
   const okSize = (s) => s === null || s === undefined || (Array.isArray(s) && s.length === 2 && s.every((n) => Number.isInteger(n) && n > 0));
-  const okKit = (k) => obj(k) && str(k.source) && str(k.license) && str(k.creator) && (str(k.ref) || str(k.commit));
-  // herk 스타일 카드는 따로 둔 파일 — 키트를 먼저 검증하고, 원본에 이미 있는 키는 덮지 않는다(KB 리뷰 4차 F3)
-  const herkBad = herks.filter((h) => obj(h) && h.__err ? !/\b404\/404\b/.test(h.__err) : !(obj(h) && obj(h.kits) && obj(h.items))).length;  // 두 경로 모두 404(파일 없음)만 조용히
-  for (const herk of herks) if (okShape && obj(herk) && !herk.__err && obj(herk.kits) && obj(herk.items)) {
-    const kits = Object.fromEntries(Object.entries(herk.kits).filter(([k, v]) => !Object.hasOwn(AS.kits, k) && okKit(v)));
-    const items = Object.fromEntries(Object.entries(herk.items).filter(([k]) => !Object.hasOwn(AS.items, k)));
-    AS = { kits: { ...AS.kits, ...kits }, items: { ...AS.items, ...items } };
+  // 키트는 화면이 쓰는 값만 검증된 꼴로 다시 만든다(ref 는 문자열일 때만, 아니면 commit)
+  const cleanKit = (k) => obj(k) && str(k.source) && str(k.license) && str(k.creator) && (str(k.ref) || str(k.commit))
+    ? { source: k.source, license: k.license, creator: k.creator, ...(str(k.ref) ? { ref: k.ref } : { commit: k.commit }) } : null;
+  const okField = (f) => obj(f) && str(f.k) && str(f.label) && (f.opt === undefined || typeof f.opt === 'boolean') && (f.ex === undefined || typeof f.ex === 'string' || num(f.ex));
+  const okBeat = (x) => obj(x) && num(x.t0) && num(x.t1) && typeof x.s === 'string' && optStr(x.label) && (x.hold === undefined || typeof x.hold === 'boolean');
+  const okItem = (c, kits) => obj(c) && typeof c.kit === 'string' && Object.hasOwn(kits, c.kit)
+    && [c.name, c.tpl, c.path, c.cat, c.plain, c.when, c.len].every(str) && [c.en, c.skill, c.render, c.thumb].every(optStr) && (c.engine === undefined || typeof c.engine === 'boolean')
+    && strs(c.inds) && (c.notes === undefined || strs(c.notes)) && okSize(c.size) && Array.isArray(c.fields) && c.fields.every(okField)
+    && obj(c.dx) && typeof c.dx.kind === 'string' && Object.hasOwn(KIND, c.dx.kind) && Array.isArray(c.dx.beats) && c.dx.beats.every(okBeat)
+    && [c.dx.look, c.dx.wow, c.dx.avoid, c.dx.lenText].every(optStr) && (c.dx.base === undefined || num(c.dx.base));
+  const notes = [], kits = {}, items = {};
+  const files = [['anim_skills.json', ask], ['anim_herk_paper.json', herks[0]], ['anim_herk_glow.json', herks[1]]];
+  for (const [name, d] of files) {
+    if (d === null || (obj(d) && d.__err)) { if (!(obj(d) && /\b404\/404\b/.test(d.__err))) notes.push(`${name} 을 읽지 못함`); continue; }  // 두 경로 모두 404(파일 없음)만 조용히
+    if (!(obj(d) && obj(d.kits) && obj(d.items))) { notes.push(`${name} 형식이 맞지 않음`); continue; }
+    for (const [k, v] of Object.entries(d.kits)) { const ck = cleanKit(v); if (ck && !Object.hasOwn(kits, k)) kits[k] = ck; }  // 먼저 읽은 파일(기본)의 키트가 이긴다
+    let bad = 0;
+    for (const [code, c] of Object.entries(d.items)) { if (Object.hasOwn(items, code)) continue; if (okItem(c, kits)) items[code] = c; else bad++; }
+    if (bad) notes.push(`${name} 항목 ${bad}개가 온전하지 않음`);
   }
-  const okItem = (c) => obj(c) && typeof c.kit === 'string' && Object.hasOwn(AS.kits, c.kit) && okKit(AS.kits[c.kit]) && typeof c.dx?.kind === 'string' && Object.hasOwn(KIND, c.dx.kind) && [c.name, c.tpl, c.path, c.cat, c.plain, c.when, c.len].every(str) && strs(c.inds) && strs(c.notes || [])
-    && okSize(c.size) && Array.isArray(c.fields) && c.fields.every((f) => obj(f) && str(f.k) && str(f.label)) && obj(c.dx) && Array.isArray(c.dx.beats)
-    && c.dx.beats.every((x) => obj(x) && typeof x.t0 === 'number' && typeof x.t1 === 'number' && typeof x.s === 'string') && (c.thumb === null || c.thumb === undefined || str(c.thumb));
-  const asAll = Object.entries(AS.items), as = asAll.filter(([, c]) => okItem(c)).map(([code, c]) => ({ ...c, code, src: 'as', as: c }));
-  const asNote = ask === null ? '애니메이션 스킬 자료를 읽지 못해 그 항목은 빠졌습니다' : !okShape ? '애니메이션 스킬 자료 형식이 맞지 않아 그 항목은 빠졌습니다' : as.length < asAll.length ? `애니메이션 스킬 ${asAll.length - as.length}개는 자료가 온전하지 않아 빠졌습니다` : herkBad ? `애니메이션 스킬 보조 자료 ${herkBad}개를 읽지 못해 그 항목은 빠졌습니다` : '';
+  AS = { kits, items };
+  const as = [];
+  for (const [code, c] of Object.entries(items)) {
+    try { const it = { ...c, code, src: 'as', as: c }; String([it.en, KIT(it).creator, it.as.kit].join(' ')); as.push(it); } catch { notes.push(`${code} 제외`); }
+  }
+  const asNote = notes.length ? `애니메이션 스킬 자료 일부가 빠짐 — ${notes.join(' · ')}` : '';
   if (asNote) console.warn(asNote);
   const pm = ex.filter((e) => ko[e.id]).map((e) => ({ ...ko[e.id], code: e.id, en: e.title, inds: e.tags.map((t) => TAG[t] || t), src: 'pm', pm: e }));
   const hf = reg.items.filter((r) => hko[r.name]?.tpl).map((r) => ({ ...hko[r.name], code: r.name, en: r.title, inds: r.tags, src: 'hf', hf: r }));
