@@ -164,11 +164,11 @@ document.querySelectorAll('[data-slot]').forEach(function(el){var v=V[el.getAttr
 GLOSS = {
     'NOW': ('현재 표시 딱지', '지금'), 'TOPIC': ('표 머리 — 주제 열', '주제'), 'TIME': ('표 머리 — 시간 열', '시간'),
     'KEY LOCATIONS': ('범례 제목', '주요 장소'), 'of total': ('숫자 뒤 작은 글', '전체 중'), 'VS': ('가운데 대결 표시', 'VS'), 'vs': ('가운데 대결 표시', 'vs'),
-    'noun': ('품사 표시', '명사'), 'DW': ('배지 이니셜', None), 'JL': ('배지 이니셜', None),
+    'noun': ('품사 표시', '명사'), 'DW': ('배지 이니셜(비우면 이름에서)', None), 'JL': ('배지 이니셜(비우면 이름에서)', None),
     'Engagement': ('작은 머리말', '참여도'), 'Scenario A': ('왼쪽 카드 머리말', '시나리오 A'), 'Scenario B': ('오른쪽 카드 머리말', '시나리오 B'),
     'Value': ('가운데 머리말', '가치'), 'Advantages': ('왼쪽 열 제목', '장점'), 'Disadvantages': ('오른쪽 열 제목', '단점'), 'The Shift': ('카드 머리말', '변화'),
     'Chapter': ('장 표시 글', '장'), 'Next Up': ('다음 표시 글', '다음'), 'TOTAL MARKET VALUE': ('숫자 위 머리말', '전체 시장 가치'), 'PROJECTED BY 2028': ('숫자 아래 설명', '2028년 전망'),
-    'BEFORE': ('왼쪽 막대 이름', '이전'), 'AFTER': ('오른쪽 막대 이름', '이후'), 'UTILISED': ('숫자 아래 글', '사용률'), 'YEAR OVER YEAR': ('숫자 아래 글', '전년 대비'),
+    'BEFORE': ('위쪽(첫째) 막대 이름', '이전'), 'AFTER': ('아래쪽(둘째) 막대 이름', '이후'), 'UTILISED': ('숫자 아래 글', '사용률'), 'YEAR OVER YEAR': ('숫자 아래 글', '전년 대비'),
     'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '100명 중'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 {n_outof} 중'),
     'retained': ('왼쪽 이름', '유지'), 'churned': ('오른쪽 이름', '이탈'), 'pass rate': ('숫자 아래 글', '합격률'), 'PASS RATE': ('숫자 아래 글', '합격률'),
     'Intuition': ('왼쪽 이름', '직관'), 'Data-Driven': ('오른쪽 이름', '데이터 기반'), 'minutes': ('분 단위 글', '분'), 'seconds': ('초 단위 글', '초'),
@@ -191,7 +191,8 @@ def fixed_fields(card, item_fields=()):
         if ex and '{' in ex:  # 다른 칸 값으로 만드는 고정 글(같은 수를 두 번 받지 않게, #541 1차) — 칸이 아니라 tmpl
             out.append({'k': f'fx{len(out) + 1}', 'tmpl': ex, 'fixed': s}); continue
         need = bool(re.search(r'\d', s))  # 숫자가 든 고정 글(기간·연도 등)은 카드의 핵심 값이라 필수 — 비우면 예시값이 다른 대상에 남는다(#541 3차)
-        out.append({'k': f'fx{len(out) + 1}', 'label': lab if need else f'{lab}(선택)', 'opt': not need, 'ex': ex if ex is not None else (name.replace(' ', '')[-2:] or '★'), 'fixed': s})
+        out.append({'k': f'fx{len(out) + 1}', 'label': lab if need else f'{lab}(선택)', 'opt': not need, 'ex': ex if ex is not None else (name.replace(' ', '')[-2:] or '★'), 'fixed': s,
+                    **({'auto': 'initial'} if ex is None else {})})  # 배지 이니셜 — 안 주면 입력한 이름에서 만든다(#541 4차)
     return out
 
 def prepare(card, vals, template=None):
@@ -279,7 +280,7 @@ def probe(items, workers=4):
 KIT = {'source': REPO, 'license': 'MIT + Herk Edit Kit Use Permission (licenses/PERMISSION-herk-edit-kit.txt)', 'creator': 'Nate Herk', 'commit': COMMIT, 'cache': True,
        'fetched': '2026-11-22', 'found_via': '쇼츠 «10 GitHub Repos That Level Up HyperFrames Videos»',
        'how': 'python3 build_herk.py card {code} --out <프로젝트> [--template <템플릿 id>] [칸=값 …] → <프로젝트>/compositions/{code}.html 과 fonts/ '
-              '(안 준 칸은 카드 예시값, 색·서체는 템플릿 — 원본의 AIS 브랜드 색은 템플릿 색으로 바꿔 넣는다). host 에 data-composition-src 로 넣고 길이는 카드 장면 순서대로'}
+              '(안 준 필수 칸은 카드 예시값, 안 준 선택 칸은 비운다(예시 인물·장소가 남지 않게), 색·서체는 템플릿 — 원본의 AIS 브랜드 색은 템플릿 색으로 바꿔 넣는다). host 에 data-composition-src 로 넣고 길이는 카드 장면 순서대로'}
 OUT_FILES = {'vox-explainer': 'anim_herk_paper.json', 'kallaway': 'anim_herk_glow.json'}
 OVERLAY = {'lower-third', 'label'}
 
@@ -296,8 +297,12 @@ def vals_of(item, over=None):
     """카드 예시값을 기본으로 사용자 값을 덮는다 — 칸 이름(k)을 data-slot 이름으로(손잡이 n_… 는 그대로). 안 준 칸에 원본 영어가 남지 않게."""
     over = over or {}
     out = {}
+    user = bool(over)  # 사용자가 칸을 채워 부르면 안 준 선택 칸은 비운다 — 예시 인물·장소·출처가 새 내용에 붙지 않게(#541 4차). 예시 렌더(over 없음)는 예시값
+    nm = next((str(over.get(f['k'], f.get('ex', ''))) for f in item['fields'] if f['k'] in ('name', 'title')), '')
     for f in item['fields']:
         v = over.get(f['k'], f.get('ex', ''))
+        if f.get('auto') == 'initial' and f['k'] not in over: v = nm.replace(' ', '')[-2:] or v
+        elif user and f.get('opt') and f['k'] not in over and not f.get('fixed'): v = ''
         if f.get('fixed'): out.setdefault('__fixed', {})[f['fixed']] = v; continue  # 칸 밖 고정 글(GLOSS)
         out[f['k'] if f['k'].startswith('n_') else f.get('slot', f['k'])] = v
     ex = {f['k']: over.get(f['k'], f.get('ex', '')) for f in item['fields']}
@@ -404,6 +409,9 @@ def derived(text, i, kind, lo=None, hi=None):
     if i >= len(ms): return None
     m = ms[i]; x = float(m.group())
     if kind == 'num': return repr(x)
+    if kind == 'of10':  # «D 중 N» 꼴을 10칸 기준 점등 수로(분모가 10이 아니어도 비율을 지킨다, #541 4차)
+        d = float(ms[i - 1].group()) if i >= 1 else 0
+        return repr(float(round(x / d * 10))) if d else None
     if kind == 'ratio': return repr(round(x / 100, 6))
     if kind == 'mag':
         u = s[m.end():m.end() + 1].upper(); mul = {'K': 1e3, 'M': 1e6, 'B': 1e9}.get(u)
@@ -464,6 +472,8 @@ def polish(fields, card=None):
             if f['k'] in derive: continue
         hit = next(([x['k'], i, kind] for x in texts for i in range(len(re.findall(NUM, str(x['ex']).replace(',', ''))))
                     for kind in KINDS if derived(str(x['ex']), i, kind) == norm(f.get('ex'))), None)
+        if hit and hit[2] == 'num' and hit[1] == 1 and derived(str(next(x['ex'] for x in texts if x['k'] == hit[0])), 0, 'num') == '10.0':
+            hit[2] = 'of10'  # 「10명 중 6명」 → 분모를 반영한 10칸 점등
         if hit: derive[f['k']] = hit
     for f in out:  # 계산되지 않는 손잡이는 필수 — 비우면 예시값(예: 최고 위험 단계)이 설명과 어긋난 채 남는다(#540 4차)
         if f['k'].startswith('n_') and f['k'] not in derive and f.get('opt') and str(f.get('ex', '')).strip():  # 예시가 빈 손잡이(없으면 비움)는 선택으로 둔다(#541 1차)

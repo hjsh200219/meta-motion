@@ -72,6 +72,11 @@ if items:
     assert hk.vals_of(_r, {'n_outof': '9,500'})['__fixed'] == {'out of 4,200': '전체 9,500 중'}
     assert all(f.get('opt') for c in items.values() for f in c['fields'] if f['k'].startswith('n_') and not str(f.get('ex', '')).strip())  # 예시가 빈 손잡이는 선택
     assert all(not f.get('opt') for c in items.values() for f in c['fields'] if f.get('fixed') and any(ch.isdigit() for ch in f['fixed']))  # 숫자가 든 고정 글 칸은 필수(#541 3차)
+    # 사용자 값으로 부르면 안 준 선택 칸은 비우고, 배지 이니셜은 이름에서, 「D 중 N」은 10칸 비율로(#541 4차)
+    assert hk.vals_of(items['hk-glow-t2-lower-third-geopin'], {'place': '제주 성산'})['coords'] == ''
+    assert hk.vals_of(items['hk-glow-t2-lower-third-badgecard'], {'name': '김하늘'})['__fixed'] == {'JL': '하늘'}
+    assert hk.vals_of(items['hk-glow-t1-stat-isotype'], {'stat': '20명 중 6명'})['n_lit'] == '3'
+    assert hk.vals_of(items['hk-glow-t1-stat-isotype'])['n_lit'] == '6'
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 {len(items)}장)')
 else:
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 파일 없음)')
