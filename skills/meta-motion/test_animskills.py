@@ -48,6 +48,10 @@ assert '[비운 칸]' not in run('show', 'rf-zoom-portal', 'kicker=다음', 'coo
 assert motion.compose('[[막대 {c}||회색]]', lambda k: None) == '회색' and motion.compose('[[막대 {c}||회색]]', lambda k: '빨강') == '막대 빨강'
 # 손글씨 길이를 문구보다 짧게 넣으면 최소 길이로(16차 F1)
 assert '최소 길이로 잡음' in run('show', 'tg-handwriting', 'dur=1초').stdout and '전체 20초' in run('show', 'tg-handwriting', 'dur=20초').stdout
+# 개수가 같아야 하는 쉼표 칸은 어긋나면 맨 앞 [입력 확인](17차 F3), 여러 줄 칸은 앞 들여쓰기 유지(17차 F2)
+assert run('show', 'ml-bar-chart-grow', 'labels=가,나,다,라,마').stdout.startswith('[입력 확인] 항목 이름 5개·숫자 4개')
+assert all('[입력 확인]' not in run('show', k).stdout for k in ('ml-bar-chart-grow', 'ml-line-chart-draw', 'as-graph', 'dg-concept'))
+assert '\n    들여쓴 첫 줄\n' in run('show', 'dg-code-walkthrough', 'code=    들여쓴 첫 줄\n둘째 줄').stdout
 # 원래 6개는 그대로(기존 스킬 이름·크기)
 assert {items[k]['skill'] for k in ORIG} == {'graph', 'map-route', 'breakdown', 'minimalistic-graphics', 'stick-figure', 'zach-d-films'}
 assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == [1080, 1920] for k in ORIG)

@@ -35,8 +35,14 @@ def resolver(fields, vals, g, no_file=False):
         if k in g: return (g[k] or '').strip() or None
         f = fm.get(k)
         if not f: return None
-        return (vals.get(k) or '').strip() or (None if f['opt'] else f['ex'])
+        v = vals.get(k) or ''
+        if v.strip(): return v.lstrip('\n').rstrip() if multi_line(f) else v.strip()  # 여러 줄 칸은 앞 들여쓰기 유지(17차)
+        return None if f['opt'] else f['ex']
     return r
+
+
+def multi_line(f):  # preview.html multiLine 과 같은 규칙 — 예시에 줄바꿈이 있거나 «줄마다» 칸
+    return '\n' in str(f.get('ex', '')) or '줄마다' in (f.get('label') or '')
 
 
 def compose(tpl, r):
@@ -73,9 +79,19 @@ def fixed_ratio(c):
     return next((k for k, v in RES.items() if v == f'{s[0]}x{s[1]}'), f'{s[0]}x{s[1]} 고정')
 
 
+def count_warn(c, r):
+    """dx.same 묶음(항목·숫자·색처럼 개수가 같아야 하는 쉼표 칸)의 개수가 다르면 맨 앞 [입력 확인] 줄 — preview.html countWarn 과 같은 규칙(17차)."""
+    bad = []
+    for grp in (c.get('dx') or {}).get('same') or []:
+        got = [(re.split(r'[(（]', f['label'])[0].strip(), len([x for x in re.split(r'[,，]', r(f['k'])) if x.strip()]))
+               for f in c['fields'] if f['k'] in grp and r(f['k']) is not None]
+        if len({n for _, n in got}) > 1: bad.append('·'.join(f'{h} {n}개' for h, n in got))
+    return ''.join(f'[입력 확인] {b} — 개수가 같아야 합니다. 맞춘 뒤 복사하세요.\n' for b in bad)
+
+
 def simple(pre, c, vals, g):
     r = resolver(c['fields'], vals, g)
-    return f"{pre} {compose(c['tpl'], r)}{compose(TAIL, r)}"
+    return f"{count_warn(c, r)}{pre} {compose(c['tpl'], r)}{compose(TAIL, r)}"
 
 
 def auto_len(c, vals):
@@ -94,7 +110,7 @@ def auto_len(c, vals):
 
 def detail(pre, c, vals, g):
     dx = c['dx']; r = resolver(c['fields'], vals, g)
-    out = [f"{pre} {compose(c['tpl'], r)}", '\n[길이·크기] ']
+    out = [f"{count_warn(c, r)}{pre} {compose(c['tpl'], r)}", '\n[길이·크기] ']
     dF = next((f for f in c['fields'] if f['k'] == 'dur'), None); D = None
     if dF:
         v = (vals.get('dur') or '').strip()
