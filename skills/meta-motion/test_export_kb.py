@@ -2,7 +2,7 @@
 """export_kb.py 점검 — 내보낸 KB 페이지가 원본 영상 모드·뒤로 가기·자료 5개·레지스트리 그림을 갖췄는지. 실행: python3 test_export_kb.py"""
 import tempfile
 from pathlib import Path
-from export_kb import DATA, KO, build
+from export_kb import DATA, KO, OPTIONAL, build
 
 with tempfile.TemporaryDirectory() as d:
     build(Path(d))
@@ -10,7 +10,9 @@ with tempfile.TemporaryDirectory() as d:
     assert html.startswith('<!doctype html>') and html.count('<meta charset') == 1
     assert "window.MOTION_MEDIA = 'origin'" in html and '← PillDocKb</a>\n    <h1>' in html
     assert sorted(p.stem for p in (Path(d) / 'anim').glob('*.html')) == sorted(p.stem for p in (Path(__file__).resolve().parent / 'data/anim').glob('*.html')) and not (Path(d) / 'anim/index.json').exists() and len(list((Path(d) / 'anim/thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/anim/thumb').glob('*.jpg')))
-    assert all((Path(d) / f).stat().st_size > 1000 for f in DATA)
+    HERE_D = Path(__file__).resolve().parent / 'data'
+    assert all((Path(d) / f).stat().st_size > 1000 for f in DATA if f not in OPTIONAL or (HERE_D / f).exists())
+    KO = [f for f in KO if f not in OPTIONAL or (HERE_D / f).exists()]
     assert all(k not in (Path(d) / f).read_text(encoding='utf-8') for f in KO for k in ('"src_sha"', '"cat_src"', '"hold_checked"', '"commit"'))
     assert all(len((Path(d) / f).read_text(encoding='utf-8')) < 480_000 for f in KO)   # KB PR AI 리뷰 diff 상한 50만 자 — 파일 하나가 한 PR 에 들어가야 한다
     assert len(list((Path(d) / 'hf_thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/hf_thumb').glob('*.jpg'))) > 400

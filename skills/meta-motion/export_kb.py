@@ -20,7 +20,7 @@ HEAD = """<!doctype html>
 # 만들 때만 쓰는 키(재료 해시·repo 커밋·카드 재료인 변수·싱크 지점)를 빼고 내보내는 파일과 그 꼴.
 # KB PR 의 AI 리뷰는 diff 50만 자 상한이 있다(2026-10-17 #284 초과) — 한 줄로 줄여 파일 하나가 한 PR 에 들어가게 한다.
 # prompt_motion_ko.json 은 KB 에 이미 있는 그대로 둔다(해시를 빼면 233줄이 바뀌어 diff 16만 자가 더 붙는다).
-KO = {'hf_registry_ko.json': None, 'hf_registry.json': None, 'anim_skills.json': None}
+KO = {'hf_registry_ko.json': None, 'hf_registry.json': None, 'anim_skills.json': None, 'anim_herk_paper.json': None, 'anim_herk_glow.json': None}
 BUILD_KEYS = {'src_sha', 'cat_src', 'cat_p', 'hold_checked', 'commit', 'variables', 'sync'}
 
 
@@ -30,7 +30,8 @@ def strip_build(v):
     return v
 
 
-DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_registry.json', 'hf_registry_ko.json', 'anim_skills.json')
+DATA = ('motion.json', 'prompt_motion.json', 'prompt_motion_ko.json', 'hf_registry.json', 'hf_registry_ko.json', 'anim_skills.json', 'anim_herk_paper.json', 'anim_herk_glow.json')
+OPTIONAL = {'anim_herk_paper.json', 'anim_herk_glow.json'}  # herk 스타일 카드(build_herk.py) — 없으면 건너뛴다
 BACK = '<a href="/" style="color:inherit;opacity:.7;font-size:13px;text-decoration:none">← PillDocKb</a>\n    <h1>'
 
 
@@ -43,9 +44,10 @@ def build(out: Path, back: bool = True) -> None:  # back=False: 로컬 보기(se
     head = HEAD if back else '\n'.join(l for l in HEAD.split('\n') if '/static/' not in l)  # 로컬엔 KB 아이콘이 없다
     (out / 'index.html').write_text(head + body + '\n</html>\n', encoding='utf-8')
     for f in DATA:
+        if f in OPTIONAL and not (HERE / 'data' / f).exists(): continue
         if f in KO:  # 만들 때만 쓰는 키(재료 해시·repo 커밋)는 빼고 내보낸다 — 16진 해시가 KB pre-commit 시크릿 검사에 걸린다(2026-10-17)
             data = json.loads((HERE / 'data' / f).read_text(encoding='utf-8'))
-            for k in data.get('kits', {}).values() if f == 'anim_skills.json' else ():  # 화면의 원본 링크용 짧은 커밋(7자는 시크릿 검사에 안 걸린다)
+            for k in data.get('kits', {}).values() if f.startswith('anim_') else ():  # 화면의 원본 링크용 짧은 커밋(7자는 시크릿 검사에 안 걸린다)
                 k['ref'] = k['commit'][:7]
             (out / f).write_text(json.dumps(strip_build(data), ensure_ascii=False, indent=KO[f], separators=(',', ': ') if KO[f] else (',', ':')), encoding='utf-8')
         else:

@@ -18,9 +18,17 @@ ORDER = ['as-3d-cartoon', 'as-stick-figure', 'as-line-art', 'as-map-route', 'as-
 TAIL = '\n⛔ 원본 예시의 문구·장면을 그대로 쓰지 않는다 · 코드를 거의 그대로 옮기면 원본 라이선스 고지를 함께 둔다'
 
 
+HERK = [HERE / 'data' / f for f in ('anim_herk_paper.json', 'anim_herk_glow.json')]  # herk-edit-kit 스타일 카드(build_herk.py) — 스타일별 두 파일(KB 리뷰 파일당 48만 자 상한). 꼴은 같다(kits + items)
+
+
 @functools.lru_cache(maxsize=1)
 def load():
-    return json.loads(DATA.read_text(encoding='utf-8'))
+    idx = json.loads(DATA.read_text(encoding='utf-8'))
+    for f in HERK:
+        if f.exists():
+            h = json.loads(f.read_text(encoding='utf-8'))
+            idx['kits'].update(h['kits']); idx['items'].update(h['items'])
+    return idx
 
 
 def kit_of(code):
@@ -68,7 +76,7 @@ def credit(code):
         return head + how + notes + TAIL
     root = cache(c['kit'])
     where = f"{root}/{c['path']}" if k.get('cache') else url(code)
-    how = k['how'].format(file=where, cache=root, url=url(code))
+    how = k['how'].format(file=where, cache=root, url=url(code), code=code)
     if k.get('cache'): how += f" · 캐시가 없으면 python3 animskills.py sync {c['kit']}"
     head = f"\n[원본] {c['kit']} {c['en']} — {url(code)} ({k['license']}, 커밋 {k['commit'][:7]}) · {size_text(c)}"
     return head + f"\n[만드는 법] {how}" + notes + TAIL
