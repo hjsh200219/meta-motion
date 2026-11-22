@@ -107,7 +107,9 @@ def detail(pre, c, vals, g):
     elif (g.get('color') or '').strip():
         out.append('\n[모양] ' + compose('색·분위기: {color}.', r))
     out.append('\n[움직임] ' + MOVE.get(dx['kind'], MOVE['scene']))
-    avoid = AVOID.replace('내레이션·음악·효과음 없음 · ', '') if c.get('engine') else AVOID  # 음성이 붙는 한 편짜리 엔진(애니메이션 스킬)
+    narr = any(f['k'] == 'narration' and str(vals.get('narration') or '').strip() for f in c.get('fields', []))  # 내레이션 칸을 채운 카드(dg-concept)
+    avoid = (AVOID.replace('내레이션·음악·효과음 없음 · ', '') if c.get('engine')  # 음성이 붙는 한 편짜리 엔진(애니메이션 스킬)
+             else AVOID.replace('내레이션·음악·효과음 없음', '음악·효과음 없음') if narr else AVOID)
     out.append('\n[하지 말 것] ' + avoid + (' · ' + compose(dx['avoid'], r) if dx.get('avoid') else ''))
     return ''.join(out)
 

@@ -185,7 +185,9 @@ function detail(pre, c, vals, g) {
   if (dx.look) { const lk = trim(dx.look); out.push('\n[모양] ' + compose(/[.!?]$/.test(lk) ? lk : lk + '.', r) + compose('[[ 색·분위기는 「{color}」 우선.]]', r)); }
   else if (trim(g.color)) out.push('\n[모양] ' + compose('색·분위기: {color}.', r));
   out.push('\n[움직임] ' + (MOVE[dx.kind] || MOVE.scene));
-  out.push('\n[하지 말 것] ' + (c.engine ? AVOID.replace('내레이션·음악·효과음 없음 · ', '') : AVOID) + (dx.avoid ? ' · ' + compose(dx.avoid, r) : ''));
+  // 내레이션 칸을 채운 카드는 내레이션 금지만 뺀다(KB 리뷰 10차) — motion.py detail 과 같은 규칙
+  const narr = (c.fields || []).some((f) => f.k === 'narration' && trim(vals.narration));
+  out.push('\n[하지 말 것] ' + (c.engine ? AVOID.replace('내레이션·음악·효과음 없음 · ', '') : narr ? AVOID.replace('내레이션·음악·효과음 없음', '음악·효과음 없음') : AVOID) + (dx.avoid ? ' · ' + compose(dx.avoid, r) : ''));
   return out.join('');
 }
 </script>
@@ -392,7 +394,7 @@ const load = (f) => fetch(f).then((r) => r.ok ? r : fetch('data/' + f).then((d) 
 const optional = (f, empty) => load(f).catch(() => empty);  // 레지스트리 자료가 없는 옛 게시본에서도 나머지는 뜬다
 // 선택 파일(herk 스타일 카드) — 없음(404)은 조용히 넘기고, 그 밖의 읽기·해석 실패는 표시한다(KB 리뷰 5차 F5)
 const optionalErr = (f) => load(f).catch((e) => ({ __err: String(e && e.message || e), __file: f }));
-Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optional('anim_skills.json', null), optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then(([cards, ex, ko, reg, hko, ask, ...herks]) => {
+Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optionalErr('anim_skills.json'), optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then(([cards, ex, ko, reg, hko, ask, ...herks]) => {
   // 애니메이션 스킬 자료는 따로 검증한다 — 못 읽거나 출처(kit)가 빠진 항목은 빼고 나머지 카드는 그대로 띄운다(KB 리뷰 F7)
   // 파일마다 따로 검증해 온전한 키트·항목만 모은다 — 기본 파일이 깨져도 보조 파일(herk)은 싣고, 항목 하나가 깨져도 나머지는 뜬다(KB 리뷰 F7·4~7차)
   const obj = (o) => o && typeof o === 'object' && !Array.isArray(o);
