@@ -156,8 +156,8 @@
 - **CSS transition·`@keyframes` 금지**(huashu-design)
   - reelforge 는 반대로 씬 시작 뒤 CSS 숨쉬기를 쓰고, 0.8.162 에서 렌더된다. 금지 규칙으로 넣지 않았다.
 - **결정성(시계·난수 금지)** 은 `check.py` 에 이미 있다.
-- **herk-edit-kit 의 카드 406장**(Vox·Kallaway 스타일)은 이번에 넣지 않았다(보류).
-  - 카드 자체는 키트 사용 허락(`licenses/PIPELINE-USE-PERMISSION.txt`)이 덮지만, 두 스타일의 `tokens.css` 가 AIS 브랜드 색이고 LICENSE 의 「Note on brand assets」는 AIS 자산을 자기 것으로 바꿔 쓰라고 한다 — 그대로는 못 쓰고, 토큰을 meta-motion 템플릿 색·서체로 바꾸면 쓸 수 있다.
-  - 넣으려면 카드 406장을 읽는 빌드 스크립트(한국어 카드는 build_hf_ko.py 처럼 생성)와 목록 그림 406장 렌더가 필요하다. 영어 전용·1920x1080 고정이고, 원본이 스스로 「렌더 QA 를 다 거치지 않은 초안」이라고 밝혔다.
+- **herk-edit-kit 의 카드 406장**(Vox·Kallaway 스타일)은 2026-11-22 보류했다가 2026-11-23 사용자 결정으로 380장을 넣었다.
+  - 두 스타일의 `tokens.css` 가 AIS 브랜드 색이라 LICENSE 「Note on brand assets」대로 브랜드 색·서체를 meta-motion 템플릿 것으로 바꿔 넣는다(`build_herk.py`).
+  - 원본이 스스로 「렌더 QA 를 다 거치지 않은 초안」이라고 밝혔다 — 넣기 전에 카드마다 끝 화면 칸 글을 대조했고, 맞지 않은 카드는 뺐다(SKILL.md 「애니메이션 스킬」).
   - 무음 자르기·말실수 자르기 같은 편집 도구는 이 스킬(모션 카드) 범위 밖이다.
 - **openai/plugins 의 hyperframes 스킬**은 HeyGen 공식 스킬의 Codex 사본이다. 이 컴퓨터에 설치된 판(HeyGen 원본)과 해시가 달라 옛 판이므로 넣지 않았다.

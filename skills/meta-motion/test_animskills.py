@@ -8,8 +8,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 run = lambda *a: subprocess.run([sys.executable, os.path.join(HERE, 'motion.py'), *a], capture_output=True, text=True)
 ORIG = {'as-graph', 'as-map-route', 'as-breakdown', 'as-line-art', 'as-stick-figure', 'as-3d-cartoon'}
 KITS = {'claude-animation-skills', 'reelforge', 'hyperframes-motion-library', 'tegaki', 'animated-diagrams-skill', 'saas-motion-kit',
-        'huashu-design', 'product-launch-motion'}
-PREFIX = {'claude-animation-skills': 'as-', 'reelforge': 'rf-', 'hyperframes-motion-library': 'ml-', 'tegaki': 'tg-',
+        'huashu-design', 'product-launch-motion'} | ({'herk-edit-kit'} if any(f.exists() for f in animskills.HERK) else set())  # herk 스타일 카드(build_herk.py) — 자료 파일이 있을 때만
+PREFIX = {'herk-edit-kit': 'hk-', 'claude-animation-skills': 'as-', 'reelforge': 'rf-', 'hyperframes-motion-library': 'ml-', 'tegaki': 'tg-',
           'animated-diagrams-skill': 'dg-', 'saas-motion-kit': 'tr-', 'huashu-design': 'hs-', 'product-launch-motion': 'pl-'}
 
 idx = animskills.load()
@@ -33,8 +33,10 @@ for code, c in items.items():  # 같은 카드 꼴 — 기존 16개 분류 안�
 # 원래 6개는 그대로(기존 스킬 이름·크기)
 assert {items[k]['skill'] for k in ORIG} == {'graph', 'map-route', 'breakdown', 'minimalistic-graphics', 'stick-figure', 'zach-d-films'}
 assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == [1080, 1920] for k in ORIG)
-# 넣지 않기로 한 것 — herk-edit-kit 카드(AIS 브랜드 토큰을 바꿔야 쓸 수 있어 보류)·openai/plugins(HeyGen 공식 스킬 사본)
-assert not any(k.startswith(('hk-', 'oa-')) for k in items)
+# 넣지 않기로 한 것 — openai/plugins(HeyGen 공식 스킬 사본). herk-edit-kit 카드는 2026-11-23 사용자 결정으로 템플릿 토큰을 바꿔 넣었다(build_herk.py)
+assert not any(k.startswith('oa-') for k in items)
+assert all(items[k]['kit'] == 'herk-edit-kit' for k in items if k.startswith('hk-'))
+assert not any(k.startswith('hk-') for k in items) or len([k for k in items if k.startswith('hk-')]) >= 350  # 넣었으면 검증을 통과한 380장 안팎
 
 # 한 목록: motion·catalog·recommend 어디서나 보이고 id 가 겹치지 않는다
 ev = {c['code']: c for c in motion.everything()}
