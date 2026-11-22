@@ -68,7 +68,7 @@ assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == 
 # 넣지 않기로 한 것 — openai/plugins(HeyGen 공식 스킬 사본). herk-edit-kit 카드는 2026-11-23 사용자 결정으로 템플릿 토큰을 바꿔 넣었다(build_herk.py)
 assert not any(k.startswith('oa-') for k in items)
 assert all(items[k]['kit'] == 'herk-edit-kit' for k in items if k.startswith('hk-'))
-assert not any(k.startswith('hk-') for k in items) or len([k for k in items if k.startswith('hk-')]) >= 320  # 넣었으면 검증·자료 잠금 검사를 통과한 330장 안팎
+assert not any(k.startswith('hk-') for k in items) or len([k for k in items if k.startswith('hk-')]) >= 320  # 넣었으면 검증·자료 잠금 검사를 통과한 328장 안팎
 
 # 한 목록: motion·catalog·recommend 어디서나 보이고 id 가 겹치지 않는다
 ev = {c['code']: c for c in motion.everything()}

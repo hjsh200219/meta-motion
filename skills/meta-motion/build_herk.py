@@ -190,7 +190,8 @@ def fixed_fields(card, item_fields=()):
         seen.add(s); lab, ex = GLOSS[s]
         if ex and '{' in ex:  # 다른 칸 값으로 만드는 고정 글(같은 수를 두 번 받지 않게, #541 1차) — 칸이 아니라 tmpl
             out.append({'k': f'fx{len(out) + 1}', 'tmpl': ex, 'fixed': s}); continue
-        out.append({'k': f'fx{len(out) + 1}', 'label': f'{lab}(선택)', 'opt': True, 'ex': ex if ex is not None else (name.replace(' ', '')[-2:] or '★'), 'fixed': s})
+        need = bool(re.search(r'\d', s))  # 숫자가 든 고정 글(기간·연도 등)은 카드의 핵심 값이라 필수 — 비우면 예시값이 다른 대상에 남는다(#541 3차)
+        out.append({'k': f'fx{len(out) + 1}', 'label': lab if need else f'{lab}(선택)', 'opt': not need, 'ex': ex if ex is not None else (name.replace(' ', '')[-2:] or '★'), 'fixed': s})
     return out
 
 def prepare(card, vals, template=None):
@@ -365,7 +366,9 @@ DATA_LOCKED = {'vox-explainer.t1.overview.vertical-timeline', 'vox-explainer.t1.
                'kallaway.t2.lower-third.typedname', 'kallaway.t2.label.numbercallout', 'kallaway.t2.label.percent',
                'kallaway.t2.label.deltachip', 'kallaway.t2.label.price', 'kallaway.t1.overview.featurecompare',
                # #541 2차: 시각·단계 번호·별점·꽃잎 값·재생 시점·변화율·좌표·전체 장 수가 칸 밖 고정 숫자·스크립트 값에 박힌 카드
-               'kallaway.t2.label.timestamp', 'kallaway.t2.label.step', 'kallaway.t2.lower-third.ratingname', 'kallaway.t1.stat.polar', 'kallaway.t2.lower-third.nowplaying', 'kallaway.t2.label.sparkchip', 'kallaway.t2.label.coord', 'kallaway.t1.section.index'}
+               'kallaway.t2.label.timestamp', 'kallaway.t2.label.step', 'kallaway.t2.lower-third.ratingname', 'kallaway.t1.stat.polar', 'kallaway.t2.lower-third.nowplaying', 'kallaway.t2.label.sparkchip', 'kallaway.t2.label.coord', 'kallaway.t1.section.index',
+               # #541 3차: 지도 점·표식 위치가 고정 좌표라 이름을 바꿔도 위치를 옮길 수 없는 카드
+               'kallaway.t1.overview.mappoints', 'kallaway.t1.overview.spectrum'}
 
 
 def locked(card):
