@@ -41,8 +41,8 @@ def fits_ratio(it, ratio):
     """레지스트리 항목은 크기가 고정이다 — 세로 영상에 가로 고정(블록 192·컴포넌트 29개), 가로 영상에 세로 고정 항목을 넣으면 화면 밖으로 넘친다.
     요청 카드·실전 예시는 비율을 요청 문장으로 정하고, 크기 미표기 컴포넌트는 조각이라 남긴다."""
     if it['src'] not in ('hf', 'as') or not ratio: return True
-    if it['src'] == 'as':  # 애니메이션 스킬은 1080x1920 고정
-        import animskills; w, h = animskills.load()['size']; d = {'width': w, 'height': h}
+    if it['src'] == 'as':  # 애니메이션 스킬은 항목마다 — 고정(원래 6개 1080x1920·reelforge·motion-library 1920x1080) 또는 가변(null)
+        import animskills; s = animskills.load()['items'][it['code']].get('size'); d = {'width': s[0], 'height': s[1]} if s else None
     else:
         import hf
         d = hf.ITEMS.get(it['code'], {}).get('dimensions')

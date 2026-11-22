@@ -45,6 +45,8 @@ def build(out: Path, back: bool = True) -> None:  # back=False: 로컬 보기(se
     for f in DATA:
         if f in KO:  # 만들 때만 쓰는 키(재료 해시·repo 커밋)는 빼고 내보낸다 — 16진 해시가 KB pre-commit 시크릿 검사에 걸린다(2026-10-17)
             data = json.loads((HERE / 'data' / f).read_text(encoding='utf-8'))
+            for k in data.get('kits', {}).values() if f == 'anim_skills.json' else ():  # 화면의 원본 링크용 짧은 커밋(7자는 시크릿 검사에 안 걸린다)
+                k['ref'] = k['commit'][:7]
             (out / f).write_text(json.dumps(strip_build(data), ensure_ascii=False, indent=KO[f], separators=(',', ': ') if KO[f] else (',', ':')), encoding='utf-8')
         else:
             shutil.copyfile(HERE / 'data' / f, out / f)

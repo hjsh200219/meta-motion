@@ -28,10 +28,10 @@ def _motion(c):
         prov = {'source': 'hyperframes', 'url': f"{hf.REG['source']}/{c['code']}", 'creator': 'HeyGen', 'license': hf.license_of(c['code'])}
         d = it.get('dimensions')
         size, brand, actions = ((d['width'], d['height']) if d else None), hf.brand_of(c['code']), actions + ['add']
-    elif src == 'as':  # 원본 스킬이 1080x1920 고정으로 렌더한다
-        idx = animskills.load()
-        prov = {'source': 'animation-skills', 'url': f"{idx['source']}/tree/{idx['commit'][:7]}/skills/{c['skill']}", 'creator': idx['creator'], 'license': idx['license'], 'commit': idx['commit']}
-        size = tuple(idx['size'])
+    elif src == 'as':  # GitHub 모션 키트 — 출처(kit)·크기는 항목마다
+        k = animskills.kit_of(c['code'])
+        prov = {'source': 'animation-skills', 'url': animskills.url(c['code']), 'creator': k['creator'], 'license': k['license'], 'commit': k['commit']}
+        size = tuple(c['size']) if c.get('size') else None
     return {'id': c['code'], 'aliases': [], 'kind': 'motion', 'title': c['name'], 'summary': c['plain'], 'when': c['when'],
             'tags': list(c.get('inds') or []), 'category': c['cat'], 'actions': actions, 'provenance': prov, 'brand': brand, 'size': size,
             'search': _search(c['code'], c['name'], c.get('en'), c['plain'], c['when'], c['cat'], *(c.get('inds') or []), prov['creator']), 'src': src}
@@ -79,7 +79,7 @@ def find(key):
 def label(i):
     """한 줄 꼬리표 — 목록·찾기에서 종류와 출처를 보인다(사용자는 출처를 몰라도 되지만 표기는 남긴다)."""
     p = i['provenance']
-    tail = {'prompt-motion': f" · {p['creator']}", 'hyperframes': f" · {p['license']}", 'animation-skills': ' · MIT'}.get(p['source'], '')
+    tail = {'prompt-motion': f" · {p['creator']}", 'hyperframes': f" · {p['license']}", 'animation-skills': f" · {p['license'].split(' ')[0]}"}.get(p['source'], '')  # 템플릿은 license 가 빈 문자열 — split()[0] 이면 터진다
     return f"[{KIND_NAME[i['kind']]} · {SOURCE_NAME[p['source']]}{tail}{' · ⚠브랜드 흉내' if i['brand'] else ''}]"
 
 

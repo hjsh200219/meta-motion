@@ -31,10 +31,10 @@ def sync_repo(commit=None, cache=CACHE, repo=REPO):
         git('fetch', '-q', '--depth', '1', 'origin', commit or 'main', cwd=cache)
     except subprocess.CalledProcessError:
         if not commit: raise
-        sys.exit(f'cokacmotion 고정 커밋 {commit[:7]} 을 받지 못해 멈춤 — 원본 저장소가 바뀌었으면 build_cokac.py 로 목록을 다시 만들고 바뀐 내용을 검토한 뒤 커밋한다')
+        sys.exit(f'{cache.name} 고정 커밋 {commit[:7]} 을 받지 못해 멈춤 — 원본 저장소가 바뀌었으면 목록을 다시 만들고(cokacmotion 은 build_cokac.py · 애니메이션 스킬은 data/anim_skills.json 의 commit) 바뀐 내용을 검토한 뒤 커밋한다')
     git('reset', '-q', '--hard', 'FETCH_HEAD', cwd=cache)
     head = git('rev-parse', 'HEAD', cwd=cache)
-    if commit and head != commit: sys.exit(f'cokacmotion 캐시 HEAD {head[:7]} 가 고정 커밋 {commit[:7]} 과 달라 멈춤')
+    if commit and head != commit: sys.exit(f'{cache.name} 캐시 HEAD {head[:7]} 가 고정 커밋 {commit[:7]} 과 달라 멈춤')
     return head
 
 

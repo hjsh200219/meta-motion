@@ -1,6 +1,6 @@
 ---
 name: meta-motion
-description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com 실전 예시(Claude 로 만든 영상의 프롬프트 230여 개) + HyperFrames 공식 레지스트리(블록·컴포넌트 444개) + 애니메이션 스킬 6개(claude-animation-skills — 그래프·3D 지도 경로·3D 분해도·라인 아트·막대 인간·3D 만화 설명) — 넷을 같은 한국어 카드·같은 분류 16개로 한 목록에서 찾고 추천받고 넣는다. 영상·쇼츠·인트로·광고·안내 영상을 만들거나 고칠 때 장면마다 맞는 카드(자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩)를 찾아 그 «자세히» 문장(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 장면 사양으로 쓴다. 렌더 전 검사(`check` — lint 가 놓치는 비결정 코드·쇼츠 UI 안전 영역), narrate 전 대본 점검, 첫 렌더 뒤 미술감독 채점, 효과 구현법은 표현 기법 참고서(`technique` — cokacmotion 166편). HyperFrames·Remotion·HTML 애니메이션 어느 도구든 적용. 트리거 — "/meta-motion", "meta-motion", "motion-prompt"(옛 이름), "모션그래픽", "모션 그래픽", "모션 템플릿", "영상 만들어", "영상 제작", "영상 만들기", "쇼츠 만들어", "숏폼", "인트로 영상", "로고 인트로", "오프닝 타이틀", "엔딩 화면", "구독 버튼", "자막 애니메이션", "자막 효과", "키네틱 타이포", "장면 전환", "트랜지션", "켄 번스", "하이퍼프레임", "hyperframes", "hyperframes registry", "하이퍼프레임 레지스트리", "애니메이션 스킬", "claude-animation-skills", "map-route", "3D 지도", "분해도", "exploded view", "막대 인간", "stick figure", "자막 스타일", "하단 자막", "lower third", "remotion", "리모션", "nondev motion", "prompt-motion", "prompt motion", "모션 프롬프트 예시", "클로드 모션", "claude motion", "검토 필름", "모션 댓글", "cokacmotion", "aimotion", "표현 기법", "안전 영역", "세이프존", "미술감독", "대본 점검".
+description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com 실전 예시(Claude 로 만든 영상의 프롬프트 230여 개) + HyperFrames 공식 레지스트리(블록·컴포넌트 444개) + 애니메이션 스킬 93개(GitHub 모션 키트 8곳 — claude-animation-skills 6 · reelforge 조각 27 · hyperframes-motion-library 템플릿 27 · saas-motion-kit 전환 24 · animated-diagrams-skill 다이어그램 5 · tegaki 한글 손글씨 · huashu-design 카메라 리그 · product-launch-motion 2) — 넷을 같은 한국어 카드·같은 분류 16개로 한 목록에서 찾고 추천받고 넣는다. 영상·쇼츠·인트로·광고·안내 영상을 만들거나 고칠 때 장면마다 맞는 카드(자막·장면 전환·로고 인트로·데이터 차트·3D·사진 배경·가게/행사/공지 안내·엔딩)를 찾아 그 «자세히» 문장(길이·장면 순서·볼거리·모양·움직임·하지 말 것)을 장면 사양으로 쓴다. 렌더 전 검사(`check` — lint 가 놓치는 비결정 코드·쇼츠 UI 안전 영역), narrate 전 대본 점검, 첫 렌더 뒤 미술감독 채점, 효과 구현법은 표현 기법 참고서(`technique` — cokacmotion 166편). HyperFrames·Remotion·HTML 애니메이션 어느 도구든 적용. 트리거 — "/meta-motion", "meta-motion", "motion-prompt"(옛 이름), "모션그래픽", "모션 그래픽", "모션 템플릿", "영상 만들어", "영상 제작", "영상 만들기", "쇼츠 만들어", "숏폼", "인트로 영상", "로고 인트로", "오프닝 타이틀", "엔딩 화면", "구독 버튼", "자막 애니메이션", "자막 효과", "키네틱 타이포", "장면 전환", "트랜지션", "켄 번스", "하이퍼프레임", "hyperframes", "hyperframes registry", "하이퍼프레임 레지스트리", "애니메이션 스킬", "claude-animation-skills", "reelforge", "motion library", "tegaki", "손글씨 애니메이션", "다이어그램 애니메이션", "animated diagrams", "전환 아틀라스", "카메라 리그", "렌더 뒤 검사", "verify", "map-route", "3D 지도", "분해도", "exploded view", "막대 인간", "stick figure", "자막 스타일", "하단 자막", "lower third", "remotion", "리모션", "nondev motion", "prompt-motion", "prompt motion", "모션 프롬프트 예시", "클로드 모션", "claude motion", "검토 필름", "모션 댓글", "cokacmotion", "aimotion", "표현 기법", "안전 영역", "세이프존", "미술감독", "대본 점검".
 ---
 
 # meta-motion
@@ -26,7 +26,7 @@ description: 모션그래픽 요청 문장 사전(152종) + prompt-motion.com �
 ```bash
 M="<이 스킬 폴더>/motion.py"   # 스킬을 부르면 표시되는 Base directory (개인 설치는 ~/.claude/skills/meta-motion)
 python3 $M                            # 인자 없음 — KB 모션 메뉴(kb.pilldoc.co.kr/motion/)를 로컬 127.0.0.1:8765/motion/ 에 띄우고 브라우저를 연다(끄기 Ctrl-C · --port · --no-open · 사용법은 help)
-# 카탈로그 하나 — 모션 835(요청 카드·실전 예시·HyperFrames 레지스트리·애니메이션 스킬) · 표현 기법 166(cokacmotion) · 색·서체 템플릿 18 을 출처 구분 없이 같은 명령으로
+# 카탈로그 하나 — 모션 922(요청 카드·실전 예시·HyperFrames 레지스트리·애니메이션 스킬 93) · 표현 기법 166(cokacmotion) · 색·서체 템플릿 18 을 출처 구분 없이 같은 명령으로
 python3 $M search 잉크                 # 찾기(이름·설명·쓸 때·태그·만든 사람, 여러 단어 AND) — 모든 종류가 한 목록에, 줄 끝 [종류 · 출처] 꼬리표 · --kind motion|technique|theme
 python3 $M list 자막                   # 분류별 목록 — 모션 분류 16개, 이어서 표현 기법·색·서체 템플릿(--cards 면 요청 카드 152개만)
 python3 $M show <id>                  # 어느 종류든 자세히 — 모션은 «자세히» 요청 문장(끝에 만든 사람·라이선스·받는 명령), 기법은 노트 전문·소스 경로, 템플릿은 최종 색·서체 토큰
@@ -38,6 +38,7 @@ python3 $M add caption-pill-karaoke --dir <프로젝트> --start 0 --track 2   #
 python3 $M recommend script.txt    # 대본(빈 줄 = 장면)을 장면별로 나눠 어울리는 모션 3개씩 추천(기본 세로 — 가로는 -h, 기계용 --json) — Jev, 글이 api.typesafe.ai 로 나감
 python3 $M theme [<id>]            # 색·서체 템플릿 목록 / 최종 토큰(fonts.resolve_theme — 카드·미리보기·필름·컴포지션이 같은 값을 쓴다)
 python3 $M check <프로젝트>         # 렌더 전 — lint 가 놓치는 비결정 코드 + 세로 영상 쇼츠 UI 띠의 글자(오류 위 120·아래 320·오른쪽 버튼 열 120 · 경고 위 240·아래 480)
+python3 $M verify <영상.mp4> -v      # 렌더 뒤 — 빈 화면·멈춤(2초+)·검은 처음끝·크기(-v 1080x1920 · -h 1920x1080 · --size)·길이(--dur)·소리 트랙·음량(-14 LUFS 기준) · --no-audio · --strict · --json (kit-rules.md 6절)
 ```
 옛 명령은 그대로 동작한다(출력 같음): `examples`·`example <id>`(실전 예시 찾기·원문 — 원문 보기는 `example` 만), `registry`(레지스트리 영어 찾기·`--type`·`--portrait`), `registry-add`(= `add`), `technique [단어|번호]`(= 기법 `search`·`show`).
 
@@ -66,6 +67,7 @@ python3 $M check <프로젝트>         # 렌더 전 — lint 가 놓치는 비�
 3. 고른 카드마다 `fields` 로 칸을 보고 실제 값(제목·파일·숫자·길이)과 영상 비율(`-v`/`-h`)·템플릿(`--template <id>` — 사용자 기본값 7번 `fonts.py pick` 이 고른 템플릿, 사용자 색 지정은 `--color`)으로 `show`(자세히)를 뽑는다. 끝의 `[색 토큰]` 줄(band·bg·text·accent·서체)이 카드 사양의 색 hex 보다 우선이다.
 4. 그 문장을 장면 사양으로 삼아 구현한다 — `[장면 순서]` 타이밍·`[볼거리 한 번]`·`[하지 말 것]` 을 지킨다. 대상이 HyperFrames 가 아니면(Remotion·HTML 등) 첫 줄 도구 이름만 무시하고 본문을 따른다. 자막 스타일·하단 자막·전환·숫자 세기·차트·글리치·필름 그레인처럼 이름 붙은 효과는 손으로 처음부터 짜기 전에 아래 「HyperFrames 레지스트리」에서 같은 효과를 찾아 출발점으로 쓴다(사양은 여전히 카드가 기준). 레지스트리에도 없는 효과(잉크·수채·판화·유리·유체·입자·글자 깨짐 등)는 `technique <단어>`(cokacmotion)에서 기법 노트·소스를 읽고 지금 장면의 소재로 다시 짠다 — 데모의 소재·장면·구도·문구·색·9:16 틀은 옮기지 않는다(데모를 본 사람이 영상에서 그 데모를 알아보면 실패). 라이브러리(three.js·PixiJS 등)가 필요한 기법은 HyperFrames 가 GSAP 본체만 부르므로 원리만 가져와 Canvas 2D·SVG·WebGL 로 쓴다.
    **렌더 전 검사**: `npx --yes hyperframes@0.8.162 lint` · `check` 에 더해 `python3 $M check <프로젝트>` 를 통과시킨다. lint 는 컴포지션 HTML 의 Math.random·Date.now 등은 잡지만 setTimeout/setInterval·gsap.ticker·gsap.delayedCall·scrambleText 는 놓치고 `<script src>` 외부 JS 는 보지 않는다(2026-11-11 실측) — 그 빈칸을 채운다. 세로 영상은 쇼츠·릴스·틱톡 UI 띠를 본다(2026-11-11 사용자 위임으로 정함 · 1080x1920 기준, 다른 크기는 비율로 늘림). **오류** = 일반 게시물에서 늘 가려지는 곳: 위 120px(상태바·탭) · 아래 320px(계정 이름·설명·음악) · 오른쪽 버튼 열 120px × 세로 45~83%(좋아요·댓글·공유 — Claude Motion 안전 영역 오른쪽 120 과 같음). **경고** = 여유 기준: 위 240px(TikTok 광고 템플릿 위 240) · 아래 480px(설명이 길어지거나 광고 CTA 가 붙는 경우). `--strict` 면 경고도 실패. 근거: 플랫폼이 일반 게시물 수치를 공식으로 내지 않고, 광고 기준(위 240~288·아래 660~672·오른쪽 120~192)은 제3자 측정이라 넓게 잡혀 있다 — 늘 가리는 UI 는 오류로, 광고 기준 쪽은 경고로 나눴다. 이 스킬의 자막 규칙(아래 350·380px)은 오류 띠 밖이다. 단 자막 줄의 오른쪽 끝이 x 960 을 넘으면(TikTok 식 폭 90% = x 1026, caption-pill-karaoke 폭 920 = x 1000) 버튼 열 오류가 되므로 긴 줄은 폭 80%(x 960) 안에서 줄을 나눈다. 2026-11-11 기존 세로 영상 68개 실측: 오류가 하나라도 있는 영상 38개(아래 320 안 자막 33개 — 화면 아래 154~200px · 버튼 열 22개, 그중 자막 4개 · 위 120 안 1개), 경고만 위 240 안 제목 65개·아래 480 안 63개. `hyperframes check --caption-zone` 은 글자를 담은 상자로 걸어서(폭 100% 상자 안 가운데 글자도 오른쪽 띠에 걸림 — 실측) 글자 실제 좌표로 다시 거른다(68개에서 상자만 걸린 오른쪽 435건·위 164건을 걸러냄). 루트 아래 클립마다 가운데 시각을 보며(caption-zone 의 seek 는 전체 길이 비율이라 기본 0.5 면 영상 가운데 한 곳만 본다 — 실측), 띠 하나에 `hyperframes check` 한 번(약 8초)이라 세로 영상 검사는 약 25초다.
+   **렌더 뒤 검사**(모든 렌더 — 2026-11-22): `python3 $M verify <렌더.mp4> -v|-h [--dur <내레이션 합계 초>]`. 오류(빈 화면·처음부터 끝까지 정지·크기·길이)는 고쳐서 다시 렌더하고, 경고(2초 넘는 정지·검은 처음끝·소리 없음·음량 -18~-10 LUFS 밖)는 의도가 아니면 고친다 — 기준 `references/kit-rules.md` 6절. 장면 길이·카메라·전환·소리는 같은 문서 1~5절 수치를 따른다.
    **첫 렌더 뒤 미술감독 채점**(단독 HyperFrames 영상만 — 릴스 무인 잡은 제외 · `references/art-director.md`): `hyperframes snapshot` 정지 화면을 별도 에이전트가 장면마다 연출·그래픽 디자인·모션 1~5점으로 매기고 고칠 것을 순위로 낸다. 모든 장면 세 축 4점 이상 또는 3라운드까지 다시 만들고, 보고에 점수를 처음 → 마지막으로 적는다.
 5. 사용자에게 장면별로 쓴 카드 코드·이름을 한 줄씩 밝힌다(예: 「오프닝 T01 입자 로고 인트로」). 인트로·아웃트로 줄은 빠뜨리지 않는다.
 6. 영상 전체의 결·연출 수준을 잡을 참고가 필요하면 `examples <영어 단어>` 로 비슷한 실전 예시 1~2개를 `example` 로 읽고 참고한다 — 그 프롬프트 문장을 그대로 베껴 쓰지 않고, 참고했으면 예시 id·만든 사람을 밝힌다.
@@ -88,7 +90,12 @@ python3 $M check <프로젝트>         # 렌더 전 — lint 가 놓치는 비�
 
 참고로 읽을 것(설치하지 않는다 — 읽기만): 공식 스킬 21개 https://github.com/heygen-com/hyperframes/tree/main/skills (embedded-captions·motion-graphics·remotion-to-hyperframes 등) · GSAP 공식 스킬 https://github.com/greensock/gsap-skills (MIT) · https://github.com/iart-ai/motion-skills (MIT, 키네틱 타이포·데이터 시각화·쇼츠 스킬 50개).
 
-## 애니메이션 스킬 6개 (2026-11-13 추가)
+## 애니메이션 스킬 — GitHub 모션 키트 8곳 93개 (2026-11-13 · 2026-11-22 추가)
+
+출처마다 고정 커밋·라이선스를 `data/anim_skills.json` 의 `kits` 에, 카드는 `items`(kit·path·size·thumb·notes)에 둔다. `show <코드>` 가 원본 주소(고정 커밋)·크기·만드는 법·실측 주의를 낸다. 원본 파일은 싣지 않고 캐시 `~/.cache/meta-motion/<키트>`(`python3 animskills.py sync <키트>`)에서 읽는다. 크기는 항목마다라 `recommend` 비율 거르기도 항목 크기를 본다(가변 null 은 양쪽).
+
+### claude-animation-skills 6개 (2026-11-13)
+
 
 출처 https://github.com/artemnovitckii/claude-animation-skills (MIT © 2026 Artem Novitckii, 커밋 `5dbea55` 고정 · 라이선스 원문 `licenses/MIT-claude-animation-skills.txt`). 사용자가 소개 쇼츠(youtube.com/shorts/0fwqV4t-6dg)를 주며 «meta-motion에 6개 모션 추가» 지시.
 - 카드: `as-graph`(미니멀 선 그래프) · `as-map-route`(3D 지도 경로) · `as-breakdown`(3D 분해도) · `as-line-art`(흑백 라인 아트 계단) · `as-stick-figure`(막대 인간 설명 릴스) · `as-3d-cartoon`(3D 만화 「만약에」 설명 쇼츠). 같은 카드 꼴·같은 16분류, `list`·`search`·`show`·`recommend`·화면에 함께 나온다. 모두 1080x1920 고정이라 가로 영상 추천에서는 빠진다.
@@ -97,6 +104,18 @@ python3 $M check <프로젝트>         # 렌더 전 — lint 가 놓치는 비�
 - 엔진 2개(막대 인간·3D 만화)는 장면이 아니라 음성이 붙는 한 편짜리 작업 — 원본 엔진을 복사해 대본·음성·장면 코드를 새로 쓴다. 무료 음성·단어 시각 모델은 영어라 한국어는 `narrate`·직접 녹음을 쓴다(`setup.sh --voice` 약 1GB).
 - 한글: 원본 서체가 라틴 전용이라 한글은 시스템 글꼴로 대체 렌더된다(실측). 지도 시간 카드 문구(`9 min`·`to go`·`Arrived`)는 template.html 에 영어 고정 — 한국어로 하려면 사본을 고쳐 spec 에 `"template"` 을 준다.
 - 원본 `install.sh` 는 쓰지 않는다(`~/.claude/skills/graph` 등으로 링크해 다른 스킬 이름과 겹친다). 원본 예시(해적 릴스·갑옷 쇼츠)의 장면·문구는 그대로 쓰지 않는다. `zach-d-films` 는 특정 크리에이터 형식 이름이라 카드 제목에 쓰지 않았다.
+
+### 쇼츠 «10 GitHub Repos That Level Up HyperFrames Videos» 의 키트 (2026-11-22)
+
+사용자가 https://www.youtube.com/shorts/Dx6c5isxnN0 를 주며 «여기 소개된 github 모션들을 meta-motion에 추가» · «각 repo에서 소개된 방법으로 meta-motion 개선할게 있으면 적용» 지시. 9곳을 읽고(openai/plugins 는 HeyGen 공식 스킬 사본이라 제외) repo 마다 한글로 시험 렌더해 쓸 수 있는 것만 넣었다.
+- `rf-*` 27 — reelforge 갤러리 조각(Apache-2.0, `740bf70`). 렌더 검증된 안무 31개(전환 쌍 4쌍은 한 장씩). 1920x1080 고정, Pretendard 라 한글이 바로 나온다. 조각을 `compositions/` 에 복사해 data-slot 글만 바꾼다(타이밍·이징·흔들림은 원본 keep 규칙대로 그대로). 0.8.162 lint 는 오류 4건을 내지만 렌더는 된다(실측). 목록 그림은 카드 예시값(한국어)으로 직접 찍었다(`animskills.py thumbs` → `render_thumb`).
+- `ml-*` 27 — hyperframes-motion-library 템플릿(MIT, `98c40ca`). 변수형 — `render . --variables '{"exportMode":"mp4", …}'`(기본 transparent 는 mp4 에서 흰 바탕, 실측). 1920x1080(chapter-title·donut-progress 는 세로판 있음). 한글은 시스템 글꼴로 나오지만 word-break 가 없어 단어 중간에서 줄이 바뀐다.
+- `tr-*` 24 — saas-motion-kit 전환 아틀라스(MIT, `bc7a414`). GSAP recipe 를 앞·뒤 장면 한 타임라인에 옮겨 쓴다. 좌표는 1920x1080 기준이라 세로면 이동 거리를 다시 잡는다. 그림 없음.
+- `dg-*` 5 — animated-diagrams-skill(Apache-2.0, `3de812d`) 구조도·시퀀스·개념·코드 설명·설치 터미널. 크기 가변, 한글은 시스템 글꼴(시퀀스 다이어그램 한글 렌더 확인). GSAP 플러그인은 GreenSock 자체 라이선스.
+- `tg-handwriting` — tegaki(MIT, `bf18556`) 한글 손글씨(나눔손글씨 펜, 650자). 일시정지 GSAP 타임라인 onUpdate 에서 `engine.update({time:{mode:'controlled', …}})` — 0.8.162 렌더 확인. 묶음에 없는 글자(「녕」「꽃」 등)는 손글씨가 아니라 한 번에 나온다.
+- `hs-camera-rig` — huashu-design(MIT, `9371131`) seek-safe 카메라 리그(문서 수식 — 직접 짠다). `pl-odometer`·`pl-one-shape-loop` — product-launch-motion(MIT, `edbfb10`, 예시 영상·로고는 NOTICE 로 재사용 금지 — 그림 없음).
+- 넣지 않은 것: herk-edit-kit 카드 406장(두 스타일 `tokens.css` 가 AIS 브랜드 색 — LICENSE 「Note on brand assets」가 재사용 불허), 기존 카드와 겹치는 커서·필름 그레인(레지스트리 `agent-cursor`·`grain-overlay` 등), design-engineering 데모(제작사 로고가 든 자기 홍보 영상).
+- 방법은 카드가 아니라 규칙·도구로: 수치 규칙 `references/kit-rules.md`(읽기 시간·아마추어 티·카메라 예산·전환 다양성·소리·렌더 뒤 검사 — 재현 안 된 원본 주장은 끝에 따로) · 렌더 뒤 검사 `motion.py verify`(`verify.py`).
 
 ## Claude Motion 과 합쳐 쓰기 — 렌더는 HyperFrames, 검토·댓글은 Motion, 카드 없는 장면은 Motion 에서 (2026-10-18)
 
@@ -146,7 +165,7 @@ MotionKit.hyperframes('s2', { compId: 's2', duration: 5 });   // __timelines.s2 
 사이트가 바뀌면 `python3 <이 스킬 폴더>/build.py` — data/motion.json·compose.mjs 를 다시 받는다.
 실전 예시는 `python3 <이 스킬 폴더>/build_pm.py` — sitemap 의 항목 페이지를 1초 간격으로 읽어 data/prompt_motion.json 을 다시 만든다(약 4분, 90% 미만 파싱이면 중단).
 HyperFrames 레지스트리는 세 단계 — ① `python3 build_hf.py`(catalog --json + repo 캐시 클론 `~/.cache/meta-motion/hyperframes` → data/hf_registry.json, 400개 미만이면 중단) ② `python3 build_hf_ko.py`(분류 Jev + 한국어 카드 edb-p, 재료가 바뀐 항목만 · `--cat-only` 는 분류만) ③ `python3 build_hf_thumbs.py`(없는 그림만 렌더, `--force` 전부). 그 뒤 `test_recommend.py`·`test_hf.py` 를 돌리고 KB 는 `export_kb.py` 로 다시 내보낸다. 렌더 고정 버전을 올리면 `build_hf.py` 의 `HF` 도 같이 올린다.
-애니메이션 스킬은 원본 repo 가 바뀌면 바뀐 SKILL.md·DEFAULTS·템플릿 타이밍을 읽고 `data/anim_skills.json` 의 카드와 `commit` 을 손으로 고친 뒤 `python3 animskills.py thumbs`(목록 그림 `data/as_thumb/`) · `test_animskills.py`.
+애니메이션 스킬은 원본 repo 가 바뀌면 바뀐 원본(SKILL.md·DEFAULTS·템플릿·조각 타이밍)을 읽고 `data/anim_skills.json` 의 카드와 그 키트 `kits.<키트>.commit` 을 손으로 고친 뒤 `python3 animskills.py thumbs`(목록 그림 `data/as_thumb/`) · `test_animskills.py`.
 카드 150개 미만이면 중단하고, 조립 규칙이 바뀌었거나 간단 문장이 사이트와 다르면 경고한다(그때는 motion.py 를 compose.mjs 에 맞춰 고친다).
 
 ## 파일
@@ -156,11 +175,12 @@ HyperFrames 레지스트리는 세 단계 — ① `python3 build_hf.py`(catalog 
 - `data/prompt_motion.json` — prompt-motion.com 예시: id·title·type(Prompt/Skill)·tags·prompt·creator·source·model·effort·iterations·posted·url·video
 - `data/hf_registry.json` — HyperFrames 공식 레지스트리 목록 444개: name·type·title·description·tags·dimensions·duration + 출처·라이선스·받은 날·제외 항목
 - `data/hf_registry_ko.json` — 레지스트리 이름별 분류(`cat`·`cat_p` Jev 확률)와 한국어 카드(name·plain·when·len·fields·tpl·dx) · `data/hf_thumb/` — 렌더 그림 444장(가로 480px)
-- `data/anim_skills.json` — 애니메이션 스킬 6개 한국어 카드(+ skill·engine·render·spec·notes, 출처·커밋) · `data/as_thumb/` — 목록 그림 6장 · `animskills.py` — 고정 커밋 캐시·만드는 법(`credit`)·그림 · `test_animskills.py`
+- `data/anim_skills.json` — 애니메이션 스킬 93개: `kits`(키트 8곳 출처·라이선스·고정 커밋·만드는 법) + `items`(한국어 카드 + kit·path·size·thumb·notes, 원래 6개는 skill·engine·render·spec) · `data/as_thumb/` — 목록 그림(thumb 이 있는 것만) · `animskills.py` — 고정 커밋 캐시(`sync <키트>`)·만드는 법(`credit`)·그림(`thumbs`, reelforge 는 `render_thumb` 로 직접 찍음) · `test_animskills.py`
 - `hf.py` — 레지스트리 찾기·넣기(`motion.py registry`·`registry-add`) · `build_hf.py` — 목록 다시 받기 · `build_hf_ko.py` — 분류·한국어 카드 · `build_hf_thumbs.py` — 그림 렌더 · `test_hf.py` — 목록·제외·host 조각·고칠 곳 검사
 - `fonts.py` — 색·서체 템플릿 18종(TEMPLATES)·서체 카탈로그·Jev 판정·글꼴 복사·이력(`pick`·`list`·`install`·`record`·`history`·`templates`) · `test_fonts.py` — 템플릿 대비·서체·라이선스·이력 검사
   - `python3 fonts.py templates` 는 템플릿·서체(절대 경로) JSON 을 부수 효과 없이 낸다 — 다른 렌더러가 같은 템플릿을 쓰는 통로다. 발행 릴스(`SHC/shconsulting/scripts/instagram/motion/theme.mjs`)가 이것과 `pick`·`record` 를 부른다. 키를 바꾸면 그쪽 `node --test scripts/instagram/motion/theme.test.mjs` 도 돌린다.
 - `catalog.py` — 카탈로그 하나(모션·기법·템플릿을 같은 꼴 항목으로: id·aliases·kind·title·summary·when·tags·category·actions·provenance·brand·size). `search`·`list`·`show`·`theme` 이 쓴다. 원본 자료 파일은 출처별로 그대로 · `test_catalog.py`(수·겹침·출처·라이선스·브랜드·제외 항목·옛 명령 출력) · 색·서체 해석은 `fonts.resolve_theme` 한곳 · `test_review_fixes.py` — 2026-11-11 Astra(EDB) 지적 회귀 시험
+- `verify.py` — 렌더 뒤 검사(`motion.py verify` · ffmpeg 로 빈 화면·멈춤·검은 처음끝·크기·길이·소리·음량) · `test_verify.py` · `references/kit-rules.md` — GitHub 모션 키트에서 가져온 수치 규칙(2026-11-22)
 - `check.py` — 렌더 전 검사(`motion.py check` · 비결정 코드 + 세로 영상 안전 영역 띠마다 `hyperframes check --caption-zone`) · `test_check.py`
 - `cokac.py` — 표현 기법 참고서 찾기·읽기(`motion.py technique`) · `build_cokac.py` — 목록 다시 받기(`data/cokac.json` 166편, 노트·소스·그림은 캐시 클론 `~/.cache/meta-motion/cokacmotion` 에서 읽고 repo 에 싣지 않는다 · 150편 미만이면 중단) · `test_cokac.py`
 - `references/script-check.md` — 대본 점검(처음 듣는 사람 기준) · `references/art-director.md` — 미술감독 채점. 두 문서와 `check.py` 는 script-to-motion(https://github.com/kstost/script-to-motion, MIT © 2026 kstost, 커밋 b791213)의 script-writing.md §0b·elevate.md·check.mjs·snapshot.mjs --safezone 에서 착안해 이 스킬에 맞게 다시 썼다(코드는 옮기지 않음). 기법 목록은 cokacmotion(https://github.com/kstost/cokacmotion, MIT © 2026 kstost, 커밋 c417b16). 라이선스 원문은 `licenses/MIT-script-to-motion.txt`·`licenses/MIT-cokacmotion.txt`

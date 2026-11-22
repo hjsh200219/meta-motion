@@ -13,7 +13,7 @@ _EX = {e['id']: e for e in EXAMPLES}
 _HF = {it['name']: it for it in _load('hf_registry.json', {}).get('items', [])}
 MORE = ([{**c, 'code': k, 'en': _EX[k]['title'], 'inds': _EX[k]['tags'], 'src': 'pm'} for k, c in _load('prompt_motion_ko.json', {}).items() if k in _EX]
         + [{**c, 'code': k, 'en': _HF[k]['title'], 'inds': _HF[k]['tags'], 'src': 'hf'} for k, c in _load('hf_registry_ko.json', {}).items() if c.get('tpl') and k in _HF]
-        + [{**c, 'code': k, 'src': 'as'} for k, c in _load('anim_skills.json', {'items': {}})['items'].items()])  # 애니메이션 스킬 6개(animskills.py)
+        + [{**c, 'code': k, 'src': 'as'} for k, c in _load('anim_skills.json', {'items': {}})['items'].items()])  # 애니메이션 스킬 — GitHub 모션 키트(animskills.py)
 MORE_BY = {c['code']: c for c in MORE}
 TOOLS = {'auto': '하이퍼프레임(HyperFrames)으로', 'claude': '/hyperframes 로', 'codex': '$hyperframes 로'}
 RATIO = {'가로': '가로 16:9', '세로': '세로 9:16', '정사각': '정사각 1:1', '없음': ''}
@@ -135,7 +135,8 @@ def where(c):
     if c.get('src') == 'hf':
         import hf
         return '\t[레지스트리 · ⚠브랜드 흉내]' if hf.brand_of(c['code']) else '\t[레지스트리]'
-    if c.get('src') == 'as': return '\t[애니메이션 스킬 · MIT Artem Novitckii]'
+    if c.get('src') == 'as':
+        import animskills; k = animskills.kit_of(c['code']); return f"\t[애니메이션 스킬 · {k['license'].split()[0]} {k['creator']}]"
     return ''
 
 
@@ -236,6 +237,10 @@ def main(argv):
         import official; official.main(rest)
     elif cmd == 'check':  # 렌더 전 — hyperframes lint 가 놓치는 비결정 코드 + 쇼츠 안전 영역(세로)
         import check; check.main(rest)
+    elif cmd == 'verify':  # 렌더 뒤 — 다 만든 mp4 의 빈 화면·멈춤·검은 처음끝·크기·길이·소리·음량(-v/-h 면 그 크기를 기대한다)
+        import verify
+        size = {'세로': ['--size', '1080x1920'], '가로': ['--size', '1920x1080']}.get(FLAG_RATIO[flags[-1]], []) if flags and '--size' not in rest else []
+        sys.exit(verify.main(rest + size))
     elif cmd == 'technique':  # cokacmotion 표현 기법 참고서 166편 — 효과를 «어떻게 짜는지»(기술만 가져간다)
         import cokac; cokac.main(rest)
     else:

@@ -14,6 +14,9 @@ with tempfile.TemporaryDirectory() as d:
     assert all(k not in (Path(d) / f).read_text(encoding='utf-8') for f in KO for k in ('"src_sha"', '"cat_src"', '"hold_checked"', '"commit"'))
     assert all(len((Path(d) / f).read_text(encoding='utf-8')) < 480_000 for f in KO)   # KB PR AI 리뷰 diff 상한 50만 자 — 파일 하나가 한 PR 에 들어가야 한다
     assert len(list((Path(d) / 'hf_thumb').glob('*.jpg'))) == len(list((Path(__file__).resolve().parent / 'data/hf_thumb').glob('*.jpg'))) > 400
+    import json   # 애니메이션 스킬 출처마다 화면 원본 링크용 짧은 커밋(ref) — 40자 commit 은 빼도 링크가 고정 커밋을 가리킨다(2026-11-22)
+    kits = json.loads((Path(d) / 'anim_skills.json').read_text(encoding='utf-8'))['kits']
+    assert kits and all(len(k['ref']) == 7 and 'commit' not in k for k in kits.values()), kits
 
 with tempfile.TemporaryDirectory() as d:   # 로컬 보기(serve.py · motion.py 인자 없음) — KB 로 가는 링크·KB 아이콘 없이, 원본 영상 모드는 같게
     build(Path(d), back=False)

@@ -204,7 +204,11 @@ const g = () => ({ ratio: RATIO[$('#ratio').value] ?? '', color: $('#color').val
 const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
 // KB(kb.pilldoc.co.kr)처럼 외부 영상을 막지 않는 곳은 window.MOTION_MEDIA = 'origin' 으로 원본 영상·그림을 바로 쓴다(Artifact 는 CSP 가 막아 함께 올린 사본을 쓴다)
 const ORIGIN = window.MOTION_MEDIA === 'origin';
-const poster = (it) => it.as ? `${BASE}as_thumb/${esc(it.code)}.jpg` : it.hf ? `${BASE}hf_thumb/${esc(it.code)}.jpg` : !it.pm?.poster ? '' : ORIGIN ? url(it.pm.poster) : `${BASE}posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}`;
+// 애니메이션 스킬은 출처(kit)가 항목마다 — animskills.url·size_text 와 같은 규칙
+const KIT = (it) => AS.kits[it.as.kit];
+const asUrl = (it) => `${KIT(it).source}/${it.as.kit === 'claude-animation-skills' ? 'tree' : 'blob'}/${KIT(it).ref || KIT(it).commit.slice(0, 7)}/${it.as.path.split('#')[0]}`;
+const asSize = (it) => it.as.size ? `${it.as.size[0]}x${it.as.size[1]}` : '크기 가변';
+const poster = (it) => it.as ? (it.as.thumb ? `${BASE}as_thumb/${esc(it.code)}.jpg` : '') : it.hf ? `${BASE}hf_thumb/${esc(it.code)}.jpg` : !it.pm?.poster ? '' : ORIGIN ? url(it.pm.poster) : `${BASE}posters/${esc(it.code)}.${esc(it.pm.poster.split('.').pop())}`;
 // 레지스트리 영상은 공식 미리보기가 있는 항목만, 외부 영상을 여는 곳(KB)에서만 — 없으면 직접 렌더한 그림 위에서 진행표를 넘긴다
 const clip = (it) => it.as ? '' : it.hf ? (ORIGIN && it.hf.preview?.video ? url(it.hf.preview.video) : '') : ORIGIN ? url(it.pm.video) : `${BASE}clips/${esc(it.code)}.mp4`;
 const media = (it) => it.pm || it.hf || it.as;
@@ -214,11 +218,11 @@ const isBrand = (it) => !!it.hf && (it.code.split('-').some((w) => BRAND.has(w))
 // 영상이 읽혔으면 영상 시각이 재생 기준, 없거나 못 읽으면 포스터 위에서 타이머로 넘긴다
 const vid = () => { const v = $('#vid'); return v && !v.error && v.readyState >= 1 ? v : null; };
 const credit = (it) => it.pm ? `\n[참고한 실전 예시] ${it.code} — ${it.pm.creator} (${it.pm.url}) · 참고만 하고 그대로 베끼지 않음`
-  : it.as ? `\n[원본 스킬] ${it.as.skill} — ${AS.source}/tree/${AS.commit.slice(0, 7)}/skills/${it.as.skill} (${AS.license}) · 렌더 ${it.as.render} · 1080x1920 — python3 motion.py show ${it.code} 로 만드는 법·주의를 본다`
+  : it.as ? `\n[원본] ${it.as.kit} ${it.as.skill || it.en} — ${asUrl(it)} (${KIT(it).license}) · ${asSize(it)} — python3 motion.py show ${it.code} 로 만드는 법·주의를 본다`
   : it.hf ? `\n[출발점] HyperFrames 레지스트리 ${it.code} (${it.hf.license || 'Apache-2.0'}) — ${HF_CMD(it)} 로 받아 이 사양대로 고친다`
     + (isBrand(it) ? '\n⚠브랜드 흉내 — 남의 제품 화면·로고·실제 @계정을 흉내 낸 항목. 그 회사·그 사람 영상이 아니면 쓰지 않는다' : '') : ''; // 항목 라이선스 우선(hf.py license_of)
 const aspectOf = (it) => {
-  if (it.as) return '1080 / 1920';
+  if (it.as) return it.as.size ? `${it.as.size[0]} / ${it.as.size[1]}` : ASPECT[$('#ratio').value];
   if (it.hf) { const d = it.hf.dimensions; return d ? `${d.width} / ${d.height}` : '16 / 9'; }
   const m = it.pm?.size?.match(/^(\d+)x(\d+)$/);
   return m ? `${m[1]} / ${m[2]}` : ASPECT[$('#ratio').value];
@@ -261,10 +265,10 @@ function select(code, scroll) {
   const untimed = play.segs[0]?.untimed, rules = (it.dx.beats || []).filter((b) => b.label && !untimed), p = it.pm, h = it.hf, v = media(it) && clip(it);
   const tall = (media(it) ? aspectOf(it) : ASPECT[$('#ratio').value]).match(/^(\d+) \/ (\d+)$/).slice(1).map(Number);
   $('#detail').innerHTML = `
-    <div>${media(it) ? '' : `<span class="code">${esc(it.code)}</span> `}<span class="en">${esc(it.cat)}</span><h2>${esc(it.name)}</h2><span class="en">${esc(it.en)} · ⏱ ${esc(it.len)}${p ? ` · ${esc(p.creator)}` : h ? ' · HyperFrames 레지스트리' : it.as ? ` · 애니메이션 스킬 · ${esc(AS.creator)}` : ''}</span></div>
+    <div>${media(it) ? '' : `<span class="code">${esc(it.code)}</span> `}<span class="en">${esc(it.cat)}</span><h2>${esc(it.name)}</h2><span class="en">${esc(it.en)} · ⏱ ${esc(it.len)}${p ? ` · ${esc(p.creator)}` : h ? ' · HyperFrames 레지스트리' : it.as ? ` · 애니메이션 스킬 · ${esc(KIT(it).creator)}` : ''}</span></div>
     ${isBrand(it) ? '<p class="ext">남의 제품 화면·로고·실제 계정을 흉내 낸 항목입니다. 그 회사·그 사람 영상이 아니면 쓰지 않습니다.</p>' : ''}
     <div class="stage ${esc(it.dx.kind)}${media(it) ? ' pic' : ''}" id="stage" style="aspect-ratio:${aspectOf(it)}${tall[1] > tall[0] ? ';max-width:300px' : ''}">
-      ${v ? `<video id="vid" src="${v}" poster="${poster(it)}" muted loop playsinline preload="auto" aria-label="${esc(p?.title || it.en)} 실제 영상"></video>` : h || it.as ? `<img src="${poster(it)}" alt="${esc(it.en)} 렌더 장면">` : ''}
+      ${v ? `<video id="vid" src="${v}" poster="${poster(it)}" muted loop playsinline preload="auto" aria-label="${esc(p?.title || it.en)} 실제 영상"></video>` : h || it.as?.thumb ? `<img src="${poster(it)}" alt="${esc(it.en)} 렌더 장면">` : ''}
       <span class="kind">${esc(KIND[it.dx.kind] || '장면')}</span><span class="tc" id="tc"></span>
       ${media(it) ? '' : '<iframe id="anim" sandbox="allow-scripts" title="샘플 화면" hidden></iframe><div class="say" id="say"></div>'}<span class="fill" id="fill"></span>
     </div>
@@ -286,10 +290,10 @@ function select(code, scroll) {
     </div>
     <div><h3>받아서 고치기 · HyperFrames 프로젝트 폴더에서</h3><pre class="en-txt" tabindex="0">${esc(HF_CMD(it))}</pre></div>` : ''}
     ${it.as ? `<div class="links">
-      <a class="btn pri" href="${url(AS.source + '/tree/' + AS.commit + '/skills/' + it.as.skill)}" target="_blank" rel="noopener">원본 스킬 ↗</a>
+      <a class="btn pri" href="${url(asUrl(it))}" target="_blank" rel="noopener">원본 ↗</a>
       <a class="btn" href="https://novitckii.com/resources/animation-skills/" target="_blank" rel="noopener">움직이는 모습 ↗</a>
     </div>
-    <div><h3>만드는 법 · 원본 스킬(고정 커밋)을 그대로 쓴다</h3><pre class="en-txt" tabindex="0">${esc(`python3 motion.py show ${it.code}`)}</pre>${(it.as.notes || []).length ? `<ul class="rules">${it.as.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}</div>` : ''}
+    <div><h3>만드는 법 · 원본(고정 커밋)을 그대로 쓴다</h3><pre class="en-txt" tabindex="0">${esc(`python3 motion.py show ${it.code}`)}</pre>${(it.as.notes || []).length ? `<ul class="rules">${it.as.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}</div>` : ''}
     ${rules.length ? `<div><h3>처음부터 끝까지 지키는 것</h3><ul class="rules">${rules.map((b) => `<li><b>${esc(b.label)}</b> — ${esc(strip(b.s))}</li>`).join('')}</ul></div>` : ''}
     <dl>
       <dt>이럴 때</dt><dd>${esc(it.when)}</dd>
@@ -297,7 +301,7 @@ function select(code, scroll) {
       ${it.dx.look ? `<dt>모양</dt><dd>${esc(strip(it.dx.look))}</dd>` : ''}
       ${it.dx.avoid ? `<dt>하지 말 것</dt><dd>${esc(strip(it.dx.avoid))}</dd>` : ''}
       ${p ? `<dt>만든 방법</dt><dd>${esc([p.model, p.effort && 'effort ' + p.effort, p.iterations, p.posted].filter(Boolean).join(' · '))}</dd>`
-          : it.as ? `<dt>원본</dt><dd>${esc([it.as.engine ? '음성이 붙는 한 편짜리 엔진' : 'JSON 사양 → 영상 한 개', '1080x1920', `렌더 ${it.as.render}`, AS.license].join(' · '))}</dd>`
+          : it.as ? `<dt>원본</dt><dd>${esc((it.as.kit === 'claude-animation-skills' ? [it.as.engine ? '음성이 붙는 한 편짜리 엔진' : 'JSON 사양 → 영상 한 개', '1080x1920', `렌더 ${it.as.render}`] : [it.as.kit, asSize(it)]).concat(KIT(it).license).join(' · '))}</dd>`
           : h ? `<dt>원본</dt><dd>${esc([h.type === 'block' ? '장면 블록' : h.composition ? '장면 컴포넌트' : '붙여 넣는 조각', h.dimensions && `${h.dimensions.width}x${h.dimensions.height}`, 'Apache-2.0'].filter(Boolean).join(' · '))}</dd>`
           : `<dt>원본</dt><dd><a href="https://nondev-thinking.web.app/motion/#${esc(it.code)}" target="_blank" rel="noopener">원본 미리보기 ↗</a></dd>`}
     </dl>
@@ -385,7 +389,7 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   // 출처를 나누지 않고 분류별로 번갈아 섞는다(2026-10-12 «요청카드와 실전 예시를 왜 분리한거야?» — 레지스트리도 같은 규칙)
   const all = [...cards.map((c) => ({ ...c, src: 'card' })), ...pm, ...hf, ...as], order = [...new Set(all.map((it) => it.cat))];
   ITEMS = order.flatMap((k) => { const by = ['card', 'pm', 'hf', 'as'].map((s) => all.filter((it) => it.cat === k && it.src === s)); return Array.from({ length: Math.max(...by.map((a) => a.length)) }, (_, i) => by.map((a) => a[i])).flat().filter(Boolean); });
-  for (const it of ITEMS) it.hay = [it.code, it.name, it.en, it.plain, it.when, it.cat, ...it.inds, it.pm?.creator, ...(it.pm?.tags || []), it.hf && 'hyperframes 레지스트리', it.as && 'animation skills 애니메이션 스킬'].join(' ').toLowerCase();
+  for (const it of ITEMS) it.hay = [it.code, it.name, it.en, it.plain, it.when, it.cat, ...it.inds, it.pm?.creator, ...(it.pm?.tags || []), it.hf && 'hyperframes 레지스트리', it.as && `animation skills 애니메이션 스킬 ${it.as.kit} ${KIT(it).creator}`].join(' ').toLowerCase();
   $('#total').textContent = ITEMS.length;
   const h = decodeURIComponent(location.hash.slice(1));
   renderChips(); renderList();
