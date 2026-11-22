@@ -177,17 +177,43 @@ const mmss = (x) => `${Math.floor(jsround(x) / 60)}:${String(jsround(x) % 60).pa
 const span = (a, b) => b >= 60 ? `${mmss(a)}~${mmss(b)}` : `${num(r1(a))}~${num(r1(b))}초`;
 // dx.same 묶음(항목·숫자·색처럼 개수가 같아야 하는 쉼표 칸)의 개수가 다르면 맨 앞에 알린다(17차 F3) — motion.py count_warn 과 같은 규칙
 function countWarn(c, r) {
-  return ((c.dx && c.dx.same) || []).map((grp) => c.fields.filter((f) => grp.includes(f.k) && r(f.k) !== null)
-    .map((f) => [f.label.split(/[(（]/)[0].trim(), String(r(f.k)).split(/[,，]/).filter((x) => x.trim()).length]))
-    .filter((got) => new Set(got.map((x) => x[1])).size > 1)
-    .map((got) => `[입력 확인] ${got.map(([h, n]) => `${h} ${n}개`).join('·')} — 개수가 같아야 합니다. 맞춘 뒤 복사하세요.\n`).join('');
+  const dx = c.dx || {}, head = (f) => f.label.split(/[(（]/)[0].trim(), cnt = (v) => String(v).split(/[,，]/).filter((x) => x.trim()).length, bad = [];
+  for (const grp of dx.same || []) {
+    const got = c.fields.filter((f) => grp.includes(f.k) && r(f.k) !== null).map((f) => [head(f), cnt(r(f.k))]);
+    if (new Set(got.map((x) => x[1])).size > 1) bad.push(got.map(([h, n]) => `${h} ${n}개`).join('·') + ' — 개수가 같아야 합니다');
+  }
+  for (const [k, n] of Object.entries(dx.min || {})) {  // 최소 개수(꺾은선은 숫자 2개 이상, 18차)
+    const f = c.fields.find((x) => x.k === k), v = r(k);
+    if (f && v !== null && cnt(v) < n) bad.push(`${head(f)}는 ${n}개 이상이어야 합니다`);
+  }
+  if (dx.cmp) {  // 직접 넣은 기호가 두 숫자와 맞지 않으면
+    const a = numOf(r(dx.cmp.a)), b = numOf(r(dx.cmp.b)), op = trim(r(dx.cmp.op)), want = a === null || b === null ? null : a > b ? '>' : a < b ? '<' : '=';
+    if (want && op && op !== want) bad.push(`기호 「${op}」가 숫자(${num(a)}·${num(b)})와 맞지 않습니다 — 「${want}」`);
+  }
+  return bad.map((x) => `[입력 확인] ${x}. 고친 뒤 복사하세요.\n`).join('');
 }
-const simple = (pre, c, vals, g) => { const r = resolver(c.fields, vals, g); return `${countWarn(c, r)}${pre} ${compose(c.tpl, r)}${compose(TAIL, r)}`; };
+const numOf = (s) => { const m = String(s ?? '').replace(/,/g, '').match(/-?\d+(?:\.\d+)?/); return m ? parseFloat(m[0]) : null; };
+// 카드 단위 칸 값 — dx.cmp 가 있으면 비운 비교 기호를 두 숫자로 정한다(18차) — motion.py card_resolver 와 같은 규칙
+function cardResolver(c, vals, g) {
+  const r = resolver(c.fields, vals, g), cmp = c.dx && c.dx.cmp;
+  if (!cmp) return r;
+  return (k) => { const v = r(k); if (k !== cmp.op || v !== null) return v; const a = numOf(r(cmp.a)), b = numOf(r(cmp.b)); return a === null || b === null ? null : a > b ? '>' : a < b ? '<' : '='; };
+}
+// 길이 칸이 있는 카드의 [초, 문구] — 자세히·간단 두 모드가 함께 쓴다(18차) — motion.py length_of 와 같은 규칙
+function lengthOf(c, vals) {
+  const dF = c.fields.find((f) => f.k === 'dur'); if (!dF) return [null, null];
+  const v = trim(vals.dur), dx = c.dx;
+  if (v && dx.auto && (secs(v) || 0) < autoLen(c, vals)) { const D = autoLen(c, vals); return [D, `약 ${num(D)}초(입력한 ${v} 로는 문구를 다 쓰고 1.2초 머물 수 없어 최소 길이로 잡음)`]; }
+  if (v) return [secs(v), v];
+  if (dx.auto) { const D = autoLen(c, vals); return [D, `약 ${num(D)}초(문구 길이로 잡음)`]; }
+  return [secs(dF.ex), `약 ${dF.ex}`];
+}
+const simple = (pre, c, vals, g) => { const r = cardResolver(c, vals, g), body = compose(c.tpl, r), lt = lengthOf(c, vals)[1], ln = lt && (trim(vals.dur) || c.dx.auto) ? `${body.endsWith('\n') ? '' : ' '}전체 길이 ${lt}.` : ''; return `${countWarn(c, r)}${pre} ${body}${ln}${compose(TAIL, r)}`; };
 function detail(pre, c, vals, g) {
-  const dx = c.dx, r = resolver(c.fields, vals, g);
+  const dx = c.dx, r = cardResolver(c, vals, g);
   const out = [`${countWarn(c, r)}${pre} ${compose(c.tpl, r)}`, '\n[길이·크기] '];
-  const dF = c.fields.find((f) => f.k === 'dur'); let D = null;
-  if (dF) { const v = trim(vals.dur); if (v && dx.auto && (secs(v) || 0) < autoLen(c, vals)) { D = autoLen(c, vals); out.push(`전체 약 ${num(D)}초(입력한 ${v} 로는 문구를 다 쓰고 1.2초 머물 수 없어 최소 길이로 잡음)`); } else if (v) { out.push('전체 ' + v); D = secs(v); } else if (dx.auto) { D = autoLen(c, vals); out.push(`전체 약 ${num(D)}초(문구 길이로 잡음)`); } else { out.push(`전체 약 ${dF.ex}`); D = secs(dF.ex); } }
+  const [D, lt] = lengthOf(c, vals);
+  if (lt) out.push('전체 ' + lt);
   else out.push('전체 ' + compose(dx.lenText || c.len || '', r));
   const ratio = trim(g.ratio);
   if (ratio) out.push(ratio in RES ? ` · ${RES[ratio]}(${ratio})` : ` · ${ratio}`);
@@ -449,6 +475,8 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
     && strs(c.inds) && (c.notes === undefined || strs(c.notes)) && okSize(c.size) && Array.isArray(c.fields) && c.fields.every(okField)
     && obj(c.dx) && typeof c.dx.kind === 'string' && Object.hasOwn(KIND, c.dx.kind) && Array.isArray(c.dx.beats) && c.dx.beats.every(okBeat)
     && [c.dx.look, c.dx.wow, c.dx.avoid, c.dx.lenText].every(optStr) && (c.dx.base === undefined || num(c.dx.base)) && (c.dx.auto === undefined || okAuto(c))
+    && (c.dx.min === undefined || (obj(c.dx.min) && Object.entries(c.dx.min).every(([k, n]) => Number.isInteger(n) && n > 0 && c.fields.some((f) => f.k === k))))
+    && (c.dx.cmp === undefined || (obj(c.dx.cmp) && ['a', 'b', 'op'].every((k) => typeof c.dx.cmp[k] === 'string' && c.fields.some((f) => f.k === c.dx.cmp[k]))))
     && (c.dx.same === undefined || (Array.isArray(c.dx.same) && c.dx.same.every((g) => strs(g) && g.every((k) => c.fields.some((f) => f.k === k)))));
   // 문구 길이로 길이를 잡는 설정(손글씨) — 숫자·칸·장면 번호가 맞을 때만(14차)
   const okAuto = (c) => { const a = c.dx.auto; return obj(a) && typeof a.k === 'string' && c.fields.some((f) => f.k === a.k) && ['start', 'gap', 'space', 'line', 'hold', 'miss'].every((k) => num(a[k]) && a[k] >= 0) && obj(a.t) && Object.values(a.t).every((v) => num(v) && v >= 0)
@@ -509,9 +537,14 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const first = cur && cur.code;
   requestAnimationFrame(tick);
   Promise.all([optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then((herks) => {
+    const before = ITEMS.map((x) => x.code).join('\n');
     build(herks);
     if (cur) cur = ITEMS.find((x) => x.code === cur.code) || cur;  // 새 목록의 같은 카드로(입력한 칸 값은 그대로)
+    if (ITEMS.map((x) => x.code).join('\n') === before) return;  // 목록이 그대로면(보조 파일 없음 등) 다시 그리지 않는다(18차 F4)
+    // 다시 그리기 전 포커스가 있던 분류·카드 버튼을 기억했다가 되돌린다
+    const fe = document.activeElement, key = fe && fe.dataset ? (fe.dataset.code !== undefined ? ['code', fe.dataset.code] : fe.dataset.cat !== undefined ? ['cat', fe.dataset.cat] : null) : null;
     renderChips(); renderList();
+    if (key) { const el = document.querySelector(`[data-${key[0]}="${CSS.escape(key[1])}"]`); if (el) el.focus(); }
     const w = ITEMS.find(want);  // 주소가 보조 파일 카드를 가리켰는데 첫 화면엔 없어 다른 카드가 골라졌고, 그 뒤 사용자가 바꾸지 않았으면 이제 고른다
     if (w && !touched && cur && cur.code === first && w.code !== first) select(w.code);
   });

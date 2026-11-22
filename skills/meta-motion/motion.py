@@ -79,19 +79,60 @@ def fixed_ratio(c):
     return next((k for k, v in RES.items() if v == f'{s[0]}x{s[1]}'), f'{s[0]}x{s[1]} 고정')
 
 
+def num_of(s):
+    m = re.search(r'-?\d+(?:\.\d+)?', str(s or '').replace(',', ''))
+    return float(m.group()) if m else None
+
+
+def card_resolver(c, vals, g):
+    """카드 단위 칸 값 — dx.cmp 가 있으면 비운 비교 기호를 두 숫자로 정한다(KB 리뷰 18차). preview.html cardResolver 와 같은 규칙."""
+    r = resolver(c['fields'], vals, g); cmp = (c.get('dx') or {}).get('cmp')
+    if not cmp: return r
+    def r2(k):
+        v = r(k)
+        if k == cmp['op'] and v is None:
+            a, b = num_of(r(cmp['a'])), num_of(r(cmp['b']))
+            return None if a is None or b is None else '>' if a > b else '<' if a < b else '='
+        return v
+    return r2
+
+
+def length_of(c, vals):
+    """길이 칸이 있는 카드의 (초, 문구) — 자세히·간단 두 모드가 함께 쓴다(18차). 손글씨(dx.auto)는 문구 길이로, 짧게 넣으면 최소 길이로."""
+    dx = c['dx']; dF = next((f for f in c['fields'] if f['k'] == 'dur'), None)
+    if not dF: return None, None
+    v = (vals.get('dur') or '').strip()
+    if v and dx.get('auto') and (secs(v) or 0) < auto_len(c, vals):
+        D = auto_len(c, vals); return D, f"약 {num(D)}초(입력한 {v} 로는 문구를 다 쓰고 1.2초 머물 수 없어 최소 길이로 잡음)"
+    if v: return secs(v), v
+    if dx.get('auto'): D = auto_len(c, vals); return D, f"약 {num(D)}초(문구 길이로 잡음)"
+    return secs(dF['ex']), f"약 {dF['ex']}"
+
+
 def count_warn(c, r):
     """dx.same 묶음(항목·숫자·색처럼 개수가 같아야 하는 쉼표 칸)의 개수가 다르면 맨 앞 [입력 확인] 줄 — preview.html countWarn 과 같은 규칙(17차)."""
     bad = []
     for grp in (c.get('dx') or {}).get('same') or []:
         got = [(re.split(r'[(（]', f['label'])[0].strip(), len([x for x in re.split(r'[,，]', r(f['k'])) if x.strip()]))
                for f in c['fields'] if f['k'] in grp and r(f['k']) is not None]
-        if len({n for _, n in got}) > 1: bad.append('·'.join(f'{h} {n}개' for h, n in got))
-    return ''.join(f'[입력 확인] {b} — 개수가 같아야 합니다. 맞춘 뒤 복사하세요.\n' for b in bad)
+        if len({n for _, n in got}) > 1: bad.append('·'.join(f'{h} {n}개' for h, n in got) + ' — 개수가 같아야 합니다')
+    for k, n in ((c.get('dx') or {}).get('min') or {}).items():  # 최소 개수(꺾은선은 숫자 2개 이상, 18차)
+        f = next(x for x in c['fields'] if x['k'] == k); v = r(k)
+        if v is not None and len([x for x in re.split(r'[,，]', v) if x.strip()]) < n: bad.append(f"{re.split(r'[(（]', f['label'])[0].strip()}는 {n}개 이상이어야 합니다")
+    cmp = (c.get('dx') or {}).get('cmp')
+    if cmp:  # 직접 넣은 기호가 두 숫자와 맞지 않으면
+        a, b, op = num_of(r(cmp['a'])), num_of(r(cmp['b'])), (r(cmp['op']) or '').strip()
+        want = None if a is None or b is None else '>' if a > b else '<' if a < b else '='
+        if want and op and op != want: bad.append(f'기호 「{op}」가 숫자({num(a)}·{num(b)})와 맞지 않습니다 — 「{want}」')
+    return ''.join(f'[입력 확인] {b}. 고친 뒤 복사하세요.\n' for b in bad)
 
 
 def simple(pre, c, vals, g):
-    r = resolver(c['fields'], vals, g)
-    return f"{count_warn(c, r)}{pre} {compose(c['tpl'], r)}{compose(TAIL, r)}"
+    r = card_resolver(c, vals, g)
+    D, lt = length_of(c, vals)  # 길이 칸을 채웠거나 문구 길이로 잡는 카드는 간단 요청에도 길이를 넣는다(18차)
+    body = compose(c['tpl'], r)
+    ln = f"{'' if body.endswith(chr(10)) else ' '}전체 길이 {lt}." if lt and ((vals.get('dur') or '').strip() or c['dx'].get('auto')) else ''
+    return f"{count_warn(c, r)}{pre} {body}{ln}{compose(TAIL, r)}"
 
 
 def auto_len(c, vals):
@@ -109,16 +150,10 @@ def auto_len(c, vals):
 
 
 def detail(pre, c, vals, g):
-    dx = c['dx']; r = resolver(c['fields'], vals, g)
+    dx = c['dx']; r = card_resolver(c, vals, g)
     out = [f"{count_warn(c, r)}{pre} {compose(c['tpl'], r)}", '\n[길이·크기] ']
-    dF = next((f for f in c['fields'] if f['k'] == 'dur'), None); D = None
-    if dF:
-        v = (vals.get('dur') or '').strip()
-        if v and dx.get('auto') and (secs(v) or 0) < auto_len(c, vals):  # 문구를 다 쓰기에 짧은 길이는 최소 길이로(16차)
-            D = auto_len(c, vals); out.append(f"전체 약 {num(D)}초(입력한 {v} 로는 문구를 다 쓰고 1.2초 머물 수 없어 최소 길이로 잡음)")
-        elif v: out.append('전체 ' + v); D = secs(v)
-        elif dx.get('auto'): D = auto_len(c, vals); out.append(f"전체 약 {num(D)}초(문구 길이로 잡음)")
-        else: out.append(f"전체 약 {dF['ex']}"); D = secs(dF['ex'])
+    D, lt = length_of(c, vals)
+    if lt: out.append('전체 ' + lt)
     else:
         out.append('전체 ' + compose(dx.get('lenText') or c.get('len') or '', r))
     ratio = (g.get('ratio') or '').strip()

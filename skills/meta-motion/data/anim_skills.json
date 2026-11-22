@@ -2180,7 +2180,11 @@
       "labels",
       "values"
      ]
-    ]
+    ],
+    "min": {
+     "values": 2,
+     "labels": 2
+    }
    },
    "kit": "hyperframes-motion-library",
    "path": "templates/line-chart-draw/index.html",
@@ -2987,8 +2991,8 @@
     },
     {
      "k": "operator",
-     "label": "가운데 기호(>, =, < 중 하나)",
-     "opt": false,
+     "label": "가운데 기호(>, =, < — 비우면 두 숫자로 정함)",
+     "opt": true,
      "ex": ">"
     },
     {
@@ -3043,7 +3047,12 @@
     "look": "어두운 반투명 카드 · 좌우 같은 크기의 큰 숫자와 회색 이름 · 가운데 주황 비교 기호 · 아래 결론",
     "wow": "두 숫자가 시차를 두고 굴러 올라가다 비교 기호가 맞붙이는 순간",
     "avoid": "실제 값만 · 기호는 >, =, < 만 가능",
-    "lenText": ""
+    "lenText": "",
+    "cmp": {
+     "a": "leftValue",
+     "b": "rightValue",
+     "op": "operator"
+    }
    },
    "kit": "hyperframes-motion-library",
    "path": "templates/stat-duel/index.html",

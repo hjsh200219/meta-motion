@@ -52,6 +52,11 @@ assert '최소 길이로 잡음' in run('show', 'tg-handwriting', 'dur=1초').st
 assert run('show', 'ml-bar-chart-grow', 'labels=가,나,다,라,마').stdout.startswith('[입력 확인] 항목 이름 5개·숫자 4개')
 assert all('[입력 확인]' not in run('show', k).stdout for k in ('ml-bar-chart-grow', 'ml-line-chart-draw', 'as-graph', 'dg-concept'))
 assert '\n    들여쓴 첫 줄\n' in run('show', 'dg-code-walkthrough', 'code=    들여쓴 첫 줄\n둘째 줄').stdout
+# 18차: 간단 모드에도 손글씨 길이, 맞대결 기호는 비우면 숫자로·모순이면 [입력 확인], 꺾은선 숫자 2개 이상
+assert '\n전체 길이 약 9.1초(문구 길이로 잡음).' in run('show', 'tg-handwriting', '--simple', 'text=오늘도 감사합니다').stdout
+assert '기호: <.' in run('show', 'ml-stat-duel', 'leftValue=80', 'rightValue=90').stdout
+assert run('show', 'ml-stat-duel', 'leftValue=80', 'rightValue=90', 'operator=>').stdout.startswith('[입력 확인] 기호 「>」')
+assert run('show', 'ml-line-chart-draw', 'labels=1월', 'values=3').stdout.startswith('[입력 확인] 숫자는 2개 이상')
 # 원래 6개는 그대로(기존 스킬 이름·크기)
 assert {items[k]['skill'] for k in ORIG} == {'graph', 'map-route', 'breakdown', 'minimalistic-graphics', 'stick-figure', 'zach-d-films'}
 assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == [1080, 1920] for k in ORIG)
