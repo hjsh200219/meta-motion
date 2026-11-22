@@ -357,7 +357,6 @@ function select(code, scroll, keepHash) {  // keepHash: 주소가 가리킨 카�
     <div><h3>받아서 고치기 · HyperFrames 프로젝트 폴더에서</h3><pre class="en-txt" tabindex="0">${esc(HF_CMD(it))}</pre></div>` : ''}
     ${it.as ? `<div class="links">
       <a class="btn pri" href="${url(asUrl(it))}" target="_blank" rel="noopener">원본 ↗</a>
-      ${it.as.kit === 'claude-animation-skills' ? `<a class="btn" href="https://novitckii.com/resources/animation-skills/" target="_blank" rel="noopener">움직이는 모습 ↗</a>` : ''}
     </div>
     <div><h3>만드는 법 · 원본(고정 커밋)을 그대로 쓴다</h3><pre class="en-txt" tabindex="0">${esc(`python3 motion.py show ${it.code}`)}</pre>${(it.as.notes || []).length ? `<ul class="rules">${it.as.notes.map((n) => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}</div>` : ''}
     ${rules.length ? `<div><h3>처음부터 끝까지 지키는 것</h3><ul class="rules">${rules.map((b) => `<li><b>${esc(b.label)}</b> — ${esc(strip(b.s))}</li>`).join('')}</ul></div>` : ''}
