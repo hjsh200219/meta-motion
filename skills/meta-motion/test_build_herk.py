@@ -68,15 +68,15 @@ if items:
     assert hk.vals_of(_d)['__fixed'] == {'noun': '명사'} and hk.vals_of(_d, {'fx1': '동사'})['__fixed'] == {'noun': '동사'}
     assert all(not f.get('opt') for f in items['hk-paper-t1-stat-ledger']['fields'] if f['k'].startswith('row'))  # 합계에 들어가는 행은 필수
     # 고정 글을 다른 칸 계산 값으로(같은 수를 두 번 받지 않게, #541 1차)
-    _r = items['hk-glow-t1-stat-rank']; assert any(f['k'] == 'n_outof' and not f.get('opt') for f in _r['fields'])  # 전체 수는 전용 칸 하나(#541 2차)
-    assert hk.vals_of(_r, {'n_outof': '9,500'})['__fixed'] == {'out of 4,200': '전체 9,500 중'}
+    assert 'hk-glow-t1-stat-rank' not in items and 'hk-paper-t1-stat-window' not in items  # 끝 화면 확인으로 뺀 카드
     assert all(f.get('opt') for c in items.values() for f in c['fields'] if f['k'].startswith('n_') and not str(f.get('ex', '')).strip())  # 예시가 빈 손잡이는 선택
     assert all(not f.get('opt') for c in items.values() for f in c['fields'] if f.get('fixed') and any(ch.isdigit() for ch in f['fixed']))  # 숫자가 든 고정 글 칸은 필수(#541 3차)
     # 사용자 값으로 부르면 안 준 선택 칸은 비우고, 배지 이니셜은 이름에서, 「D 중 N」은 10칸 비율로(#541 4차)
-    assert hk.vals_of(items['hk-glow-t2-lower-third-geopin'], {'place': '제주 성산'})['coords'] == ''
+    assert hk.vals_of(items['hk-glow-t2-lower-third-geopin'], {'place': '제주 성산'})['coords'] == hk.CLEAR
     assert hk.vals_of(items['hk-glow-t2-lower-third-badgecard'], {'name': '김하늘'})['__fixed'] == {'JL': '하늘'}
     assert hk.vals_of(items['hk-glow-t1-stat-isotype'], {'stat': '20명 중 6명'})['n_lit'] == '3'
     assert hk.vals_of(items['hk-glow-t1-stat-isotype'])['n_lit'] == '6'
+    assert hk.vals_of(items['hk-glow-t1-overview-callouts'], {f['k']: f['ex'] for f in items['hk-glow-t1-overview-callouts']['fields'] if not f.get('opt')})['n_suffix_2'] == ''  # 손잡이엔 지움 신호를 넣지 않는다
     for _f in ('anim_herk_paper.json', 'anim_herk_glow.json'):  # 카드 한 장 = 한 줄(KB 리뷰 diff 상한, #541)
         _t = (hk.HERE / 'data' / _f).read_text(encoding='utf-8'); _d = json.loads(_t)
         assert _t == hk.dump_lines(_d) and _t.count('\n') == len(_d['items']) + 2, _f

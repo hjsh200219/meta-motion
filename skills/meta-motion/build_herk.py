@@ -134,7 +134,8 @@ SLOT_JS = """<script>/* meta-motion: 칸(data-slot) 글 바꾸기 — 카드 스
 (function(){var V=%s;
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function fmt(s){return esc(s).replace(/\\*([^*]+)\\*/g,'<em>$1</em>').replace(/\\n/g,'<br>')}
-function fill(el,v){v=String(v);if(v==='')return;  /* 비운 칸은 원본(그림 무늬 등)을 그대로 둔다 */
+function fill(el,v){v=String(v);if(v==='')return;  /* 비운 그림 칸은 원본(그림 무늬 등)을 그대로 둔다 */
+ if(v==='__clear__'){el.innerHTML='';el.style.visibility='hidden';return}  /* 안 준 선택 글 칸은 비우고 숨긴다 — 원본 영어 자리표시자가 남지 않게 */
  if(el.tagName==='IMG'){el.src=v;return}
  if(/\\.(png|jpe?g|webp|gif|svg)$/i.test(v)&&!el.textContent.trim()){el.style.backgroundImage='url("'+v+'")';el.style.backgroundSize='cover';el.style.backgroundPosition='center';return}
 var ks=[].slice.call(el.children).filter(function(k){return !/^(EM|BR)$/.test(k.tagName)});
@@ -169,7 +170,7 @@ GLOSS = {
     'Value': ('가운데 머리말', '가치'), 'Advantages': ('왼쪽 열 제목', '장점'), 'Disadvantages': ('오른쪽 열 제목', '단점'), 'The Shift': ('카드 머리말', '변화'),
     'Chapter': ('장 표시 글', '장'), 'Next Up': ('다음 표시 글', '다음'), 'TOTAL MARKET VALUE': ('숫자 위 머리말', '전체 시장 가치'), 'PROJECTED BY 2028': ('숫자 아래 설명', '2028년 전망'),
     'BEFORE': ('위쪽(첫째) 막대 이름', '이전'), 'AFTER': ('아래쪽(둘째) 막대 이름', '이후'), 'UTILISED': ('숫자 아래 글', '사용률'), 'YEAR OVER YEAR': ('숫자 아래 글', '전년 대비'),
-    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '=100칸 기준'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 {n_outof} 중'),
+    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '=100칸 기준'), 'of': ('분수 가운데 글', '/'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 {n_outof} 중'),
     'retained': ('왼쪽 이름', '유지'), 'churned': ('오른쪽 이름', '이탈'), 'pass rate': ('숫자 아래 글', '합격률'), 'PASS RATE': ('숫자 아래 글', '합격률'),
     'Intuition': ('왼쪽 이름', '직관'), 'Data-Driven': ('오른쪽 이름', '데이터 기반'), 'minutes': ('분 단위 글', '분'), 'seconds': ('초 단위 글', '초'),
     'TGT': ('조준 표시 글', '목표'), 'Definition': ('머리말', '정의'), 'vs. last cohort': ('비교 기준 글', '지난 기수 대비'), 'The Big Idea': ('머리말', '핵심 아이디어'),
@@ -280,7 +281,7 @@ def probe(items, workers=4):
 KIT = {'source': REPO, 'license': 'MIT + Herk Edit Kit Use Permission (licenses/PERMISSION-herk-edit-kit.txt)', 'creator': 'Nate Herk', 'commit': COMMIT, 'cache': True,
        'fetched': '2026-11-22', 'found_via': '쇼츠 «10 GitHub Repos That Level Up HyperFrames Videos»',
        'how': 'python3 build_herk.py card {code} --out <프로젝트> [--template <템플릿 id>] [칸=값 …] → <프로젝트>/compositions/{code}.html 과 fonts/ '
-              '(칸을 주면 필수 칸은 모두 줘야 하고 안 준 선택 칸은 비운다 — 예시 인물·장소·숫자가 남지 않게, 칸을 하나도 안 주면 미리보기용 예시값, 색·서체는 템플릿 — 원본의 AIS 브랜드 색은 템플릿 색으로 바꿔 넣는다). host 에 data-composition-src 로 넣고 길이는 카드 장면 순서대로'}
+              '(칸을 주면 필수 칸은 모두 줘야 하고 안 준 선택 칸은 비운다 — 예시 인물·장소·숫자가 남지 않게(«비우면 이름에서»처럼 라벨에 적힌 칸은 그 규칙대로, 작은 고정 글 칸은 기본 글), 칸을 하나도 안 주면 미리보기용 예시값, 색·서체는 템플릿 — 원본의 AIS 브랜드 색은 템플릿 색으로 바꿔 넣는다). host 에 data-composition-src 로 넣고 길이는 카드 장면 순서대로'}
 OUT_FILES = {'vox-explainer': 'anim_herk_paper.json', 'kallaway': 'anim_herk_glow.json'}
 OVERLAY = {'lower-third', 'label'}
 
@@ -302,7 +303,8 @@ def vals_of(item, over=None):
     for f in item['fields']:
         v = over.get(f['k'], f.get('ex', ''))
         if f.get('auto') == 'initial' and f['k'] not in over: v = nm.replace(' ', '')[-2:] or v
-        elif user and f.get('opt') and f['k'] not in over and not f.get('fixed'): v = ''
+        elif user and f.get('opt') and f['k'] not in over and not f.get('fixed'):  # 그림 칸은 원본 무늬, 글 칸은 지움 신호(빈 값이면 원본 영어가 남았다 — 250장 화면 확인)
+            v = '' if (f['k'].startswith('n_') or '그림' in f['label'] or IMG_SLOT.search(f.get('slot', f['k']))) else CLEAR  # 손잡이는 data 값이라 빈 값(지움 신호가 글자로 찍혔다)
         if f.get('fixed'): out.setdefault('__fixed', {})[f['fixed']] = v; continue  # 칸 밖 고정 글(GLOSS)
         out[f['k'] if f['k'].startswith('n_') else f.get('slot', f['k'])] = v
     ex = {f['k']: over.get(f['k'], f.get('ex', '')) for f in item['fields']}
@@ -373,7 +375,9 @@ DATA_LOCKED = {'vox-explainer.t1.overview.vertical-timeline', 'vox-explainer.t1.
                # #541 2차: 시각·단계 번호·별점·꽃잎 값·재생 시점·변화율·좌표·전체 장 수가 칸 밖 고정 숫자·스크립트 값에 박힌 카드
                'kallaway.t2.label.timestamp', 'kallaway.t2.label.step', 'kallaway.t2.lower-third.ratingname', 'kallaway.t1.stat.polar', 'kallaway.t2.lower-third.nowplaying', 'kallaway.t2.label.sparkchip', 'kallaway.t2.label.coord', 'kallaway.t1.section.index',
                # #541 3차: 지도 점·표식 위치가 고정 좌표라 이름을 바꿔도 위치를 옮길 수 없는 카드
-               'kallaway.t1.overview.mappoints', 'kallaway.t1.overview.spectrum'}
+               'kallaway.t1.overview.mappoints', 'kallaway.t1.overview.spectrum',
+               # 끝 화면 확인(필수 칸만·예시 렌더 328장): 숫자 판을 종이 덮개가 가려 끝에 숫자가 안 보이는 창 카드, 스크립트가 «out of N» 영어를 다시 쓰는 순위 카드
+               'vox-explainer.t1.stat.window', 'kallaway.t1.stat.rank'}
 
 
 def locked(card):
@@ -382,6 +386,7 @@ def locked(card):
     return card['id'] in DATA_LOCKED or len(ft) >= 3 or any(len(x) >= 20 for x in ft)
 
 
+CLEAR = '__clear__'  # SLOT_JS 에 «이 글 칸은 비우고 숨김» 신호
 IMG_SLOT = re.compile(r'img|image|photo|pic|scrap|frame|thumb|avatar|logo|subject|cutout|portrait', re.I)  # 그림을 넣는 칸 이름
 TEXT_TAGS = {'span', 'p', 'em', 'strong', 'b', 'i', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'small', 'label'}
 
@@ -524,7 +529,7 @@ def export(gen, drop=()):
         outs[OUT_FILES[c['style']]]['items'][code] = {
             'kit': 'herk-edit-kit', 'path': 'style-library/' + c['file'], 'size': [1920, 1080], 'thumb': 'render', 'en': ' '.join([tier, *rest]),
             'template': STYLE[c['style']][1], 'cat': g['cat'], 'name': g['name'], 'plain': g['plain'], 'when': g['when'], 'len': g['len'], 'inds': [],
-            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive) + (' 꼬리표·배지·머리말 같은 작은 고정 글은 위 칸 값을 쓴다(장면 설명에 적힌 원래 글보다 우선).' if any(f.get('fixed') for f in g['fields']) else ''), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {}), **({'fixed_tmpl': ftmpl} if ftmpl else {})}
+            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive) + (' 꼬리표·배지·머리말 같은 작은 고정 글은 위 칸에 준 값을 쓰고, 안 준 칸은 기본 글을 쓴다(장면 설명에 적힌 원래 글보다 우선).' if any(f.get('fixed') for f in g['fields']) else ''), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {}), **({'fixed_tmpl': ftmpl} if ftmpl else {})}
     for f, d in outs.items():
         (HERE / 'data' / f).write_text(dump_lines(d), encoding='utf-8')
     return {f: len(d['items']) for f, d in outs.items()}
