@@ -390,10 +390,15 @@ document.addEventListener('change', (e) => {
 
 for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if (v !== null) $('#' + k).value = v; }
 // 게시본은 자료를 같은 폴더에, repo 는 data/ 아래에 둔다 — 없으면 data/ 에서 찾는다
-const load = (f) => fetch(f).then((r) => r.ok ? r : fetch('data/' + f).then((d) => { if (!d.ok) throw new Error(`${f} ${r.status}/${d.status}`); BASE = 'data/'; return d; })).then((r) => r.json());  // 두 경로의 상태를 모두 남긴다
+// 실패는 응답 본문과 섞이지 않게 따로 만든 객체로 — 두 경로의 HTTP 상태를 모두 담는다(KB 리뷰 11차 F3)
+class LoadErr extends Error { constructor(f, statuses, msg) { super(msg || `${f} ${statuses.join('/')}`); this.statuses = statuses; } }
+// mark=true 인 필수 자료만 미디어 기준 경로(BASE)를 정한다 — JSON 해석에 성공한 뒤에만(선택 파일 실패가 기존 카드 그림 경로를 바꾸지 않게, 11차 F2)
+const load = (f, mark = true) => fetch(f).then((r) => r.ok ? [r, false] : fetch('data/' + f).then((d) => { if (!d.ok) throw new LoadErr(f, [r.status, d.status]); return [d, true]; }))
+  .then(([r, fromData]) => r.json().catch((e) => { throw new LoadErr(f, [r.status], `${f} JSON 해석 실패`); }).then((j) => { if (mark && fromData) BASE = 'data/'; return j; }));
 const optional = (f, empty) => load(f).catch(() => empty);  // 레지스트리 자료가 없는 옛 게시본에서도 나머지는 뜬다
-// 선택 파일(herk 스타일 카드) — 없음(404)은 조용히 넘기고, 그 밖의 읽기·해석 실패는 표시한다(KB 리뷰 5차 F5)
-const optionalErr = (f) => load(f).catch((e) => ({ __err: String(e && e.message || e), __file: f }));
+// 선택 파일(애니메이션 스킬) — 두 경로가 실제로 모두 404 면 조용히 넘기고, 그 밖의 읽기·해석 실패는 표시한다
+const optionalErr = (f) => load(f, false).catch((e) => (e instanceof LoadErr ? e : new LoadErr(f, [], String(e && e.message || e))));
+const isMissing = (e) => e instanceof LoadErr && e.statuses.length === 2 && e.statuses.every((s) => s === 404);
 Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optionalErr('anim_skills.json'), optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then(([cards, ex, ko, reg, hko, ask, ...herks]) => {
   // 애니메이션 스킬 자료는 따로 검증한다 — 못 읽거나 출처(kit)가 빠진 항목은 빼고 나머지 카드는 그대로 띄운다(KB 리뷰 F7)
   // 파일마다 따로 검증해 온전한 키트·항목만 모은다 — 기본 파일이 깨져도 보조 파일(herk)은 싣고, 항목 하나가 깨져도 나머지는 뜬다(KB 리뷰 F7·4~7차)
@@ -414,10 +419,10 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const notes = [], kits = {}, items = {};
   const files = [['anim_skills.json', ask], ['anim_herk_paper.json', herks[0]], ['anim_herk_glow.json', herks[1]]];
   for (const [name, d] of files) {
-    if (d === null || (obj(d) && d.__err)) { if (!(obj(d) && /\b404\/404\b/.test(d.__err))) notes.push(`${name} 을 읽지 못함`); continue; }  // 두 경로 모두 404(파일 없음)만 조용히
+    if (d instanceof LoadErr) { if (!isMissing(d)) notes.push(`${name} 을 읽지 못함`); continue; }  // 두 경로 모두 실제 404(파일 없음)만 조용히
     if (!(obj(d) && obj(d.kits) && obj(d.items))) { notes.push(`${name} 형식이 맞지 않음`); continue; }
     // 항목은 자기 파일의 키트로 검증한다 — 같은 키트 이름이 앞 파일에 다른 출처·버전으로 있으면 그 파일 항목은 뺀다(원본 링크가 다른 판을 가리키지 않게)
-    const local = {}, same = (a, b) => a.source === b.source && (a.ref || a.commit) === (b.ref || b.commit);
+    const local = {}, same = (a, b) => a.source === b.source && (a.ref || a.commit) === (b.ref || b.commit) && a.creator === b.creator && a.license === b.license;  // 표시하는 메타데이터 전부가 같아야 같은 키트(11차 F4)
     let conflict = 0;
     for (const [k, v] of Object.entries(d.kits)) { const ck = cleanKit(v); if (!ck) continue; if (Object.hasOwn(kits, k) && !same(kits[k], ck)) { conflict++; continue; } local[k] = ck; }
     let bad = 0; const clash = [];
