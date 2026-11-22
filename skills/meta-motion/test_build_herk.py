@@ -77,6 +77,9 @@ if items:
     assert hk.vals_of(items['hk-glow-t2-lower-third-badgecard'], {'name': '김하늘'})['__fixed'] == {'JL': '하늘'}
     assert hk.vals_of(items['hk-glow-t1-stat-isotype'], {'stat': '20명 중 6명'})['n_lit'] == '3'
     assert hk.vals_of(items['hk-glow-t1-stat-isotype'])['n_lit'] == '6'
+    for _f in ('anim_herk_paper.json', 'anim_herk_glow.json'):  # 카드 한 장 = 한 줄(KB 리뷰 diff 상한, #541)
+        _t = (hk.HERE / 'data' / _f).read_text(encoding='utf-8'); _d = json.loads(_t)
+        assert _t == hk.dump_lines(_d) and _t.count('\n') == len(_d['items']) + 2, _f
     assert hk.vals_of(items['hk-glow-t1-stat-dotgrid'])['__fixed'] == {'OF 100': '100칸 기준'} and not any(f.get('fixed') for f in items['hk-glow-t1-stat-dotgrid']['fields'])  # 격자 분모는 고정(#541 5차)
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 {len(items)}장)')
 else:

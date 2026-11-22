@@ -24,6 +24,16 @@ KO = {'hf_registry_ko.json': None, 'hf_registry.json': None, 'anim_skills.json':
 BUILD_KEYS = {'src_sha', 'cat_src', 'cat_p', 'hold_checked', 'commit', 'variables', 'sync'}
 
 
+
+def dump_lines(d):
+    """herk 자료 JSON — 카드 한 장을 한 줄로(값은 같다). 한 줄짜리 파일은 카드 하나만 고쳐도 diff 가 파일 전체 두 배가 되어
+    KB AI 리뷰 상한(50만 자, 지운 줄+새 줄)을 넘고 리뷰가 매번 전 카드를 다시 읽었다(PillDocKb #541)."""
+    j = lambda x: json.dumps(x, ensure_ascii=False, separators=(',', ':'))
+    rest = {k: v for k, v in d.items() if k != 'items'}
+    head = j(rest)[:-1] + (',' if rest else '')
+    rows = ',\n'.join(f'{j(k)}:{j(v)}' for k, v in d.get('items', {}).items())
+    return head + '"items":{\n' + rows + '\n}}\n'
+
 def strip_build(v):
     if isinstance(v, dict): return {k: strip_build(x) for k, x in v.items() if k not in BUILD_KEYS}
     if isinstance(v, list): return [strip_build(x) for x in v]
@@ -49,7 +59,8 @@ def build(out: Path, back: bool = True, base_only: bool = False) -> None:  # bas
             data = json.loads((HERE / 'data' / f).read_text(encoding='utf-8'))
             for k in data.get('kits', {}).values() if f.startswith('anim_') else ():  # 화면의 원본 링크용 짧은 커밋(7자는 시크릿 검사에 안 걸린다)
                 k['ref'] = k['commit'][:7]
-            (out / f).write_text(json.dumps(strip_build(data), ensure_ascii=False, indent=KO[f], separators=(',', ': ') if KO[f] else (',', ':')), encoding='utf-8')
+            text = dump_lines(strip_build(data)) if f.startswith('anim_herk_') else json.dumps(strip_build(data), ensure_ascii=False, indent=KO[f], separators=(',', ': ') if KO[f] else (',', ':'))
+            (out / f).write_text(text, encoding='utf-8')
         else:
             shutil.copyfile(HERE / 'data' / f, out / f)
     shutil.rmtree(out / 'anim', ignore_errors=True)

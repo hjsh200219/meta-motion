@@ -481,6 +481,16 @@ def polish(fields, card=None):
     return [f for f in out if f['k'] not in derive], derive
 
 
+def dump_lines(d):
+    """herk 자료 JSON — 카드 한 장을 한 줄로(값은 같다). 한 줄짜리 파일은 카드 하나만 고쳐도 diff 가 파일 전체 두 배가 되어
+    KB AI 리뷰 상한(50만 자, 지운 줄+새 줄)을 넘고 리뷰가 매번 전 카드를 다시 읽었다(PillDocKb #541)."""
+    j = lambda x: json.dumps(x, ensure_ascii=False, separators=(',', ':'))
+    rest = {k: v for k, v in d.items() if k != 'items'}
+    head = j(rest)[:-1] + (',' if rest else '')
+    rows = ',\n'.join(f'{j(k)}:{j(v)}' for k, v in d.get('items', {}).items())
+    return head + '"items":{\n' + rows + '\n}}\n'
+
+
 def derive_note(derive):
     """요청 문장 끝 안내 — 손잡이를 어떻게 계산하는지(받는 쪽이 따로 숫자를 정하지 않게)."""
     kinds = {v[2] for v in derive.values()}
@@ -516,7 +526,7 @@ def export(gen, drop=()):
             'template': STYLE[c['style']][1], 'cat': g['cat'], 'name': g['name'], 'plain': g['plain'], 'when': g['when'], 'len': g['len'], 'inds': [],
             'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive) + (' 꼬리표·배지·머리말 같은 작은 고정 글은 위 칸 값을 쓴다(장면 설명에 적힌 원래 글보다 우선).' if any(f.get('fixed') for f in g['fields']) else ''), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {}), **({'fixed_tmpl': ftmpl} if ftmpl else {})}
     for f, d in outs.items():
-        (HERE / 'data' / f).write_text(json.dumps(d, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
+        (HERE / 'data' / f).write_text(dump_lines(d), encoding='utf-8')
     return {f: len(d['items']) for f, d in outs.items()}
 
 
