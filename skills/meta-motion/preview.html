@@ -120,7 +120,7 @@ footer { color: var(--muted); font-size: 12px; }
     <div class="list" id="list"><p class="count">카드를 불러오는 중…</p></div>
     <section class="detail" id="detail" aria-live="polite"><p class="note">왼쪽에서 카드를 고르세요.</p></section>
   </div>
-  <footer>실전 예시 출처: <a href="https://prompt-motion.com" target="_blank" rel="noopener">prompt-motion.com</a>, 2026-10-11 수집 · 사내 참고용. 영상과 프롬프트는 만든 사람의 것이며, 참고만 하고 그대로 베끼지 않습니다. 실전 예시 영상은 만든 사람의 원본(외부 영상을 못 여는 Artifact 에서는 미리보기용으로 줄인 사본)이고, 카드 내용은 원문 프롬프트를 우리 말로 새로 정리한 것입니다. 원본 화질은 «원본 영상 보기»로 엽니다.<br>요청 카드 출처: <a href="https://nondev-thinking.web.app/motion/" target="_blank" rel="noopener">모션그래픽 주문 사전</a>(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 · 사내 참고용. 이 화면의 재생은 카드에 적힌 장면 순서와 초를 그대로 따라가는 진행표이고, 실제 그림 미리보기는 카드마다 있는 «원본 미리보기» 링크에서 볼 수 있습니다. 요청 문장은 meta-motion 플러그인의 <code>motion.py show</code> 와 같은 규칙으로 만듭니다.<br>레지스트리 출처: <a href="https://github.com/heygen-com/hyperframes/tree/main/registry" target="_blank" rel="noopener">HyperFrames 공식 레지스트리</a>(HeyGen, Apache-2.0) · 목록 그림은 각 항목을 직접 렌더한 한 장면, 영상은 공식 미리보기가 있는 항목만 · 카드 내용은 영어 설명과 타임라인 코드를 우리 말로 새로 정리한 것입니다. 남의 제품 화면·실제 계정을 흉내 낸 항목은 그 회사·그 사람 영상이 아니면 쓰지 않습니다.<br>애니메이션 스킬 출처: <a href="https://github.com/artemnovitckii/claude-animation-skills" target="_blank" rel="noopener">claude-animation-skills</a>(MIT © 2026 Artem Novitckii, 커밋 5dbea55 고정), 2026-11-13 추가 · 카드는 원본 사양을 우리 말로 정리한 것이고, 영상은 원본 템플릿을 그대로 렌더합니다. 목록 그림은 원본 docs/skills.jpg 를 자른 것입니다.</footer>
+  <footer>실전 예시 출처: <a href="https://prompt-motion.com" target="_blank" rel="noopener">prompt-motion.com</a>, 2026-10-11 수집 · 사내 참고용. 영상과 프롬프트는 만든 사람의 것이며, 참고만 하고 그대로 베끼지 않습니다. 실전 예시 영상은 만든 사람의 원본(외부 영상을 못 여는 Artifact 에서는 미리보기용으로 줄인 사본)이고, 카드 내용은 원문 프롬프트를 우리 말로 새로 정리한 것입니다. 원본 화질은 «원본 영상 보기»로 엽니다.<br>요청 카드 출처: <a href="https://nondev-thinking.web.app/motion/" target="_blank" rel="noopener">모션그래픽 주문 사전</a>(한국경영교육연구소 AI ACADEMY), 2026-10-08 수집 · 사내 참고용. 이 화면의 재생은 카드에 적힌 장면 순서와 초를 그대로 따라가는 진행표이고, 실제 그림 미리보기는 카드마다 있는 «원본 미리보기» 링크에서 볼 수 있습니다. 요청 문장은 meta-motion 플러그인의 <code>motion.py show</code> 와 같은 규칙으로 만듭니다.<br>레지스트리 출처: <a href="https://github.com/heygen-com/hyperframes/tree/main/registry" target="_blank" rel="noopener">HyperFrames 공식 레지스트리</a>(HeyGen, Apache-2.0) · 목록 그림은 각 항목을 직접 렌더한 한 장면, 영상은 공식 미리보기가 있는 항목만 · 카드 내용은 영어 설명과 타임라인 코드를 우리 말로 새로 정리한 것입니다. 남의 제품 화면·실제 계정을 흉내 낸 항목은 그 회사·그 사람 영상이 아니면 쓰지 않습니다.<br>애니메이션 스킬 출처: GitHub 모션 키트 8곳(claude-animation-skills·reelforge·hyperframes-motion-library·tegaki·animated-diagrams-skill·saas-motion-kit·huashu-design·product-launch-motion) — 저장소·라이선스·고정 커밋은 항목마다 «원본»에 적었습니다. 카드는 원본 사양을 우리 말로 정리한 것입니다. 목록 그림은 claude-animation-skills 6개는 원본 docs/skills.jpg 를 자른 것, 나머지는 원본 미리보기이거나 한국어 예시값으로 직접 렌더한 한 장면이고, 그림이 없는 항목도 있습니다.</footer>
 </div>
 
 <script>
@@ -387,9 +387,11 @@ const load = (f) => fetch(f).then((r) => r.ok ? r : fetch('data/' + f).then((d) 
 const optional = (f, empty) => load(f).catch(() => empty);  // 레지스트리 자료가 없는 옛 게시본에서도 나머지는 뜬다
 Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optional('anim_skills.json', null)]).then(([cards, ex, ko, reg, hko, ask]) => {
   // 애니메이션 스킬 자료는 따로 검증한다 — 못 읽거나 출처(kit)가 빠진 항목은 빼고 나머지 카드는 그대로 띄운다(KB 리뷰 F7)
-  AS = ask && ask.kits && ask.items ? ask : { kits: {}, items: {} };
-  const asAll = Object.entries(AS.items), as = asAll.filter(([, c]) => AS.kits[c.kit]).map(([code, c]) => ({ ...c, code, src: 'as', as: c }));
-  const asNote = !ask ? '애니메이션 스킬 자료를 읽지 못해 그 항목은 빠졌습니다' : as.length < asAll.length ? `애니메이션 스킬 ${asAll.length - as.length}개는 출처 정보가 없어 빠졌습니다` : '';
+  const okShape = ask && typeof ask.kits === 'object' && ask.kits && typeof ask.items === 'object' && ask.items;
+  AS = okShape ? ask : { kits: {}, items: {} };
+  const okItem = (c) => c && typeof c === 'object' && AS.kits[c.kit] && typeof c.name === 'string' && typeof c.tpl === 'string' && Array.isArray(c.fields) && c.dx && Array.isArray(c.dx.beats) && typeof c.path === 'string';
+  const asAll = Object.entries(AS.items), as = asAll.filter(([, c]) => okItem(c)).map(([code, c]) => ({ ...c, code, src: 'as', as: c }));
+  const asNote = !okShape ? '애니메이션 스킬 자료를 읽지 못해 그 항목은 빠졌습니다' : as.length < asAll.length ? `애니메이션 스킬 ${asAll.length - as.length}개는 자료가 온전하지 않아 빠졌습니다` : '';
   if (asNote) console.warn(asNote);
   const pm = ex.filter((e) => ko[e.id]).map((e) => ({ ...ko[e.id], code: e.id, en: e.title, inds: e.tags.map((t) => TAG[t] || t), src: 'pm', pm: e }));
   const hf = reg.items.filter((r) => hko[r.name]?.tpl).map((r) => ({ ...hko[r.name], code: r.name, en: r.title, inds: r.tags, src: 'hf', hf: r }));
