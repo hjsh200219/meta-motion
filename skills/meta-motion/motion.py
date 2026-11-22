@@ -262,6 +262,7 @@ def main(argv):
   theme [<id>] [--color 문장]   색·서체 템플릿 목록 / 최종 토큰
   official <공식 안내 페이지 URL> --out <폴더> [--screens-only]  공식 지원 문서의 화면 이미지를 alt 와 함께 받기(official.json) — 사용법 영상의 실제 화면
   check <프로젝트> [--no-zone] [--strict] [--top 240] [--top-error 120] [--bottom 480] [--bottom-error 320] [--right 120] [--json]  렌더 전 검사 — lint 가 놓치는 비결정 코드 + 세로 영상 쇼츠 UI 띠의 글자
+  verify <영상.mp4> [-v|-h|--size 1080x1920] [--dur 초] [--no-audio] [--strict] [--json]  렌더 뒤 검사 — 빈 화면·멈춤·검은 처음끝·크기·길이·소리 트랙·음량(-14 LUFS)
   technique [단어…|번호] [--group 분류]  (옛 명령) 표현 기법만 찾기·노트 전문 — search·show 와 같은 자료(⛔ 기술만 가져간다 · MIT kstost)
   film <recommend.json|-> --durs 3.2,5.1,… [--template <id>] [-v|-h] [--out 폴더]  Claude Motion 검토 필름 기록(scenes.json·base.css·클립 장면·split.sh·plan) — 렌더는 HyperFrames, 검토·댓글은 Motion
 옵션: -v 세로 9:16 · -h 가로 16:9 · --ratio 가로|세로|정사각|없음 (기본 가로) · --color "남색과 노랑" · --file video.mp4 · --tool auto|claude|codex''')

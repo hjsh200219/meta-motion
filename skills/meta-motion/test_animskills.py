@@ -31,7 +31,7 @@ for code, c in items.items():  # 같은 카드 꼴 — 기존 16개 분류 안�
 # 원래 6개는 그대로(기존 스킬 이름·크기)
 assert {items[k]['skill'] for k in ORIG} == {'graph', 'map-route', 'breakdown', 'minimalistic-graphics', 'stick-figure', 'zach-d-films'}
 assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == [1080, 1920] for k in ORIG)
-# 넣지 않기로 한 것 — herk-edit-kit 카드(AIS 브랜드 토큰 재사용 불허)·openai/plugins(HeyGen 공식 스킬 사본)
+# 넣지 않기로 한 것 — herk-edit-kit 카드(AIS 브랜드 토큰을 바꿔야 쓸 수 있어 보류)·openai/plugins(HeyGen 공식 스킬 사본)
 assert not any(k.startswith(('hk-', 'oa-')) for k in items)
 
 # 한 목록: motion·catalog·recommend 어디서나 보이고 id 가 겹치지 않는다

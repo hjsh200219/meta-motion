@@ -107,14 +107,14 @@ python3 $M verify <영상.mp4> -v      # 렌더 뒤 — 빈 화면·멈춤(2초+
 
 ### 쇼츠 «10 GitHub Repos That Level Up HyperFrames Videos» 의 키트 (2026-11-22)
 
-사용자가 https://www.youtube.com/shorts/Dx6c5isxnN0 를 주며 «여기 소개된 github 모션들을 meta-motion에 추가» · «각 repo에서 소개된 방법으로 meta-motion 개선할게 있으면 적용» 지시. 9곳을 읽고(openai/plugins 는 HeyGen 공식 스킬 사본이라 제외) repo 마다 한글로 시험 렌더해 쓸 수 있는 것만 넣었다.
+사용자가 https://www.youtube.com/shorts/Dx6c5isxnN0 를 주며 «여기 소개된 github 모션들을 meta-motion에 추가» · «각 repo에서 소개된 방법으로 meta-motion 개선할게 있으면 적용» 지시. 9곳을 읽고(openai/plugins 는 HeyGen 공식 스킬 사본이라 제외) 실행 코드가 있는 4곳(reelforge·motion-library·tegaki·animated-diagrams-skill)은 0.8.162 로 한글 시험 렌더를 한 뒤 넣었다 — 키트마다 1편씩(motion-library 는 big-number-card, 다이어그램은 sequence-diagram)이라 카드 주의의 「실측」은 그 1편에서 나온 것이다. 나머지 3곳(saas-motion-kit 전환·huashu 카메라 리그·product-launch)은 렌더하지 않은 사양 카드다(원본 recipe·문서 수식 근거, 추정한 구간은 카드 주의에 「추정」).
 - `rf-*` 27 — reelforge 갤러리 조각(Apache-2.0, `740bf70`). 렌더 검증된 안무 31개(전환 쌍 4쌍은 한 장씩). 1920x1080 고정, Pretendard 라 한글이 바로 나온다. 조각을 `compositions/` 에 복사해 data-slot 글만 바꾼다(타이밍·이징·흔들림은 원본 keep 규칙대로 그대로). 0.8.162 lint 는 오류 4건을 내지만 렌더는 된다(실측). 목록 그림은 카드 예시값(한국어)으로 직접 찍었다(`animskills.py thumbs` → `render_thumb`).
 - `ml-*` 27 — hyperframes-motion-library 템플릿(MIT, `98c40ca`). 변수형 — `render . --variables '{"exportMode":"mp4", …}'`(기본 transparent 는 mp4 에서 흰 바탕, 실측). 1920x1080(chapter-title·donut-progress 는 세로판 있음). 한글은 시스템 글꼴로 나오지만 word-break 가 없어 단어 중간에서 줄이 바뀐다.
 - `tr-*` 24 — saas-motion-kit 전환 아틀라스(MIT, `bc7a414`). GSAP recipe 를 앞·뒤 장면 한 타임라인에 옮겨 쓴다. 좌표는 1920x1080 기준이라 세로면 이동 거리를 다시 잡는다. 그림 없음.
 - `dg-*` 5 — animated-diagrams-skill(Apache-2.0, `3de812d`) 구조도·시퀀스·개념·코드 설명·설치 터미널. 크기 가변, 한글은 시스템 글꼴(시퀀스 다이어그램 한글 렌더 확인). GSAP 플러그인은 GreenSock 자체 라이선스.
 - `tg-handwriting` — tegaki(MIT, `bf18556`) 한글 손글씨(나눔손글씨 펜, 650자). 일시정지 GSAP 타임라인 onUpdate 에서 `engine.update({time:{mode:'controlled', …}})` — 0.8.162 렌더 확인. 묶음에 없는 글자(「녕」「꽃」 등)는 손글씨가 아니라 한 번에 나온다.
 - `hs-camera-rig` — huashu-design(MIT, `9371131`) seek-safe 카메라 리그(문서 수식 — 직접 짠다). `pl-odometer`·`pl-one-shape-loop` — product-launch-motion(MIT, `edbfb10`, 예시 영상·로고는 NOTICE 로 재사용 금지 — 그림 없음).
-- 넣지 않은 것: herk-edit-kit 카드 406장(두 스타일 `tokens.css` 가 AIS 브랜드 색 — LICENSE 「Note on brand assets」가 재사용 불허), 기존 카드와 겹치는 커서·필름 그레인(레지스트리 `agent-cursor`·`grain-overlay` 등), design-engineering 데모(제작사 로고가 든 자기 홍보 영상).
+- 넣지 않은 것: herk-edit-kit 카드 406장(보류 — 카드는 키트 사용 허락이 덮지만 두 스타일 `tokens.css` 가 AIS 브랜드 색이라 LICENSE 「Note on brand assets」대로 토큰을 우리 템플릿으로 바꿔야 쓸 수 있다. 빌드 스크립트·그림 406장이 필요해 사용자 결정 대기 — `kit-rules.md` 끝), 기존 카드와 겹치는 커서·필름 그레인(레지스트리 `agent-cursor`·`grain-overlay` 등), design-engineering 데모(제작사 로고가 든 자기 홍보 영상).
 - 방법은 카드가 아니라 규칙·도구로: 수치 규칙 `references/kit-rules.md`(읽기 시간·아마추어 티·카메라 예산·전환 다양성·소리·렌더 뒤 검사 — 재현 안 된 원본 주장은 끝에 따로) · 렌더 뒤 검사 `motion.py verify`(`verify.py`).
 
 ## Claude Motion 과 합쳐 쓰기 — 렌더는 HyperFrames, 검토·댓글은 Motion, 카드 없는 장면은 Motion 에서 (2026-10-18)

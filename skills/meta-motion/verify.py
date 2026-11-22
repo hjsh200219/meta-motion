@@ -92,7 +92,7 @@ def run(path, size=None, dur=None, audio=True):
         elif b >= D - 0.05 and D - a >= 0.3: add('black_edge', 'warning', f'마지막 {D - a:.1f}초가 검은 화면(의도한 페이드 아웃이면 무시)')
     info['lufs'] = info['true_peak'] = None
     if not info['audio']:
-        if audio: add('no_audio', 'warning', '소리 트랙 없음 — 음성은 기본으로 붙인다(무음 영상이면 --no-audio). HyperFrames 는 <audio> 에 id 가 있어야 한다(lint media_missing_id)')
+        if audio: add('no_audio', 'warning', '소리 트랙 없음 — 음성은 기본으로 붙인다(무음 영상이면 --no-audio). <audio> 를 넣었는데 없으면 렌더 로그·lint(media_missing_id)를 본다')
     else:
         info['lufs'], info['true_peak'] = loudness(path)
         L, P = info['lufs'], info['true_peak']

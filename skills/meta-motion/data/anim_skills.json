@@ -7086,7 +7086,8 @@
     "원본은 1920x1080 기준(중심 960/540)이며 다른 크기는 가로·세로의 절반으로 바꿈",
     "줌 길이 공식: 0.55×|ln(z2/z1)|/ln2 를 0.30~0.94초로 제한(1→2배가 정확히 0.55초). 배율 단계 1.06/1.3/1.45/1.8/2.3, 이징 power3.inOut, 따라가는 이동은 cubic-bezier(0.33,0,0.15,1)",
     "근거: camera-language.md §3(리그)·§4(이징·길이·단계)·§8(시차)·§9(속도 흐림), gsap-recipes.md §9. 원본 repo 의 BGM(Suno)·SFX(ElevenLabs) 안내는 언급만 하고 이 카드에서는 쓰지 않음",
-    "원본 라이선스 MIT(커밋 9371131). 3D 회전 확대에서 글자 번짐을 막으려면 scale 대신 CSS zoom 을 장면 층에만 쓰는 기법이 문서에 있음"
+    "원본 라이선스 MIT(커밋 9371131). 3D 회전 확대에서 글자 번짐을 막으려면 scale 대신 CSS zoom 을 장면 층에만 쓰는 기법이 문서에 있음",
+    "렌더해 보지 않은 사양 카드 — 원본에 타임라인 코드가 없어 장면 구간(beats)은 문서 설명으로 추정했다(2026-11-22)"
    ]
   },
   "pl-odometer": {
@@ -7166,7 +7167,8 @@
     "원본 예시 영상(Cheerful)·로고는 NOTICE 로 재사용 금지 — 장면은 새로 짓는다",
     "v2 는 문서 수식뿐, 코드는 직접 써야 함: 자리 p 의 값 = floor(v/10^p)%10 + max(0,(v%10^p)−(10^p−1)), v 는 정수에 도달하도록 감속",
     "스프링은 닫힌 형태 감쇠 계단 응답 stepR(tau,{w,z}) 로 계산(문서의 Odometer·Springs 절). 시간만으로 모든 상태를 계산해야 되감아도 정확함",
-    "원본 라이선스 MIT, 예시 영상·고객 로고는 NOTICE 로 제외(커밋 edbfb10)"
+    "원본 라이선스 MIT, 예시 영상·고객 로고는 NOTICE 로 제외(커밋 edbfb10)",
+    "렌더해 보지 않은 사양 카드 — 원본에 타임라인 코드가 없어 장면 구간(beats)은 문서 설명으로 추정했다(2026-11-22)"
    ]
   },
   "pl-one-shape-loop": {
@@ -7252,7 +7254,8 @@
     "원본 예시 영상(Cheerful)·로고는 NOTICE 로 재사용 금지 — 장면은 새로 짓는다",
     "v2 는 문서 수식뿐, 코드는 직접 써야 함. 본 카드의 구간 시각은 README 의 14초 설명과 prompts.md·SKILL.md 의 규칙에서 나눈 안이며 원본 타임라인 코드는 repo 에 없음(근거 약함)",
     "글자가 바뀔 때는 새 글자와 옛 글자가 겹치지 않게 들어옴·나감을 따로 잡음(짧고 일찍 나감). 카메라나 커서는 상태가 바뀔 때마다 화면을 채우도록 움직임",
-    "원본 라이선스 MIT(커밋 edbfb10). 모든 장면은 시간 하나만으로 계산해야 안전함"
+    "원본 라이선스 MIT(커밋 edbfb10). 모든 장면은 시간 하나만으로 계산해야 안전함",
+    "렌더해 보지 않은 사양 카드 — 원본에 타임라인 코드가 없어 장면 구간(beats)은 문서 설명으로 추정했다(2026-11-22)"
    ]
   },
   "tr-t01-match-cut-shape": {
@@ -7325,7 +7328,8 @@
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
     "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
-    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다"
+    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t02-match-cut-motion": {
@@ -7398,7 +7402,8 @@
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
     "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
-    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다"
+    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t03-graphic-match-color": {
@@ -7465,7 +7470,8 @@
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
     "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
-    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다"
+    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t04-beat-cut-hold": {
@@ -7532,7 +7538,8 @@
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
     "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
-    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다"
+    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t05-object-carry": {
@@ -7598,7 +7605,9 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "장면 구간·길이 일부는 recipe 에 정해지지 않은 값(stagger 개수·블러 구간)을 추정해 잡았다 — 원본 recipe 로 다시 잰다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t06-type-carry": {
@@ -7670,7 +7679,9 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "장면 구간·길이 일부는 recipe 에 정해지지 않은 값(stagger 개수·블러 구간)을 추정해 잡았다 — 원본 recipe 로 다시 잰다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t07-cursor-carry": {
@@ -7737,7 +7748,8 @@
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
     "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
-    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다"
+    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t08-line-to-horizon": {
@@ -7803,7 +7815,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t09-push-through": {
@@ -7863,7 +7876,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t10-whip-pan-blur": {
@@ -7929,7 +7943,9 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "장면 구간·길이 일부는 recipe 에 정해지지 않은 값(stagger 개수·블러 구간)을 추정해 잡았다 — 원본 recipe 로 다시 잰다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t11-dolly-out-reveal": {
@@ -7995,7 +8011,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t12-parallax-slide": {
@@ -8061,7 +8078,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t13-product-shape-mask": {
@@ -8127,7 +8145,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t14-text-mask": {
@@ -8193,7 +8212,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t15-focal-iris": {
@@ -8266,7 +8286,8 @@
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
     "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
-    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다"
+    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t16-split-stack": {
@@ -8332,7 +8353,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t17-paper-fold": {
@@ -8398,7 +8420,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t18-ink-bleed": {
@@ -8458,7 +8481,9 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "장면 구간·길이 일부는 recipe 에 정해지지 않은 값(stagger 개수·블러 구간)을 추정해 잡았다 — 원본 recipe 로 다시 잰다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t19-dither-pixel-sort": {
@@ -8524,7 +8549,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t20-glass-refraction-wipe": {
@@ -8590,7 +8616,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t21-freeze-rewind-scrub": {
@@ -8656,7 +8683,8 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t22-speed-ramp": {
@@ -8723,7 +8751,8 @@
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
     "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
-    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다"
+    "원본 recipe 의 기준 시각 T 는 전환 컷 시각이며 base 는 T 앞뒤 전체 구간 길이다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t23-timelapse-tick": {
@@ -8789,7 +8818,9 @@
    "thumb": null,
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
-    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로"
+    "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
+    "장면 구간·길이 일부는 recipe 에 정해지지 않은 값(stagger 개수·블러 구간)을 추정해 잡았다 — 원본 recipe 로 다시 잰다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   },
   "tr-t24-loop-seam": {
@@ -8856,7 +8887,8 @@
    "notes": [
     "recipe 좌표는 1920x1080 기준 — 세로 9:16 이면 이동 거리(px)를 1080/1920 으로 다시 잡는다",
     "원본 서체(Manrope·Instrument Serif)는 라틴 전용 — 한글 글은 meta-motion 템플릿 서체로",
-    "루프 이음 확인은 원본 tools/loop_check.py 방식(렌더 영상 첫·끝 프레임 비교)을 따른다"
+    "루프 이음 확인은 원본 tools/loop_check.py 방식(렌더 영상 첫·끝 프레임 비교)을 따른다",
+    "렌더해 보지 않은 사양 카드(2026-11-22) — 수치는 data.json recipe 근거"
    ]
   }
  }
