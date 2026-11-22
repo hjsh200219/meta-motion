@@ -63,6 +63,13 @@ mmss = lambda x: f'{jsround(x) // 60}:{jsround(x) % 60:02d}'
 span = lambda a, b: f'{mmss(a)}~{mmss(b)}' if b >= 60 else f'{num(r1(a))}~{num(r1(b))}초'
 
 
+def fixed_ratio(c):
+    """크기 고정 항목(애니메이션 스킬 size)의 비율 문구 — 표준 크기면 비율 이름, 아니면 «가로x세로 고정». preview.html fixedRatio 와 같은 규칙."""
+    s = c.get('size') if c.get('src') == 'as' else None
+    if not s: return None
+    return next((k for k, v in RES.items() if v == f'{s[0]}x{s[1]}'), f'{s[0]}x{s[1]} 고정')
+
+
 def simple(pre, c, vals, g):
     r = resolver(c['fields'], vals, g)
     return f"{pre} {compose(c['tpl'], r)}{compose(TAIL, r)}"
@@ -196,7 +203,8 @@ def main(argv):
             if it and it['kind'] == 'theme':
                 import fonts, json; return print(json.dumps(fonts.resolve_theme(it['id'], opt['color'] or None), ensure_ascii=False, indent=1))
         c = card(key)
-        print((simple(pre, c, vals, g) if opt['simple'] or not c['dx'] else detail(pre, c, vals, g)) + credit(c) + tokens)
+        gc = {**g, 'ratio': fixed_ratio(c) or g['ratio']}  # 크기가 고정된 애니메이션 스킬은 그 크기로(고른 비율과 원본 크기가 한 문장에 섞이지 않게)
+        print((simple(pre, c, vals, gc) if opt['simple'] or not c['dx'] else detail(pre, c, vals, gc)) + credit(c) + tokens)
     elif cmd == 'order':  # 사이트 «주문서» — 여러 카드를 한 요청으로(간단 문장, 공통 칸은 맨 앞에 한 번)
         cs = [card(a) for a in args]
         only = lambda k: (g.get(k) or '').strip() or None

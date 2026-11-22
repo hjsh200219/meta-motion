@@ -201,7 +201,8 @@ const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 let AS = { items: {} }, BASE = '', animOk = false, ITEMS = [], cat = '', cur = null, vals = {}, lvl = 'd', play = { t: 0, on: !reduce, last: 0, segs: [], len: 1 };
 const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
 // 크기가 고정된 애니메이션 스킬은 고른 비율 대신 그 크기의 비율로 요청한다(KB 리뷰 F2 — 가로 16:9 와 1080x1920 이 한 문장에 섞임)
-const fixedRatio = (it) => { const s = it?.as?.size; return s ? (s[1] > s[0] ? RATIO['세로'] : s[0] > s[1] ? RATIO['가로'] : RATIO['정사각']) : null; };
+// 표준 크기면 비율 이름, 아니면 실제 픽셀(«1200x920 고정») — motion.py fixed_ratio 와 같은 규칙(KB 리뷰 4차 F1)
+const fixedRatio = (it) => { const s = it?.as?.size; if (!s) return null; const r = Object.keys(RES).find((k) => RES[k] === `${s[0]}x${s[1]}`); return r || `${s[0]}x${s[1]} 고정`; };
 const g = () => ({ ratio: fixedRatio(cur) ?? RATIO[$('#ratio').value] ?? '', color: $('#color').value, file: '' });
 const pre = () => TOOLS[$('#tool').value] || TOOLS.auto;
 // KB(kb.pilldoc.co.kr)처럼 외부 영상을 막지 않는 곳은 window.MOTION_MEDIA = 'origin' 으로 원본 영상·그림을 바로 쓴다(Artifact 는 CSP 가 막아 함께 올린 사본을 쓴다)
@@ -390,12 +391,16 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const obj = (o) => o && typeof o === 'object' && !Array.isArray(o);
   const okShape = obj(ask) && obj(ask.kits) && obj(ask.items);
   AS = okShape ? ask : { kits: {}, items: {} };
-  // herk 스타일 카드는 따로 둔 파일 — 꼴이 맞을 때만 합친다(없거나 깨져도 나머지는 그대로)
-  for (const herk of herks) if (okShape && obj(herk) && obj(herk.kits) && obj(herk.items)) AS = { kits: { ...AS.kits, ...herk.kits }, items: { ...AS.items, ...herk.items } };
   // 목록·찾기·상세·요청 문장이 쓰는 필드를 모두 검사한다 — 하나라도 어긋나면 그 항목만 뺀다
   const str = (v) => typeof v === 'string' && v.length > 0, strs = (v) => Array.isArray(v) && v.every((x) => typeof x === 'string');
   const okSize = (s) => s === null || s === undefined || (Array.isArray(s) && s.length === 2 && s.every((n) => Number.isInteger(n) && n > 0));
   const okKit = (k) => obj(k) && str(k.source) && str(k.license) && str(k.creator) && (str(k.ref) || str(k.commit));
+  // herk 스타일 카드는 따로 둔 파일 — 키트를 먼저 검증하고, 원본에 이미 있는 키는 덮지 않는다(KB 리뷰 4차 F3)
+  for (const herk of herks) if (okShape && obj(herk) && obj(herk.kits) && obj(herk.items)) {
+    const kits = Object.fromEntries(Object.entries(herk.kits).filter(([k, v]) => !AS.kits[k] && okKit(v)));
+    const items = Object.fromEntries(Object.entries(herk.items).filter(([k]) => !AS.items[k]));
+    AS = { kits: { ...AS.kits, ...kits }, items: { ...AS.items, ...items } };
+  }
   const okItem = (c) => obj(c) && okKit(AS.kits[c.kit]) && [c.name, c.tpl, c.path, c.cat, c.plain, c.when, c.len].every(str) && strs(c.inds) && strs(c.notes || [])
     && okSize(c.size) && Array.isArray(c.fields) && c.fields.every((f) => obj(f) && str(f.k) && str(f.label)) && obj(c.dx) && Array.isArray(c.dx.beats)
     && c.dx.beats.every((x) => obj(x) && typeof x.t0 === 'number' && typeof x.t1 === 'number' && typeof x.s === 'string') && (c.thumb === null || c.thumb === undefined || str(c.thumb));
