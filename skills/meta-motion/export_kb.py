@@ -2,7 +2,7 @@
 """preview.html 을 사내 KB(kb.pilldoc.co.kr/motion/)용 페이지로 내보낸다 — preview.html 이 정본, 내보낸 파일은 고치지 않는다.
 KB 에는 외부 영상을 막는 CSP 가 없어 원본 영상·그림을 바로 쓴다(window.MOTION_MEDIA='origin'). 접근은 KB 로그인(kb 역할)이 막는다.
 실행: python3 export_kb.py <PillDocKb>/site/motion   → index.html + motion.json·prompt_motion.json·prompt_motion_ko.json·hf_registry.json·hf_registry_ko.json
-                                                     + anim_skills.json + anim/(요청 카드 샘플) + hf_thumb/(레지스트리 렌더 그림) + as_thumb/(애니메이션 스킬 그림)"""
+                                                     + anim_skills.json(+ anim_herk_*.json — --base-only 면 뺌) + anim/(요청 카드 샘플) + hf_thumb/(레지스트리 렌더 그림) + as_thumb/(애니메이션 스킬 그림)"""
 import json, shutil, sys
 from pathlib import Path
 
@@ -35,7 +35,7 @@ OPTIONAL = {'anim_herk_paper.json', 'anim_herk_glow.json'}  # herk 스타일 카
 BACK = '<a href="/" style="color:inherit;opacity:.7;font-size:13px;text-decoration:none">← PillDocKb</a>\n    <h1>'
 
 
-def build(out: Path, back: bool = True) -> None:  # back=False: 로컬 보기(serve.py) — KB 첫 화면으로 가는 링크가 없다
+def build(out: Path, back: bool = True, base_only: bool = False) -> None:  # base_only: herk 스타일 카드(OPTIONAL)와 그 그림을 빼고 — KB PR 을 나눠 올릴 때  # back=False: 로컬 보기(serve.py) — KB 첫 화면으로 가는 링크가 없다
     src = (HERE / 'preview.html').read_text(encoding='utf-8')
     assert src.startswith('<meta charset="utf-8">\n') and src.count('<h1>') == 1, 'preview.html 머리 모양이 바뀜 — 이 스크립트를 맞출 것'
     out.mkdir(parents=True, exist_ok=True)
@@ -44,7 +44,7 @@ def build(out: Path, back: bool = True) -> None:  # back=False: 로컬 보기(se
     head = HEAD if back else '\n'.join(l for l in HEAD.split('\n') if '/static/' not in l)  # 로컬엔 KB 아이콘이 없다
     (out / 'index.html').write_text(head + body + '\n</html>\n', encoding='utf-8')
     for f in DATA:
-        if f in OPTIONAL and not (HERE / 'data' / f).exists(): continue
+        if f in OPTIONAL and (base_only or not (HERE / 'data' / f).exists()): continue
         if f in KO:  # 만들 때만 쓰는 키(재료 해시·repo 커밋)는 빼고 내보낸다 — 16진 해시가 KB pre-commit 시크릿 검사에 걸린다(2026-10-17)
             data = json.loads((HERE / 'data' / f).read_text(encoding='utf-8'))
             for k in data.get('kits', {}).values() if f.startswith('anim_') else ():  # 화면의 원본 링크용 짧은 커밋(7자는 시크릿 검사에 안 걸린다)
@@ -57,10 +57,11 @@ def build(out: Path, back: bool = True) -> None:  # back=False: 로컬 보기(se
     shutil.rmtree(out / 'hf_thumb', ignore_errors=True)
     shutil.copytree(HERE / 'data' / 'hf_thumb', out / 'hf_thumb')
     shutil.rmtree(out / 'as_thumb', ignore_errors=True)
-    shutil.copytree(HERE / 'data' / 'as_thumb', out / 'as_thumb')
+    shutil.copytree(HERE / 'data' / 'as_thumb', out / 'as_thumb', ignore=shutil.ignore_patterns('hk-*') if base_only else None)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2 or sys.argv[1].startswith('-'): sys.exit(__doc__)  # --help 를 폴더 이름으로 받지 않는다
-    build(Path(sys.argv[1]))
-    print(f'내보냄 → {sys.argv[1]}', file=sys.stderr)
+    args = [a for a in sys.argv[1:] if a != '--base-only']
+    if len(args) != 1 or args[0].startswith('-'): sys.exit(__doc__)  # --help 를 폴더 이름으로 받지 않는다
+    build(Path(args[0]), base_only='--base-only' in sys.argv)
+    print(f'내보냄 → {args[0]}', file=sys.stderr)

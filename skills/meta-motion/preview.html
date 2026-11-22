@@ -419,7 +419,7 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const notes = [], kits = {}, items = {};
   const files = [['anim_skills.json', ask], ['anim_herk_paper.json', herks[0]], ['anim_herk_glow.json', herks[1]]];
   for (const [name, d] of files) {
-    if (d instanceof LoadErr) { if (!isMissing(d)) notes.push(`${name} 을 읽지 못함`); continue; }  // 두 경로 모두 실제 404(파일 없음)만 조용히
+    if (d instanceof LoadErr) { if (!isMissing(d) || name === 'anim_skills.json') notes.push(`${name} 을 읽지 못함`); continue; }  // 보조 파일만 두 경로 모두 404 면 조용히 — 기본 파일이 없으면 알린다(13차 F3)
     if (!(obj(d) && obj(d.kits) && obj(d.items))) { notes.push(`${name} 형식이 맞지 않음`); continue; }
     // 항목은 자기 파일의 키트로 검증한다 — 같은 키트 이름이 앞 파일에 다른 출처·버전으로 있으면 그 파일 항목은 뺀다(원본 링크가 다른 판을 가리키지 않게)
     const local = {}, same = (a, b) => a.source === b.source && (a.ref || a.commit) === (b.ref || b.commit) && a.creator === b.creator && a.license === b.license;  // 표시하는 메타데이터 전부가 같아야 같은 키트(11차 F4)
