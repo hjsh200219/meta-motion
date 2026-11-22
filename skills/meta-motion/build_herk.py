@@ -262,6 +262,11 @@ def vals_of(item, over=None):
     for f in item['fields']:
         v = over.get(f['k'], f.get('ex', ''))
         out[f['k'] if f['k'].startswith('n_') else f.get('slot', f['k'])] = v
+    for knob, (src, i, kind) in (item.get('derive') or {}).items():  # 그래픽 손잡이는 숫자 글 칸에서 계산(KB 리뷰 #540 F4)
+        if knob in over: out[knob] = over[knob]; continue
+        f = next(x for x in item['fields'] if x['k'] == src)
+        v = derived(str(over.get(src, f.get('ex', ''))), i, kind)
+        if v is not None: out[knob] = v[:-2] if v.endswith('.0') else v
     return out
 
 
@@ -311,24 +316,89 @@ def tpl_of(g):
     return f"{g['name']} 만들어줘. " + ' '.join(req) + ''.join(opt) + em
 
 
+# 핵심 자료가 칸이 아니라 스크립트 배열·CSS 에 박힌 카드 — 요청 문장으로 자료를 바꿀 수 없어 뺀다(KB 리뷰 #540 F3, 2026-11-23 스크립트 배열 조사)
+DATA_LOCKED = {'vox-explainer.t1.overview.vertical-timeline', 'vox-explainer.t1.stat.column-chart', 'vox-explainer.t1.overview.matrix',
+               'kallaway.t1.overview.legend', 'kallaway.t1.stat.radialbars', 'kallaway.t1.stat.waterfall'}
+
+
+def locked(card):
+    """칸으로 바꿀 수 없는 핵심 자료가 있는 카드 — 칸 밖 고정 글 3개 이상이거나 DATA_LOCKED."""
+    return card['id'] in DATA_LOCKED or len(fixed_text(card)) >= 3
+
+
+NUM = r'-?\d+(?:\.\d+)?'
+KINDS = ('num', 'ratio', 'mag', 'pre', 'suf', 'dec', 'sign')
+
+
+def norm(v):
+    s = str(v if v is not None else '').strip().replace(',', '')
+    try: return repr(float(s))
+    except ValueError: return s
+
+
+def derived(text, i, kind):
+    """숫자 글(예: «$860K», «10중 3명», «+27%»)에서 i 번째 숫자로 손잡이 값을 계산 — num 그대로·ratio /100·mag K/M/B 곱·pre 앞 기호·suf 뒤 단위·dec 소수 자릿수·sign 부호(up/down)."""
+    s = text.replace(',', ''); ms = list(re.finditer(NUM, s))
+    if i >= len(ms): return None
+    m = ms[i]; x = float(m.group())
+    if kind == 'num': return repr(x)
+    if kind == 'ratio': return repr(round(x / 100, 6))
+    if kind == 'mag':
+        u = s[m.end():m.end() + 1].upper(); mul = {'K': 1e3, 'M': 1e6, 'B': 1e9}.get(u)
+        return repr(float(round(x * mul))) if mul else None
+    if kind == 'pre': return s[:m.start()].strip()[-1:] or None
+    if kind == 'suf': u = s[m.end():m.end() + 1]; return u if u.isalpha() else None
+    if kind == 'dec': return repr(float(len(m.group().split('.')[1]) if '.' in m.group() else 0))
+    if kind == 'sign': return 'down' if m.group().startswith('-') else 'up' if s[:m.start()].strip().endswith('+') or x > 0 else None
+
+
+def polish(fields):
+    """칸 정리(KB 리뷰 #540): 같은 키는 하나로(한 값이 같은 이름의 칸 전부에 들어간다), 같은 라벨은 번호를 붙여 구분,
+    숫자 글 칸과 예시 숫자가 같은 n_ 손잡이는 칸에서 빼고 그 글 칸에서 계산(derive) — 숫자와 그래픽 채움이 어긋나지 않게."""
+    out, seen = [], {}
+    for f in fields:
+        if f['k'] in seen:
+            g = seen[f['k']]
+            if '같은 값' not in g['label']: g['label'] = re.sub(r'(\s*\((?:선택|필수)\))?$', lambda m: ' — 같은 이름의 칸 모두 같은 값' + (m.group(1) or ''), g['label'], count=1)
+            continue
+        f = dict(f); seen[f['k']] = f; out.append(f)
+    cnt = {}
+    for f in out: cnt[f['label']] = cnt.get(f['label'], 0) + 1
+    idx = {}
+    for f in out:
+        if cnt[f['label']] > 1:
+            lab = f['label']; idx[lab] = idx.get(lab, 0) + 1
+            f['label'] = re.sub(r'(\s*\((?:선택|필수)\))?$', lambda m: f' {idx[lab]}' + (m.group(1) or ''), lab, count=1)
+    derive = {}
+    texts = sorted((x for x in out if not x['k'].startswith('n_') and re.search(r'\d', str(x.get('ex', '')))), key=lambda x: not x['k'].startswith('stat'))  # 수치 칸(stat…)을 먼저 — 제목 속 연도에 잘못 붙지 않게
+    for f in out:
+        if not f['k'].startswith('n_'): continue
+        hit = next(([x['k'], i, kind] for x in texts for i in range(len(re.findall(NUM, str(x['ex']).replace(',', ''))))
+                    for kind in KINDS if derived(str(x['ex']), i, kind) == norm(f.get('ex'))), None)
+        if hit: derive[f['k']] = hit
+    return [f for f in out if f['k'] not in derive], derive
+
+
 def export(gen, drop=()):
     """검증한 카드를 data/anim_herk_<스타일>.json 두 파일로(꼴은 anim_skills.json 과 같다 — kits + items)."""
     by = {code_of(c): c for c in cards()}
     outs = {f: {'kits': {'herk-edit-kit': KIT}, 'items': {}} for f in OUT_FILES.values()}
     for code, g in sorted(gen.items()):
-        if code in drop or not g.get('tpl'): continue
+        if code in drop or not g.get('tpl') or locked(by[code]): continue
         c = by[code]; ft = fixed_text(c)
+        fields, derive = polish(g['fields']); g = {**g, 'fields': fields}
         notes = [f"원본 스타일의 색·서체 자리에 템플릿을 넣는다(기본 {STYLE[c['style']][1]} — --template 로 바꾼다). 원본 AIS 브랜드 파랑·남색은 템플릿 강조색·배경으로 바꿔 넣는다(LICENSE 「Note on brand assets」)",
                  '1920x1080 고정 · 원본은 스스로 「렌더 QA 를 다 거치지 않은 초안」이라고 밝힌 키트다 — 쓰기 전에 snapshot 으로 한 번 본다']
         if ft: notes.append('칸 밖에 박힌 영어 글이 있다(사본에서 직접 바꾼다): ' + ' · '.join(dict.fromkeys(ft))[:160])
         kn = [f['k'] for f in g['fields'] if f['k'].startswith('n_')]
         if kn: notes.append(f"n_ 칸({', '.join(kn)})은 화면 글이 아니라 스크립트가 읽는 숫자(채움 비율·목표값 등) — 숫자만 넣는다")
+        if derive: notes.append('그래픽 손잡이(' + ', '.join(derive) + ')는 따로 받지 않고 ' + ', '.join(dict.fromkeys(v[0] for v in derive.values())) + ' 칸의 숫자에서 계산한다(build_herk card)')
         if c['purpose'] in OVERLAY: notes.append('배경이 비어 있는 얹는 카드 — 영상 위 트랙에 둔다')
         tier, *rest = c['id'].split('.')[1:]
         outs[OUT_FILES[c['style']]]['items'][code] = {
             'kit': 'herk-edit-kit', 'path': 'style-library/' + c['file'], 'size': [1920, 1080], 'thumb': 'render', 'en': ' '.join([tier, *rest]),
             'template': STYLE[c['style']][1], 'cat': g['cat'], 'name': g['name'], 'plain': g['plain'], 'when': g['when'], 'len': g['len'], 'inds': [],
-            'fields': g['fields'], 'tpl': tpl_of(g), 'dx': g['dx'], 'notes': notes}
+            'fields': g['fields'], 'tpl': tpl_of(g) + (' 그래픽의 채움·눈금은 위 숫자 그대로.' if derive else ''), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {})}
     for f, d in outs.items():
         (HERE / 'data' / f).write_text(json.dumps(d, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
     return {f: len(d['items']) for f, d in outs.items()}

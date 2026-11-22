@@ -43,10 +43,18 @@ if items:
         slots = {el['data-slot'] for el in BeautifulSoup((hk.LIB / c['file']).read_text(encoding='utf-8'), 'html.parser').select('[data-slot]')} - {''}  # 빈 data-slot 은 칸이 아니다
         v = hk.vals_of(it)
         assert slots <= set(v), (k, sorted(slots - set(v)))
-        assert {x[0] for x in hk.knobs(c)} <= {f['k'] for f in it['fields']}, k
+        assert {x[0] for x in hk.knobs(c)} <= {f['k'] for f in it['fields']} | set(it.get('derive') or {}), k  # 손잡이는 칸이거나 숫자 글 칸에서 계산
+        ks = [f['k'] for f in it['fields']]; ls = [f['label'] for f in it['fields']]
+        assert len(ks) == len(set(ks)) and len(ls) == len(set(ls)), k  # 같은 키·같은 라벨 없음(KB 리뷰 #540)
+        assert not hk.locked(c), k  # 핵심 자료가 칸 밖에 박힌 카드는 넣지 않는다
         assert all(not re.search(r'[A-Za-z]{4,}', str(f['ex'])) or re.fullmatch(r'@\S+', str(f['ex'])) for f in it['fields'] if not f['k'].startswith('n_')), k
         assert it['size'] == [1920, 1080] and it['kit'] == 'herk-edit-kit' and it['path'].startswith('style-library/'), k
         assert not re.search(r'\d+(?:\.\d+)?\s*(?:초|px|배)', it['tpl']), k  # 수치는 장면 순서에만
+    # 숫자 글 칸에서 그래픽 손잡이를 계산한다(KB 리뷰 #540 F4)
+    assert hk.vals_of(items['hk-paper-t1-stat-arc-gauge'], {'stat': '45%'})['n_pct'] == '45'
+    assert hk.vals_of(items['hk-paper-t1-stat-bar'], {'stat': '30%'})['n_fill'] == '0.3'
+    _m = hk.vals_of(items['hk-glow-t1-stat-money'], {'stat': '$1.5M'}); assert (_m['n_value'], _m['n_prefix'], _m['n_suffix'], _m['n_decimals']) == ('1500000', '$', 'M', '1')
+    assert hk.vals_of(items['hk-glow-t1-stat-delta'], {'stat': '-12%'})['n_dir'] == 'down'
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 {len(items)}장)')
 else:
     print(f'test_build_herk: ok (카드 {len(cards)}장 · 자료 파일 없음)')
