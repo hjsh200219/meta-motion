@@ -169,7 +169,7 @@ GLOSS = {
     'Value': ('가운데 머리말', '가치'), 'Advantages': ('왼쪽 열 제목', '장점'), 'Disadvantages': ('오른쪽 열 제목', '단점'), 'The Shift': ('카드 머리말', '변화'),
     'Chapter': ('장 표시 글', '장'), 'Next Up': ('다음 표시 글', '다음'), 'TOTAL MARKET VALUE': ('숫자 위 머리말', '전체 시장 가치'), 'PROJECTED BY 2028': ('숫자 아래 설명', '2028년 전망'),
     'BEFORE': ('위쪽(첫째) 막대 이름', '이전'), 'AFTER': ('아래쪽(둘째) 막대 이름', '이후'), 'UTILISED': ('숫자 아래 글', '사용률'), 'YEAR OVER YEAR': ('숫자 아래 글', '전년 대비'),
-    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '=100명 중'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 {n_outof} 중'),
+    'retention': ('도넛 안 글', '유지율'), 'OF 100': ('숫자 아래 글', '=100칸 기준'), 'of': ('분수 가운데 글', '중'), 'out of 4,200': ('순위 아래 글(전체 수)', '전체 {n_outof} 중'),
     'retained': ('왼쪽 이름', '유지'), 'churned': ('오른쪽 이름', '이탈'), 'pass rate': ('숫자 아래 글', '합격률'), 'PASS RATE': ('숫자 아래 글', '합격률'),
     'Intuition': ('왼쪽 이름', '직관'), 'Data-Driven': ('오른쪽 이름', '데이터 기반'), 'minutes': ('분 단위 글', '분'), 'seconds': ('초 단위 글', '초'),
     'TGT': ('조준 표시 글', '목표'), 'Definition': ('머리말', '정의'), 'vs. last cohort': ('비교 기준 글', '지난 기수 대비'), 'The Big Idea': ('머리말', '핵심 아이디어'),
@@ -514,7 +514,7 @@ def export(gen, drop=()):
         outs[OUT_FILES[c['style']]]['items'][code] = {
             'kit': 'herk-edit-kit', 'path': 'style-library/' + c['file'], 'size': [1920, 1080], 'thumb': 'render', 'en': ' '.join([tier, *rest]),
             'template': STYLE[c['style']][1], 'cat': g['cat'], 'name': g['name'], 'plain': g['plain'], 'when': g['when'], 'len': g['len'], 'inds': [],
-            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {}), **({'fixed_tmpl': ftmpl} if ftmpl else {})}
+            'fields': g['fields'], 'tpl': tpl_of(g) + derive_note(derive) + (' 꼬리표·배지·머리말 같은 작은 고정 글은 위 칸 값을 쓴다(장면 설명에 적힌 원래 글보다 우선).' if any(f.get('fixed') for f in g['fields']) else ''), 'dx': g['dx'], 'notes': notes, **({'derive': derive} if derive else {}), **({'fixed_tmpl': ftmpl} if ftmpl else {})}
     for f, d in outs.items():
         (HERE / 'data' / f).write_text(json.dumps(d, ensure_ascii=False, separators=(',', ':')) + '\n', encoding='utf-8')
     return {f: len(d['items']) for f, d in outs.items()}
