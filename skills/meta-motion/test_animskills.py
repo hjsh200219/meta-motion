@@ -41,6 +41,13 @@ assert motion.auto_len(hw, {}) == 7.7 and motion.auto_len(hw, {'text': '오늘�
 w = hw['dx']['beats'][hw['dx']['auto']['beat']]['t1'] * 9.1 / hw['dx']['base']
 assert 7.66 <= w <= 9.1 - 1.2, w
 assert len(hw['dx']['auto']['t']) > 700 and max(hw['dx']['auto']['t'].values()) == 2.41
+# 비운 선택 칸이 가리키는 요소는 [비운 칸] 으로 빼라고 알린다(KB 리뷰 15차) — 채우면 붙지 않는다
+assert '[비운 칸] 작은 윗글자·좌표 글자·작은 메모' in run('show', 'rf-zoom-portal').stdout
+assert '[비운 칸]' not in run('show', 'rf-zoom-portal', 'kicker=다음', 'coordinate=좌표', 'note=메모').stdout
+# [[A||B]]: 칸을 비우면 B(원본 설명), 채우면 A — 막대 색(16차 F2)
+assert motion.compose('[[막대 {c}||회색]]', lambda k: None) == '회색' and motion.compose('[[막대 {c}||회색]]', lambda k: '빨강') == '막대 빨강'
+# 손글씨 길이를 문구보다 짧게 넣으면 최소 길이로(16차 F1)
+assert '최소 길이로 잡음' in run('show', 'tg-handwriting', 'dur=1초').stdout and '전체 20초' in run('show', 'tg-handwriting', 'dur=20초').stdout
 # 원래 6개는 그대로(기존 스킬 이름·크기)
 assert {items[k]['skill'] for k in ORIG} == {'graph', 'map-route', 'breakdown', 'minimalistic-graphics', 'stick-figure', 'zach-d-films'}
 assert all(items[k]['kit'] == 'claude-animation-skills' and items[k]['size'] == [1080, 1920] for k in ORIG)

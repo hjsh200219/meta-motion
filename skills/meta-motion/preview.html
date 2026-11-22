@@ -148,7 +148,8 @@ function resolver(fields, vals, g) {
   };
 }
 function compose(tpl, r) {
-  const s = String(tpl || '').replace(/\[\[([\s\S]*?)\]\]/g, (m, seg) => [...seg.matchAll(/\{(\w+)\}/g)].every((x) => r(x[1]) !== null) ? seg : '');
+  // [[A]] 는 A 의 칸이 다 있으면 A, [[A||B]] 는 아니면 B(칸을 비웠을 때 원본 설명, 16차) — motion.py compose 와 같은 규칙
+  const s = String(tpl || '').replace(/\[\[([\s\S]*?)\]\]/g, (m, seg) => { const i = seg.indexOf('||'), a = i < 0 ? seg : seg.slice(0, i), b = i < 0 ? '' : seg.slice(i + 2); return [...a.matchAll(/\{(\w+)\}/g)].every((x) => r(x[1]) !== null) ? a : b; });
   return s.replace(/\{(\w+)\}/g, (m, k) => r(k) || '');
 }
 function secs(txt) {
@@ -177,7 +178,7 @@ function detail(pre, c, vals, g) {
   const dx = c.dx, r = resolver(c.fields, vals, g);
   const out = [`${pre} ${compose(c.tpl, r)}`, '\n[길이·크기] '];
   const dF = c.fields.find((f) => f.k === 'dur'); let D = null;
-  if (dF) { const v = trim(vals.dur); if (v) { out.push('전체 ' + v); D = secs(v); } else if (dx.auto) { D = autoLen(c, vals); out.push(`전체 약 ${num(D)}초(문구 길이로 잡음)`); } else { out.push(`전체 약 ${dF.ex}`); D = secs(dF.ex); } }
+  if (dF) { const v = trim(vals.dur); if (v && dx.auto && (secs(v) || 0) < autoLen(c, vals)) { D = autoLen(c, vals); out.push(`전체 약 ${num(D)}초(입력한 ${v} 로는 문구를 다 쓰고 1.2초 머물 수 없어 최소 길이로 잡음)`); } else if (v) { out.push('전체 ' + v); D = secs(v); } else if (dx.auto) { D = autoLen(c, vals); out.push(`전체 약 ${num(D)}초(문구 길이로 잡음)`); } else { out.push(`전체 약 ${dF.ex}`); D = secs(dF.ex); } }
   else out.push('전체 ' + compose(dx.lenText || c.len || '', r));
   const ratio = trim(g.ratio);
   if (ratio) out.push(ratio in RES ? ` · ${RES[ratio]}(${ratio})` : ` · ${ratio}`);
@@ -198,6 +199,9 @@ function detail(pre, c, vals, g) {
   // 내레이션 칸을 채운 카드는 내레이션 금지만 뺀다(KB 리뷰 10차) — motion.py detail 과 같은 규칙
   const narr = (c.fields || []).some((f) => f.k === 'narration' && trim(vals.narration));
   out.push('\n[하지 말 것] ' + (c.engine ? AVOID.replace('내레이션·음악·효과음 없음 · ', '') : narr ? AVOID.replace('내레이션·음악·효과음 없음', '음악·효과음 없음') : AVOID) + (dx.avoid ? ' · ' + compose(dx.avoid, r) : ''));
+  // 비운 선택 칸이 가리키는 요소는 빼라고 알린다(KB 리뷰 15차) — motion.py detail 과 같은 규칙
+  const gone = (c.fields || []).filter((f) => typeof f.drop === 'string' && f.drop && !trim(vals[f.k])).map((f) => f.drop);
+  if (gone.length) out.push('\n[비운 칸] ' + gone.join('·') + ' — 장면 순서·모양에 나오는 이 요소는 빼고(그 자리는 비움) 나머지 시각은 그대로.');
   return out.join('');
 }
 </script>
@@ -404,13 +408,16 @@ for (const k of ['ratio', 'tool', 'color']) { const v = store.get('mc-' + k); if
 // 실패는 응답 본문과 섞이지 않게 따로 만든 객체로 — 두 경로의 HTTP 상태를 모두 담는다(KB 리뷰 11차 F3)
 class LoadErr extends Error { constructor(f, statuses, msg) { super(msg || `${f} ${statuses.join('/')}`); this.statuses = statuses; } }
 // mark=true 인 필수 자료만 미디어 기준 경로(BASE)를 정한다 — JSON 해석에 성공한 뒤에만(선택 파일 실패가 기존 카드 그림 경로를 바꾸지 않게, 11차 F2)
-const load = (f, mark = true) => fetch(f).then((r) => r.ok ? [r, false] : fetch('data/' + f).then((d) => { if (!d.ok) throw new LoadErr(f, [r.status, d.status]); return [d, true]; }))
+// data/ 대체 경로는 첫 응답이 404 일 때만 — 게시 파일의 다른 HTTP 오류(500 등)는 대체 자료로 가리지 않고 그대로 실패로 알린다(16차 F4)
+const load = (f, mark = true) => fetch(f).then((r) => r.ok ? [r, false] : r.status !== 404 ? Promise.reject(new LoadErr(f, [r.status])) : fetch('data/' + f).then((d) => { if (!d.ok) throw new LoadErr(f, [r.status, d.status]); return [d, true]; }))
   .then(([r, fromData]) => r.json().catch((e) => { throw new LoadErr(f, [r.status], `${f} JSON 해석 실패`); }).then((j) => { if (mark && fromData) BASE = 'data/'; return j; }));
 const optional = (f, empty) => load(f).catch(() => empty);  // 레지스트리 자료가 없는 옛 게시본에서도 나머지는 뜬다
 // 선택 파일(애니메이션 스킬) — 두 경로가 실제로 모두 404 면 조용히 넘기고, 그 밖의 읽기·해석 실패는 표시한다
 const optionalErr = (f) => load(f, false).catch((e) => (e instanceof LoadErr ? e : new LoadErr(f, [], String(e && e.message || e))));
 const isMissing = (e) => e instanceof LoadErr && e.statuses.length === 2 && e.statuses.every((s) => s === 404);
-Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optionalErr('anim_skills.json'), optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then(([cards, ex, ko, reg, hko, ask, ...herks]) => {
+// 보조 스킬 파일(herk)은 첫 화면을 그린 뒤 따로 읽어 목록에 합친다 — 지금 고른 카드·검색 상태는 그대로(16차 F3)
+Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motion_ko.json'), optional('hf_registry.json', { items: [] }), optional('hf_registry_ko.json', {}), optionalErr('anim_skills.json')]).then(([cards, ex, ko, reg, hko, ask]) => {
+  const build = (herks) => {  // herks=null: 아직 안 읽음
   // 애니메이션 스킬 자료는 따로 검증한다 — 못 읽거나 출처(kit)가 빠진 항목은 빼고 나머지 카드는 그대로 띄운다(KB 리뷰 F7)
   // 파일마다 따로 검증해 온전한 키트·항목만 모은다 — 기본 파일이 깨져도 보조 파일(herk)은 싣고, 항목 하나가 깨져도 나머지는 뜬다(KB 리뷰 F7·4~7차)
   const obj = (o) => o && typeof o === 'object' && !Array.isArray(o);
@@ -423,7 +430,7 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const okPath = (s) => { if (!str(s)) return false; const [p, a, ...rest] = s.split('#'); return !rest.length && (a === undefined || /^L\d+$/.test(a)) && !/[\\?]/.test(p) && p.split('/').every((x) => x && x !== '.' && x !== '..'); };
   const cleanKit = (k) => obj(k) && okRepo(k.source) && str(k.license) && str(k.creator) && (str(k.ref) ? hex(k.ref, '7,40') : hex(k.commit, '40'))
     ? { source: k.source, license: k.license, creator: k.creator, ...(str(k.ref) ? { ref: k.ref } : { commit: k.commit }) } : null;
-  const okField = (f) => obj(f) && str(f.k) && str(f.label) && (f.opt === undefined || typeof f.opt === 'boolean') && (f.ex === undefined || typeof f.ex === 'string' || num(f.ex));
+  const okField = (f) => obj(f) && str(f.k) && str(f.label) && (f.opt === undefined || typeof f.opt === 'boolean') && optStr(f.drop) && (f.ex === undefined || typeof f.ex === 'string' || num(f.ex));
   const okBeat = (x) => obj(x) && num(x.t0) && num(x.t1) && typeof x.s === 'string' && optStr(x.label) && (x.hold === undefined || typeof x.hold === 'boolean');
   const okItem = (c, kits) => obj(c) && typeof c.kit === 'string' && Object.hasOwn(kits, c.kit)
     && [c.name, c.tpl, c.cat, c.plain, c.when, c.len].every(str) && okPath(c.path) && [c.en, c.skill, c.render, c.thumb].every(optStr) && (c.engine === undefined || typeof c.engine === 'boolean')
@@ -437,7 +444,7 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   const KEEP = ['kit', 'path', 'size', 'thumb', 'en', 'skill', 'render', 'engine', 'notes', 'cat', 'name', 'plain', 'when', 'len', 'inds', 'fields', 'tpl', 'dx'];
   // 같은 코드 비교는 화면이 쓰는 필드만, 직렬화가 실패하면 그 항목 경고로(14차 F4 — 쓰지 않는 깊은 속성이 페이지 전체를 멈추지 않게)
   const sig = (x) => { try { return JSON.stringify(KEEP.map((k) => x[k])); } catch { return null; } };
-  const files = [['anim_skills.json', ask], ['anim_herk_paper.json', herks[0]], ['anim_herk_glow.json', herks[1]]];
+  const files = [['anim_skills.json', ask], ...(herks ? [['anim_herk_paper.json', herks[0]], ['anim_herk_glow.json', herks[1]]] : [])];
   for (const [name, d] of files) {
     if (d instanceof LoadErr) { if (!isMissing(d) || name === 'anim_skills.json') notes.push(`${name} 을 읽지 못함`); continue; }  // 보조 파일만 두 경로 모두 404 면 조용히 — 기본 파일이 없으면 알린다(13차 F3)
     if (!(obj(d) && obj(d.kits) && obj(d.items))) { notes.push(`${name} 형식이 맞지 않음`); continue; }
@@ -481,9 +488,19 @@ Promise.all([load('motion.json'), load('prompt_motion.json'), load('prompt_motio
   ITEMS = order.flatMap((k) => { const by = ['card', 'pm', 'hf', 'as'].map((s) => all.filter((it) => it.cat === k && it.src === s)); return Array.from({ length: Math.max(...by.map((a) => a.length)) }, (_, i) => by.map((a) => a[i])).flat().filter(Boolean); });
   for (const it of ITEMS) if (it.src !== 'as') it.hay = [it.code, it.name, it.en, it.plain, it.when, it.cat, ...it.inds, it.pm?.creator, ...(it.pm?.tags || []), it.hf && 'hyperframes 레지스트리', it.as && `animation skills 애니메이션 스킬 ${it.as.kit} ${KIT(it).creator}`].join(' ').toLowerCase();
   $('#total').textContent = ITEMS.length + (asNote ? ` (${asNote})` : '');
-  const h = decodeURIComponent(location.hash.slice(1));
+  };
+  const h = decodeURIComponent(location.hash.slice(1)), want = (x) => x.code === h || x.code === h.toUpperCase();
+  build(null);
   renderChips(); renderList();
-  select((ITEMS.find((it) => it.code === h || it.code === h.toUpperCase()) || ITEMS[0]).code);
+  select((ITEMS.find(want) || ITEMS[0]).code);
+  const first = cur && cur.code;
   requestAnimationFrame(tick);
+  Promise.all([optionalErr('anim_herk_paper.json'), optionalErr('anim_herk_glow.json')]).then((herks) => {
+    build(herks);
+    if (cur) cur = ITEMS.find((x) => x.code === cur.code) || cur;  // 새 목록의 같은 카드로(입력한 칸 값은 그대로)
+    renderChips(); renderList();
+    const w = ITEMS.find(want);  // 주소가 보조 파일 카드를 가리켰는데 첫 화면엔 없어 다른 카드가 골라졌고, 그 뒤 사용자가 바꾸지 않았으면 이제 고른다
+    if (w && cur && cur.code === first && w.code !== first) select(w.code);
+  });
 }).catch((err) => { $('#list').innerHTML = `<p class="count">자료를 읽지 못했습니다(${esc(err.message)}). 페이지를 새로 고쳐 보세요.</p>`; });
 </script>

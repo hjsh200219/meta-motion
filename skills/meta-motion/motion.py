@@ -40,7 +40,10 @@ def resolver(fields, vals, g, no_file=False):
 
 
 def compose(tpl, r):
-    s = re.sub(r'\[\[([\s\S]*?)\]\]', lambda m: m.group(1) if all(r(k) is not None for k in re.findall(r'\{(\w+)\}', m.group(1))) else '', tpl or '')
+    def opt(m):  # [[A]] 는 A 의 칸이 다 있으면 A, [[A||B]] 는 아니면 B(칸을 비웠을 때 원본 설명, KB 리뷰 16차)
+        a, _, b = m.group(1).partition('||')
+        return a if all(r(k) is not None for k in re.findall(r'\{(\w+)\}', a)) else b
+    s = re.sub(r'\[\[([\s\S]*?)\]\]', opt, tpl or '')
     return re.sub(r'\{(\w+)\}', lambda m: r(m.group(1)) or '', s)
 
 
@@ -95,7 +98,9 @@ def detail(pre, c, vals, g):
     dF = next((f for f in c['fields'] if f['k'] == 'dur'), None); D = None
     if dF:
         v = (vals.get('dur') or '').strip()
-        if v: out.append('전체 ' + v); D = secs(v)
+        if v and dx.get('auto') and (secs(v) or 0) < auto_len(c, vals):  # 문구를 다 쓰기에 짧은 길이는 최소 길이로(16차)
+            D = auto_len(c, vals); out.append(f"전체 약 {num(D)}초(입력한 {v} 로는 문구를 다 쓰고 1.2초 머물 수 없어 최소 길이로 잡음)")
+        elif v: out.append('전체 ' + v); D = secs(v)
         elif dx.get('auto'): D = auto_len(c, vals); out.append(f"전체 약 {num(D)}초(문구 길이로 잡음)")
         else: out.append(f"전체 약 {dF['ex']}"); D = secs(dF['ex'])
     else:
@@ -126,6 +131,8 @@ def detail(pre, c, vals, g):
     avoid = (AVOID.replace('내레이션·음악·효과음 없음 · ', '') if c.get('engine')  # 음성이 붙는 한 편짜리 엔진(애니메이션 스킬)
              else AVOID.replace('내레이션·음악·효과음 없음', '음악·효과음 없음') if narr else AVOID)
     out.append('\n[하지 말 것] ' + avoid + (' · ' + compose(dx['avoid'], r) if dx.get('avoid') else ''))
+    gone = [f['drop'] for f in c['fields'] if f.get('drop') and not (vals.get(f['k']) or '').strip()]  # 비운 선택 칸이 가리키는 요소(KB 리뷰 15차)
+    if gone: out.append('\n[비운 칸] ' + '·'.join(gone) + ' — 장면 순서·모양에 나오는 이 요소는 빼고(그 자리는 비움) 나머지 시각은 그대로.')
     return ''.join(out)
 
 
